@@ -1,0 +1,72 @@
+
+Habe hier angefangen:
+https://aws.amazon.com/de/blogs/apn/aws-iot-on-mongoose-os-part-1/
+
+MOS downloaden (mongoose flashing tool) von:
+https://mongoose-os.com/software.html
+
+sudo add-apt-repository ppa:mongoose-os/mos
+sudo apt-get update
+sudo apt-get install mos
+mos --help
+mos
+
+Dann mongoose os repo klonen und mongoose OS auf den ESP flashen:
+
+git clone https://github.com/cesanta/mongoose-os
+(nach ~/work/iot)
+
+cd work/iot/mongoose-os/fw/examples/c_mqtt
+
+file "mos_esp8266.yml bearbeiten und zeile zu libs hinzufügen:
+	origin: https://github.com/mongoose-os-libs/aws
+
+mos build --arch esp8266
+sudo mos flash
+sudo mos wifi cc-wlan 'sHmi.Ho]Hi$frOg'
+sudo mos aws-iot-setup --aws-region eu-central-1 --aws-iot-policy mos-default
+	Enter them y/N? 
+	
+	access key (iot iam user):  AKIAJGNVQYCYBJCY77VQ
+	secret access key: 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
+			password is: (AYE)VY92hZ)
+
+Führt zu Fehler: Error: failed to set aws.thing_name: no config value at path "aws.thing_name"
+	-> Zeile in libs vergessen vor dem bauen und flashen oben (siehe oben)
+
+sudo mos console
+
+jezt kann man über die AWS IOT Console das licht ein und ausschalten :)
+
+sudo su
+mos
+--> so kann man die mos UI öffnen
+
+
+
+=== MOS SETUP:
+sudo mos build --arch esp8266 --local
+sudo mos flash
+sudo mos wifi cc-wlan 'sHmi.Ho]Hi$frOg'
+sudo mos aws-iot-setup --aws-region eu-central-1 --aws-iot-policy mos-default       // wird im mos tool nicht angezeigt?
+
+sudo mos console
+
+=== AWS prepare:
+sudo mos aws-iot-setup --aws-region eu-central-1 --aws-iot-policy mos-default
+
+
+==================
+02.02.2018
+==================
+Ich habe ein JS Projekt angelegt mit AWS Anbindung, dass beim Erkennen von Bewegungen den Shadow in AWS anpasst.
+Provisionierung hat auch über Kommandozeile funktioniert (siehe oben).
+
+MQTT subscription auf folgendes topic liefert die Delta-Änderungen:
+    $aws/things/esp8266_1BED65/shadow/update/delta
+
+Über den AWS Things Explorer kann der Shadow angezeigt werden, man sieht, wie er sich dann immer ändert.
+
+Ich habe mal eine Test-Rule angelegt die ein Lambda auslösen (soll?) -> noch nicht gestet.
+Keine Ahnung was das Lambda macht, scheinbar protokolliert es nach CloudWatch?
+--> Da können die AWS Kollegen helfen!
