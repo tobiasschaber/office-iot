@@ -3,4 +3,7 @@ deps/
 mongoose-os/
 target/
 *.iml
+<<<<<<< HEAD
 docs
+=======
+>>>>>>> 5e1460888145616cf6e7cdf007facaf136b501d8
