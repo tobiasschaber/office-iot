@@ -70,13 +70,28 @@ trigger: cloudwatch event
 
 
 ===================================================================
-
+ÄNDERUNGEN AM LAMBDA
 ===================================================================
+Ich habe umgestellt auf ein NodeJS Lambda, das hat dann auch soweit geklappt.
+Ich konnte daraus auf die dynamodb zugreifen und Einträge lesen. das hat geklappt, ich konnte auf die
+Events zugreifen, auch per query.
 
+Danach habe ich versucht, die google calendar API aufzurufen, und zwar so wie ee
+hier: https://www.npmjs.com/package/node-google-calendar beschrieben ist.
+Ich habe einen Dienstaccount angelegt (Siehe hier: https://console.developers.google.com/apis/credentials?project=symbolic-rope-196114&organizationId=68929296454)
+hier ein JSON heruntergeladen, in dem auch der private key und eine email-adresse enthalten ist ( so eine lange)
+meinen Google KAlender habe ich dieser Adresse freigegeben.
+Ich habe ein config file angelegt (/config/settings.js) und daneben das gedownloadete json gespeichert (google-api-keyfile.json)
+die settings musste ich ein wenig anpassen, damit anstatt P.14 das json file akzeptiert wurde.
+die lange mail adresse wurde als "SERVICE_ACCT_ID" eingetragen.
 
+dazu habe ich ein calendarTest.js angelegt, welche alle Kalendereinträge lesen soll. diese liefert aus WebStorm ausgeführt
+Sie enthält eine Liste CALENDAR_ID wo man mehrere Kalender eintragen kann. mein Standard Kalender von codecentric wurde dort eingetragen.
+derzeit aber nur ein leeres Json zurück, mit einer items: [] Liste.
 
-
-
+Fraglich ist derzeit, ob Oauth auch eingerichtet werden muss. (da ich den Kalender explizit freigegeben habe, würde ich erwarten, dass nicht...)
+    
+    -> SIehe docs/google calendar api doku!
 
 
 
