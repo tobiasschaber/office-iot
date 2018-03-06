@@ -7,15 +7,16 @@
 //exports.handler = (event, context, callback) => {
 
     var AWS = require('aws-sdk');
-    AWS.config.update({region: 'eu-central-1'});
-    var dynamoDB = new AWS.DynamoDB({region: 'eu-central-1', apiVersion: '2012-08-10'});
+    const awsRegion = 'eu-central-1';
+    AWS.config.update({region: awsRegion});
 
+    var dynamoDB = new AWS.DynamoDB({region: awsRegion, apiVersion: '2012-08-10'});
     var docClient = new AWS.DynamoDB.DocumentClient();
+
 
 
     /* calculate the timestamp from when db entries will be queried */
     var timeLimit = Date.now() - (1000*60*150000);
-
 
     /* db query parameters to detect relevant events */
     var params = {

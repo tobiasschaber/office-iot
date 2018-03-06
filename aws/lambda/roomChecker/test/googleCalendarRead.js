@@ -7,7 +7,7 @@
      var AWS = require('aws-sdk');
      AWS.config.update({region: 'eu-central-1'});
 
-    const CONFIG = require('../config/settings');
+    const CONFIG = require('../config/calendarSettings');
     const CalendarAPI = require('node-google-calendar');
 
     let cal = new CalendarAPI(CONFIG);
