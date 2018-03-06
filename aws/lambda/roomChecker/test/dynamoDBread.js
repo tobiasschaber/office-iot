@@ -4,7 +4,7 @@
 // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GettingStarted.NodeJs.04.html
 
 
-exports.handler = (event, context, callback) => {
+//exports.handler = (event, context, callback) => {
 
     var AWS = require('aws-sdk');
     AWS.config.update({region: 'eu-central-1'});
@@ -14,7 +14,7 @@ exports.handler = (event, context, callback) => {
 
 
     /* calculate the timestamp from when db entries will be queried */
-    var timeLimit = Date.now() - (1000*60*15);
+    var timeLimit = Date.now() - (1000*60*150000);
 
 
     /* db query parameters to detect relevant events */
@@ -59,7 +59,7 @@ exports.handler = (event, context, callback) => {
 
     }
 
-};
+//};
 
 
 
