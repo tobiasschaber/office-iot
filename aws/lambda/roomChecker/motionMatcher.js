@@ -1,8 +1,10 @@
 
+
+
 //exports.handler = (event, context, callback) => {
 
     const awsRegion = 'eu-central-1';
-    const timeFrameSize = 60*60*24*14;       /* time frame size in seconds */
+    const timeFrameSize = 60*60;       /* time frame size in seconds */
     const calendarId = 'codecentric.de_3239393533353332373931@resource.calendar.google.com';
     const motionsTableName = 'motions';
 
@@ -101,7 +103,7 @@
         }
 
         for(i=0; i<motions.Items.length; i++) {
-            console.log("Event: " + motions.Items[i].timestamp);
+            console.log("Event: " + motions.Items[i].timestamp + " | " + motions.Items[i].motionDetected);
         }
 
     }
