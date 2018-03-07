@@ -4,7 +4,7 @@
 //exports.handler = (event, context, callback) => {
 
     const awsRegion = 'eu-central-1';
-    const timeFrameSize = 60*60;       /* time frame size in seconds */
+    const motionTimeFrameSizeSec = 60*60;       /* time frame size in seconds in the past to query motion events */
     const calendarId = 'codecentric.de_3239393533353332373931@resource.calendar.google.com';
     const motionsTableName = 'motions';
 
@@ -17,26 +17,9 @@
     const cal = new CalendarAPI(calendarConfig);
     const docClient = new AWS.DynamoDB.DocumentClient();
 
-    /* calculate the timestamp from when db entries will be queried */
-    const timeLimit = Date.now() - (1000*timeFrameSize);
-
-
-    var calendarQueryParams = calculateCalendarQuery(calendarId);
-
-
-    /* motions database query parameters to detect relevant events */
-    let searchparams = {
-        TableName: motionsTableName,
-        ProjectionExpression: "id, #timestamp, motionDetected",
-        FilterExpression: "#timestamp > :timestmp",
-        ExpressionAttributeNames: {
-            "#timestamp": "timestamp"
-        },
-        ExpressionAttributeValues: {
-            ":timestmp": timeLimit,
-        }
-    };
-
+    /* create query parameters for motions and calendar entries */
+    var calendarQueryParams = calculateCalendarQueryParams(calendarId);
+    var searchParams = calculateMotionQueryParams();
 
 
     /**
@@ -51,14 +34,16 @@
 
 
 
+
+
     /**
      * promise wrapper for the dynamoDB query, which uses a callback implementation
      * @param searchparams the parameters for the search
      * @returns {Promise<any>}
      */
-    var scanMotions = function(searchparams) {
+    var scanMotions = function(searchParams) {
         return new Promise((resolve, reject) => {
-            docClient.scan(searchparams, (err, data) => {
+            docClient.scan(searchParams, (err, data) => {
                 if(err) {
                     return reject(err);
                 }
@@ -67,8 +52,11 @@
         });
     };
 
+
     /* create a promise via the wrapper */
-    var motionsPromise = scanMotions(searchparams);
+    var motionsPromise = scanMotions(searchParams);
+
+
 
 
     /**
@@ -110,8 +98,7 @@
      * of the whole current day
      * @returns {{calendarId: string, timeMin: string, timeMax: string}}
      */
-    function calculateCalendarQuery(calendarId) {
-
+    function calculateCalendarQueryParams(calendarId) {
 
         var start = new Date();
         var end  = new Date();
@@ -126,13 +113,39 @@
         console.log("-----------------------------------");
 
         /* calendar query parameters */
-        let calendarQueryParams = {
+        var calendarQueryParams = {
             calendarId: calendarId,
             timeMin: start.toISOString(),
             timeMax: end.toISOString(),
         };
 
         return calendarQueryParams;
-
     }
 
+
+    /**
+     * calculate the query search params for the dynamoDB query to request
+     * all events in a given time
+     * @returns {{TableName: string, ProjectionExpression: string, FilterExpression: string, ExpressionAttributeNames: {"#timestamp": string}, ExpressionAttributeValues: {":timestmp": number}}}
+     */
+    function calculateMotionQueryParams() {
+
+        /* calculate the timestamp from when db entries will be queried */
+        var timeLimit = Date.now() - (1000*motionTimeFrameSizeSec);
+
+        /* motions database query parameters to detect relevant events */
+        var searchparams = {
+            TableName: motionsTableName,
+            ProjectionExpression: "id, #timestamp, motionDetected",
+            FilterExpression: "#timestamp > :timestmp",
+            ExpressionAttributeNames: {
+                "#timestamp": "timestamp"
+            },
+            ExpressionAttributeValues: {
+                ":timestmp": timeLimit,
+            }
+        };
+
+        return searchparams;
+
+    }
