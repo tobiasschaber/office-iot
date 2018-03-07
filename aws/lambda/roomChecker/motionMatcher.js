@@ -82,12 +82,58 @@
      */
     function matchMotionsToCalendar(calendarEntries, motions) {
 
+        /* iterate over all calendar entries */
         for(i=0; i<calendarEntries.length; i++) {
-            console.log("Entry: " + calendarEntries[i].summary + " " + calendarEntries[i].status);
+            var currentEvent = calendarEntries[i];
+
+            /* ignore cancelled events */
+            if(currentEvent.status !== 'cancelled') {
+                console.log("===============================================================");
+                console.log("scanning in: " + currentEvent.summary);
+
+                var currentEventStart = new Date(currentEvent.start.dateTime);
+                var currentEventEnd   = new Date(currentEvent.end.dateTime);
+
+                var motionsDetected = false;
+                var motionsCount = 0;
+
+                /* iterate over all motions */
+                for(j=0; j<motions.Items.length; j++) {
+                    var currentMotion = motions.Items[j];
+                    var currentMotionTimestamp = new Date(currentMotion.timestamp);
+
+                    /* if there are motions in the calendar entry's timeframe */
+                    if(currentMotion.motionDetected == true) {
+                        if(currentEventStart <= currentMotionTimestamp &&
+                           currentEventEnd   >= currentMotionTimestamp) {
+                            motionsDetected = true;
+                            ++motionsCount;
+                        }
+                    }
+                }
+
+                handleMotionsDetected(motionsDetected, motionsCount, currentEvent);
+
+            }
+
         }
 
-        for(i=0; i<motions.Items.length; i++) {
-            console.log("Event: " + motions.Items[i].timestamp + " | " + motions.Items[i].motionDetected);
+    }
+
+
+    /**
+     * decide what to do depending on the motion detection status
+     * @param motionsDetected
+     * @param motionsCount
+     * @param currentEvent
+     */
+    function handleMotionsDetected(motionsDetected, motionsCount, currentEvent) {
+
+        if(motionsDetected != true) {
+            console.log("Found no motions in " + currentEvent.summary + " from " + currentEvent.creator.email);
+            motionsDetected = false;
+        } else {
+            console.log("FOUND " + motionsCount + " motions in " + currentEvent.summary);
         }
 
     }
