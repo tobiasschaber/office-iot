@@ -89,7 +89,7 @@
             /* ignore cancelled events */
             if(currentEvent.status !== 'cancelled') {
                 console.log("===============================================================");
-                console.log("scanning in: " + currentEvent.summary);
+                console.log("Scanning: " + currentEvent.summary);
 
                 var currentEventStart = new Date(currentEvent.start.dateTime);
                 var currentEventEnd   = new Date(currentEvent.end.dateTime);
@@ -112,7 +112,7 @@
                     }
                 }
 
-                handleMotionsDetected(motionsDetected, motionsCount, currentEvent);
+                handleMotionsDetected(motionsDetected, motionsCount, currentEvent, currentEventStart, currentEventEnd);
 
             }
 
@@ -127,11 +127,26 @@
      * @param motionsCount
      * @param currentEvent
      */
-    function handleMotionsDetected(motionsDetected, motionsCount, currentEvent) {
+    function handleMotionsDetected(motionsDetected, motionsCount, currentEvent, currentEventStart, currentEventEnd) {
 
         if(motionsDetected != true) {
             console.log("Found no motions in " + currentEvent.summary + " from " + currentEvent.creator.email);
-            motionsDetected = false;
+
+            let now = Date.now();
+
+            if(currentEventEnd > now) {
+                if(currentEventStart < now) {
+                    console.log("(Event is currently running)");
+                } else {
+                    console.log("(Event is not yet started)");
+                }
+            } else {
+                console.log("Event is over!");
+                //TODO something should happen here!
+            }
+
+
+
         } else {
             console.log("FOUND " + motionsCount + " motions in " + currentEvent.summary);
         }
