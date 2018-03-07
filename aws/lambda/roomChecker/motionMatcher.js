@@ -21,12 +21,8 @@
     const timeLimit = Date.now() - (1000*timeFrameSize);
 
 
-    /* calendar query parameters */
-    let calendarQueryParams = {
-        calendarId: calendarId,
-        timeMin: '2018-03-02T00:00:00-01:00',
-        timeMax: '2018-03-02T18:00:00-01:00',
-    };
+    var calendarQueryParams = calculateCalendarQuery(calendarId);
+
 
     /* motions database query parameters to detect relevant events */
     let searchparams = {
@@ -105,6 +101,38 @@
         for(i=0; i<motions.Items.length; i++) {
             console.log("Event: " + motions.Items[i].timestamp + " | " + motions.Items[i].motionDetected);
         }
+
+    }
+
+
+    /**
+     * calculate the google calendar query parameters containing a time frame
+     * of the whole current day
+     * @returns {{calendarId: string, timeMin: string, timeMax: string}}
+     */
+    function calculateCalendarQuery(calendarId) {
+
+
+        var start = new Date();
+        var end  = new Date();
+
+        /* begin at 00:00:00 and end at 23:59:59 to get all calendar entries of the day */
+        start.setHours(0, 0, 0);
+        end.setHours(23, 59, 59);
+
+        console.log("-----------------------------------");
+        console.log("start: " + start.toUTCString());
+        console.log("  end: " + end.toUTCString());
+        console.log("-----------------------------------");
+
+        /* calendar query parameters */
+        let calendarQueryParams = {
+            calendarId: calendarId,
+            timeMin: start.toISOString(),
+            timeMax: end.toISOString(),
+        };
+
+        return calendarQueryParams;
 
     }
 
