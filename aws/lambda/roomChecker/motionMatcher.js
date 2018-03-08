@@ -4,7 +4,7 @@
 //exports.handler = (event, context, callback) => {
 
     const awsRegion = 'eu-central-1';
-    const motionTimeFrameSizeSec = 60*60;       /* time frame size in seconds in the past to query motion events */
+    const motionTimeFrameSizeSec = 60*60*24;       /* time frame size in seconds in the past to query motion events */
     const calendarId = 'codecentric.de_3239393533353332373931@resource.calendar.google.com';
     const motionsTableName = 'motions';
 
@@ -34,8 +34,6 @@
 
 
 
-
-
     /**
      * promise wrapper for the dynamoDB query, which uses a callback implementation
      * @param searchparams the parameters for the search
@@ -55,7 +53,6 @@
 
     /* create a promise via the wrapper */
     var motionsPromise = scanMotions(searchParams);
-
 
 
 
@@ -82,6 +79,8 @@
      */
     function matchMotionsToCalendar(calendarEntries, motions) {
 
+        //TODO: Herausfinden ob ein Meeting wiederkehrend ist oder nicht.
+
         /* iterate over all calendar entries */
         for(i=0; i<calendarEntries.length; i++) {
             var currentEvent = calendarEntries[i];
@@ -89,10 +88,12 @@
             /* ignore cancelled events */
             if(currentEvent.status !== 'cancelled') {
                 console.log("===============================================================");
-                console.log("Scanning: " + currentEvent.summary);
+                console.log("Scanning: " + currentEvent.summary + " " + (currentEvent.recurrence? "[recurring event]":""));
 
-                var currentEventStart = new Date(currentEvent.start.dateTime);
-                var currentEventEnd   = new Date(currentEvent.end.dateTime);
+                /* it looks like on recurring events, the date stays the same (date of creation) and
+                only the time needs to be taken into consideration */
+                let currentEventStart = copyTimeIntoToday(currentEvent.start.dateTime);
+                let currentEventEnd   = copyTimeIntoToday(currentEvent.end.dateTime);
 
                 var motionsDetected = false;
                 var motionsCount = 0;
@@ -100,6 +101,7 @@
                 /* iterate over all motions */
                 for(j=0; j<motions.Items.length; j++) {
                     var currentMotion = motions.Items[j];
+
                     var currentMotionTimestamp = new Date(currentMotion.timestamp);
 
                     /* if there are motions in the calendar entry's timeframe */
@@ -121,6 +123,7 @@
     }
 
 
+
     /**
      * decide what to do depending on the motion detection status
      * @param motionsDetected
@@ -128,6 +131,7 @@
      * @param currentEvent
      */
     function handleMotionsDetected(motionsDetected, motionsCount, currentEvent, currentEventStart, currentEventEnd) {
+
 
         if(motionsDetected != true) {
             console.log("Found no motions in " + currentEvent.summary + " from " + currentEvent.creator.email);
@@ -142,7 +146,14 @@
                 }
             } else {
                 console.log("Event is over!");
-                //TODO something should happen here!
+                console.log("");
+                console.log("(NOBODY THERE)");
+                console.log("             ");
+                console.log("            °");
+                console.log("           ° ");
+                console.log("   >-)))°>  ");
+                console.log("Event Start: " + currentEventStart)
+                console.log("Event Endet: " + currentEventEnd)
             }
 
 
@@ -152,6 +163,7 @@
         }
 
     }
+
 
 
     /**
@@ -184,6 +196,7 @@
     }
 
 
+
     /**
      * calculate the query search params for the dynamoDB query to request
      * all events in a given time
@@ -208,5 +221,25 @@
         };
 
         return searchparams;
+
+    }
+
+
+
+    /**
+     * copy hours, minutes and seconds from a date to the same time today
+     * @param dateTime
+     */
+    function copyTimeIntoToday(dateTime) {
+
+        let newDate   = new Date(dateTime);
+        var targetDate = new Date();
+
+        targetDate.setHours(newDate.getHours());
+        targetDate.setMinutes(newDate.getMinutes());
+        targetDate.setSeconds(newDate.getSeconds());
+
+        return targetDate;
+
 
     }
