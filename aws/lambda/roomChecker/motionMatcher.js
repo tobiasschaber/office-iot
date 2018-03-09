@@ -3,8 +3,9 @@
 
 //exports.handler = (event, context, callback) => {
 
+    const awsCredentialsProfile = 'officeiot';      /* aws credentials profile name (default: default) */
     const awsRegion = 'eu-central-1';
-    const motionTimeFrameSizeSec = 60*60*24;       /* time frame size in seconds in the past to query motion events */
+    const motionTimeFrameSizeSec = 60*60*24;        /* time frame size in seconds in the past to query motion events */
     const calendarId = 'codecentric.de_3239393533353332373931@resource.calendar.google.com';
     const motionsTableName = 'motions';
 
@@ -12,7 +13,9 @@
     const calendarConfig = require('./config/calendarSettings');
     const CalendarAPI = require('node-google-calendar');
 
+
     AWS.config.update({region: awsRegion});
+    AWS.config.update({credentials: new AWS.SharedIniFileCredentials({profile: awsCredentialsProfile})});
 
     const cal = new CalendarAPI(calendarConfig);
     const docClient = new AWS.DynamoDB.DocumentClient();
@@ -78,8 +81,6 @@
      * @param motions list of all motions
      */
     function matchMotionsToCalendar(calendarEntries, motions) {
-
-        //TODO: Herausfinden ob ein Meeting wiederkehrend ist oder nicht.
 
         /* iterate over all calendar entries */
         for(i=0; i<calendarEntries.length; i++) {
