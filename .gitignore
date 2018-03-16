@@ -6,3 +6,5 @@ target/
 docs
 .idea
 *.tfvars
+*.tfstate
+*.backup
