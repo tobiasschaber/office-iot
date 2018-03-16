@@ -8,3 +8,4 @@ docs
 *.tfvars
 *.tfstate
 *.backup
+.terraform
