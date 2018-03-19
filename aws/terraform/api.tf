@@ -79,3 +79,68 @@ resource "aws_lambda_function" "list_rooms_lambda" {
   source_code_hash = "${base64sha256(file("../lambda/api/api.zip"))}"
   timeout = "10"
 }
+
+
+resource "aws_api_gateway_rest_api" "officeiot_api" {
+  name        = "OfficeIOTAPI"
+  description = "API for Office IOT services"
+}
+
+
+resource "aws_api_gateway_resource" "room_resource" {
+  rest_api_id = "${aws_api_gateway_rest_api.officeiot_api.id}"
+  parent_id   = "${aws_api_gateway_rest_api.officeiot_api.root_resource_id}"
+  path_part   = "room"
+}
+
+
+resource "aws_api_gateway_method" "room_method_any" {
+  rest_api_id   = "${aws_api_gateway_rest_api.officeiot_api.id}"
+  resource_id   = "${aws_api_gateway_resource.room_resource.id}"
+  http_method   = "ANY"
+  authorization = "NONE"
+}
+
+
+resource "aws_api_gateway_integration" "room_post_integration" {
+  rest_api_id             = "${aws_api_gateway_rest_api.officeiot_api.id}"
+  resource_id             = "${aws_api_gateway_resource.room_resource.id}"
+  http_method             = "${aws_api_gateway_method.room_method_any.http_method}"
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = "${aws_lambda_function.create_room_lambda.invoke_arn}"
+}
+
+
+resource "aws_api_gateway_deployment" "room" {
+  depends_on = [
+    "aws_api_gateway_integration.room_post_integration"
+  ]
+
+  rest_api_id = "${aws_api_gateway_rest_api.officeiot_api.id}"
+  stage_name  = "prod"
+}
+
+
+
+
+resource "aws_lambda_permission" "apigw" {
+  statement_id  = "AllowAPIGatewayInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = "${aws_lambda_function.create_room_lambda.arn}"
+  principal     = "apigateway.amazonaws.com"
+
+  # The /*/* portion grants access from any method on any resource
+  # within the API Gateway "REST API".
+  source_arn = "${aws_api_gateway_deployment.room.execution_arn}/*/room"
+}
+
+
+
+//output "base_url" {
+//  value = "${aws_api_gateway_deployment.room.invoke_url}"
+//}
+
+
+
+
