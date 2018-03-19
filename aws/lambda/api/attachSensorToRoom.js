@@ -1,6 +1,7 @@
 
 const AWS = require('aws-sdk');
 const sensorsTableName = 'sensors';
+const helper = require('./helper');
 const awsRegion = 'eu-central-1';
 
 
@@ -22,13 +23,26 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
  */
 exports.attachSensorToRoom = (event, context, callback) => {
 
+    /* ensure event format is correct */
+    if(!event || !event.queryStringParameters) {
+        callback(null, helper.createResponse(500, "event or event.queryStringParameters not set"));
+        return;
+    }
+
+    /* ensure all request parameters are defined */
+    if(!event.queryStringParameters.sensorId ||
+        !event.queryStringParameters.roomId ||
+        !event.queryStringParameters.description) {
+        callback(null, helper.createResponse(500, "missing request parameter"));
+        return;
+    }
 
     AWS.config.update({region: awsRegion});
-
     const docClient = new AWS.DynamoDB.DocumentClient();
 
-
-    attachSensorToRoom("sensorId2", "roomId", "description");
+    attachSensorToRoom(event.queryStringParameters.sensorId,
+                       event.queryStringParameters.roomId,
+                       event.queryStringParameters.description);
 
 
     /**
@@ -51,8 +65,11 @@ exports.attachSensorToRoom = (event, context, callback) => {
         docClient.put(params, function (err, data) {
             if (err) {
                 console.error("Unable to attach sensor to room. Error JSON:", JSON.stringify(err, null, 2));
+                callback(null, helper.createResponse(500, "error: " + JSON.stringify((err, null, 2))));
             } else {
                 console.log("Sensor attached: ", JSON.stringify(data, null, 2));
+                callback(null, helper.createResponse(200, "sensor attached."));
+
             }
         });
 

@@ -2,6 +2,7 @@
 const AWS = require('aws-sdk');
 const uuidv1 = require('uuid/v1');
 const roomsTableName = 'rooms';
+const helper = require('./helper');
 const awsRegion = 'eu-central-1';
 
 
@@ -58,15 +59,6 @@ exports.listRooms = (event, context, callback) => {
             });
         };
 
-
-        //
-        //
-        //
-        //
-        // AKTUELLES PROBLEM: ich weiß nicht wie das Ergebnis dass wir unten haben, zurückgegeben werden kann an den aufrufenden.
-        // VIELLEICHT KOMME ICH HIER WEITER?
-        //     https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/nodejs-write-lambda-function-example.html
-
         /* create a promise via the wrapper */
         var roomsPromise = scanRoomsPromiseWrapper(searchparams);
 
@@ -75,10 +67,11 @@ exports.listRooms = (event, context, callback) => {
          */
         Promise.all([roomsPromise])
             .then(resp => {
-                console.log(resp[0]);
+                callback(null, helper.createResponse(200, JSON.stringify(resp[0])));
 
             }).catch(err => {
-            console.log(err.message);
+                console.log(err.message);
+                callback(null, helper.createResponse(500, err.message));
         });
     }
 

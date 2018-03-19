@@ -4,4 +4,17 @@ var listRooms = require('../api/listRooms');
 
 
 listRooms.setLocalTestMode("officeiot");
-listRooms.listRooms();
+
+var callback = function(a, b) {
+    console.log(a);
+    console.log(b);
+}
+
+
+var event = {
+    queryStringParameters: {
+    }
+}
+
+
+listRooms.listRooms(event, null, callback);
