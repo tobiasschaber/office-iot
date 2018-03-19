@@ -22,7 +22,7 @@ variable "default_sensor" {
   {
     "sensorId": {"S": "26e98cf9"},
     "description": {"S": "Sensor auf dem Tisch im Jakku"},
-    "attachedInRoom": {"N": "1"}
+    "attachedInRoom": {"S": "1"}
   }
   ITEM
 }
