@@ -54,6 +54,16 @@ exports.createRoom = (event, context, callback) => {
                 console.error("Unable to create room. Error JSON:", JSON.stringify(err, null, 2));
             } else {
                 console.log("Room created: ", JSON.stringify(data, null, 2));
+
+                var response = {
+                    "statusCode": 200,
+                    "headers": {
+                    },
+                    "body": JSON.stringify(data),
+                    "isBase64Encoded": false
+                };
+                callback(null, response);
+
             }
         });
     }
