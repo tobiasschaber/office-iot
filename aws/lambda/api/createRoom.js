@@ -1,6 +1,7 @@
 
 const AWS = require('aws-sdk');
 const uuidv1 = require('uuid/v1');
+const helper = require('./helper');
 const roomsTableName = 'rooms';
 const awsRegion = 'eu-central-1';
 
@@ -22,10 +23,31 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
  */
 exports.createRoom = (event, context, callback) => {
 
+    /* ensure event format is correct */
+    if(!event || !event.queryStringParameters) {
+        callback(null, helper.createResponse(500, "event or event.queryStringParameters not set"));
+        return;
+    }
+
+    /* ensure all request parameters are defined */
+    if(!event.queryStringParameters.roomName ||
+       !event.queryStringParameters.accountId ||
+       !event.queryStringParameters.privateKey ||
+       !event.queryStringParameters.calendarId) {
+        callback(null, helper.createResponse(500, "missing request parameter"));
+        return;
+    }
+
+
     AWS.config.update({region: awsRegion});
     const docClient = new AWS.DynamoDB.DocumentClient();
 
-    createRoom("name des Raums", "AccountIDXXX", "PrivateKeyXXX", "calendarIDZZZ");
+    /* execute the main function */
+    createRoom( event.queryStringParameters.roomName,
+                event.queryStringParameters.accountId,
+                event.queryStringParameters.privateKey,
+                event.queryStringParameters.calendarId);
+
 
 
     /**
@@ -52,18 +74,11 @@ exports.createRoom = (event, context, callback) => {
         docClient.put(params, function (err, data) {
             if (err) {
                 console.error("Unable to create room. Error JSON:", JSON.stringify(err, null, 2));
+                callback(null, helper.createResponse(500, "error: " + JSON.stringify((err, null, 2))));
             } else {
-                console.log("Room created: ", JSON.stringify(data, null, 2));
+                console.log("room created");
 
-                var response = {
-                    "statusCode": 200,
-                    "headers": {
-                    },
-                    "body": JSON.stringify(data),
-                    "isBase64Encoded": false
-                };
-                callback(null, response);
-
+                callback(null, helper.createResponse(200, "room created with id: " + uuid));
             }
         });
     }

@@ -94,18 +94,18 @@ resource "aws_api_gateway_resource" "room_resource" {
 }
 
 
-resource "aws_api_gateway_method" "room_method_any" {
+resource "aws_api_gateway_method" "room_method_post" {
   rest_api_id   = "${aws_api_gateway_rest_api.officeiot_api.id}"
   resource_id   = "${aws_api_gateway_resource.room_resource.id}"
-  http_method   = "ANY"
-  authorization = "NONE"
+  http_method   = "POST"
+  authorization = "AWS_IAM"
 }
 
 
 resource "aws_api_gateway_integration" "room_post_integration" {
   rest_api_id             = "${aws_api_gateway_rest_api.officeiot_api.id}"
   resource_id             = "${aws_api_gateway_resource.room_resource.id}"
-  http_method             = "${aws_api_gateway_method.room_method_any.http_method}"
+  http_method             = "${aws_api_gateway_method.room_method_post.http_method}"
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
   uri                     = "${aws_lambda_function.create_room_lambda.invoke_arn}"
