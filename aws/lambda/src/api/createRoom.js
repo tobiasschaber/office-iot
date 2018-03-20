@@ -1,9 +1,9 @@
 
 const AWS = require('aws-sdk');
-const uuidv1 = require('uuid/v1');
 const helper = require('./helper');
-const roomsTableName = 'rooms';
+const roomsService = require('../services/rooms');
 const awsRegion = 'eu-central-1';
+
 
 
 /**
@@ -12,6 +12,7 @@ const awsRegion = 'eu-central-1';
  */
 exports.setLocalTestMode = (awsCredentialsProfile) => {
     AWS.config.update({credentials: new AWS.SharedIniFileCredentials({profile: awsCredentialsProfile})});
+    roomsService.setLocalTestMode(awsCredentialsProfile);
 }
 
 
@@ -22,6 +23,7 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
  * @param callback
  */
 exports.createRoom = (event, context, callback) => {
+    AWS.config.update({region: awsRegion});
 
     /* ensure event format is correct */
     if(!event || !event.queryStringParameters) {
@@ -38,15 +40,17 @@ exports.createRoom = (event, context, callback) => {
         return;
     }
 
+    var wrapperCallback = function(body) {
 
-    AWS.config.update({region: awsRegion});
-    const docClient = new AWS.DynamoDB.DocumentClient();
+        callback(null, helper.createResponse(200, JSON.stringify(body)));
+    }
 
-    /* execute the main function */
-    createRoom( event.queryStringParameters.roomName,
-                event.queryStringParameters.accountId,
-                event.queryStringParameters.privateKey,
-                event.queryStringParameters.calendarId);
+    roomsService.createRoom(
+        event.queryStringParameters.roomName,
+        event.queryStringParameters.accountId,
+        event.queryStringParameters.privateKey,
+        event.queryStringParameters.calendarId,
+        wrapperCallback);
 
 
 
@@ -59,28 +63,9 @@ exports.createRoom = (event, context, callback) => {
      * @returns {*}
      */
     function createRoom(roomName, svcAccountId, svcAccPrivateKey, calendarId) {
-        var uuid = uuidv1();
-        var params = {
-            TableName: roomsTableName,
-            Item: {
-                "roomId": uuid,
-                "roomName": roomName,
-                "calendarServiceAccountId": svcAccountId,
-                "calendarServiceAccountPrivateKey": svcAccPrivateKey,
-                "calendarId": calendarId
-            }
-        };
 
-        docClient.put(params, function (err, data) {
-            if (err) {
-                console.error("Unable to create room. Error JSON:", JSON.stringify(err, null, 2));
-                callback(null, helper.createResponse(500, "error: " + JSON.stringify((err, null, 2))));
-            } else {
-                console.log("room created");
 
-                callback(null, helper.createResponse(200, "room created with id: " + uuid));
-            }
-        });
+
     }
 
 }
