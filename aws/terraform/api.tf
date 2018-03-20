@@ -35,12 +35,12 @@ resource "aws_iam_role_policy_attachment" "attach_lambda_execution_role" {
 # the API lambda to work with rooms
 resource "aws_lambda_function" "create_room_lambda" {
   description = "create a new room"
-  filename = "../lambda/api/api.zip"
+  filename = "../lambda/api/build/api.zip"
   function_name = "createRoom"
   handler = "createRoom.createRoom"
   role = "${aws_iam_role.lambda_execution_role.arn}"
   runtime = "nodejs6.10"
-  source_code_hash = "${base64sha256(file("../lambda/api/api.zip"))}"
+  source_code_hash = "${base64sha256(file("../lambda/api/build/api.zip"))}"
   timeout = "10"
 }
 
