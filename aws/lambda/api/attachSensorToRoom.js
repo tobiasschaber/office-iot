@@ -70,6 +70,7 @@ exports.attachSensorToRoom = (event, context, callback) => {
                 console.log("Sensor attached: ", JSON.stringify(data, null, 2));
                 callback(null, helper.createResponse(200, "sensor attached."));
 
+
             }
         });
 

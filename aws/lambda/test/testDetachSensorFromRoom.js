@@ -12,6 +12,9 @@ var callback = function(a, b) {
 }
 
 
+/* invocation string:
+    sensorId=testSensorId&roomId=testRoomId
+ */
 var event = {
     queryStringParameters: {
         sensorId: "testSensorId",

@@ -57,7 +57,7 @@ exports.detachSensorFromRoom = (event, context, callback) => {
             TableName: sensorsTableName,
             Item: {
                 "sensorId": sensorId,
-                "attachedInRoom": "{}",
+                "attachedInRoom": "-",
             }
         };
 

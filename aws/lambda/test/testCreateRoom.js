@@ -12,6 +12,9 @@ var callback = function(a, b) {
 }
 
 
+/* invocation string:
+    roomName=TestRoom&accountId=testAccountId&privateKey=testPrivateKey&calendarId=testCalendarId
+ */
 var event = {
     queryStringParameters: {
         roomName: "TestRoom",

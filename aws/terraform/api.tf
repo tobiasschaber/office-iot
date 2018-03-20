@@ -152,7 +152,7 @@ resource "aws_api_gateway_integration" "room_get_integration" {
   rest_api_id             = "${aws_api_gateway_rest_api.officeiot_api.id}"
   resource_id             = "${aws_api_gateway_resource.room_resource.id}"
   http_method             = "${aws_api_gateway_method.room_method_get.http_method}"
-  integration_http_method = "GET"
+  integration_http_method = "POST" /* attention: always use POST for lambda invocation internally! */
   type                    = "AWS_PROXY"
   uri                     = "${aws_lambda_function.list_rooms_lambda.invoke_arn}"
 }
@@ -170,7 +170,7 @@ resource "aws_api_gateway_integration" "sensor_delete_integration" {
   rest_api_id             = "${aws_api_gateway_rest_api.officeiot_api.id}"
   resource_id             = "${aws_api_gateway_resource.sensor_resource.id}"
   http_method             = "${aws_api_gateway_method.sensors_method_delete.http_method}"
-  integration_http_method = "DELETE"
+  integration_http_method = "POST" /* attention: always use POST for lambda invocation internally! */
   type                    = "AWS_PROXY"
   uri                     = "${aws_lambda_function.detach_sensor_from_room_lambda.invoke_arn}"
 }
