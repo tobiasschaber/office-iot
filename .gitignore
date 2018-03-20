@@ -9,3 +9,4 @@ docs
 *.tfstate
 *.backup
 .terraform
+node_modules
