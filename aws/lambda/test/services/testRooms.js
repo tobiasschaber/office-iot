@@ -13,3 +13,6 @@ roomsServices.getRooms(callback);
 
 /* test get room by id */
 roomsServices.getRoomById("00000000-0000-0000-0000-000000000000", callback);
+
+/* test create a room */
+roomsServices.createRoom("testRaum", "testAccountId", "testPrivateKey", "testCalendarId", callback);

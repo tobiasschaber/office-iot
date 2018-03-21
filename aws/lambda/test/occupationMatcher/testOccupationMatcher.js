@@ -16,5 +16,4 @@ var event = {
     }
 }
 
-
 occupationMatcher.matchOccupations(event, null, callback);

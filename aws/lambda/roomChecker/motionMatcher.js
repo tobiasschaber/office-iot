@@ -10,30 +10,17 @@
     const motionsTableName = 'motions';
 
     const AWS = require('aws-sdk');
-    const calendarConfig = require('./config/calendarSettings');
-    const CalendarAPI = require('node-google-calendar');
 
 
-    AWS.config.update({region: awsRegion});
-    AWS.config.update({credentials: new AWS.SharedIniFileCredentials({profile: awsCredentialsProfile})});
 
-    const cal = new CalendarAPI(calendarConfig);
+
     const docClient = new AWS.DynamoDB.DocumentClient();
 
     /* create query parameters for motions and calendar entries */
-    var calendarQueryParams = calculateCalendarQueryParams(calendarId);
     var searchParams = calculateMotionQueryParams();
 
 
-    /**
-     * the promise which reads calendar entries (events)
-     */
-    var calendarPromise = cal.Events.list(calendarQueryParams.calendarId, calendarQueryParams)
-        .then(resp => {
-            return resp;
-        }).catch(err => {
-        console.log(err.message);
-    });
+
 
 
 
@@ -163,37 +150,6 @@
             console.log("FOUND " + motionsCount + " motions in " + currentEvent.summary);
         }
 
-    }
-
-
-
-    /**
-     * calculate the google calendar query parameters containing a time frame
-     * of the whole current day
-     * @returns {{calendarId: string, timeMin: string, timeMax: string}}
-     */
-    function calculateCalendarQueryParams(calendarId) {
-
-        var start = new Date();
-        var end  = new Date();
-
-        /* begin at 00:00:00 and end at 23:59:59 to get all calendar entries of the day */
-        start.setHours(0, 0, 0);
-        end.setHours(23, 59, 59);
-
-        console.log("-----------------------------------");
-        console.log("start: " + start.toUTCString());
-        console.log("  end: " + end.toUTCString());
-        console.log("-----------------------------------");
-
-        /* calendar query parameters */
-        var calendarQueryParams = {
-            calendarId: calendarId,
-            timeMin: start.toISOString(),
-            timeMax: end.toISOString(),
-        };
-
-        return calendarQueryParams;
     }
 
 

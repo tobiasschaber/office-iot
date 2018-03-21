@@ -1,6 +1,8 @@
 
 const AWS = require('aws-sdk');
-const listRooms = require('../api/listRooms');
+const roomServices   = require('../services/rooms');
+const sensorServices = require('../services/sensors');
+const calendarServices = require('../services/calendar');
 
 
 
@@ -10,7 +12,8 @@ const listRooms = require('../api/listRooms');
  */
 exports.setLocalTestMode = (awsCredentialsProfile) => {
     AWS.config.update({credentials: new AWS.SharedIniFileCredentials({profile: awsCredentialsProfile})});
-    listRooms.setLocalTestMode("officeiot");
+    roomServices.setLocalTestMode("officeiot");
+    sensorServices.setLocalTestMode("officeiot");
 }
 
 
@@ -25,18 +28,52 @@ exports.matchOccupations = (event, context, callback) => {
     const awsRegion = 'eu-central-1';
     AWS.config.update({region: awsRegion});
 
-    listRooms.listRooms(event, null, roomsCallback);
+    roomServices.getRooms(roomsCallback);
+}
 
+
+var motionsCallback = function(sensors) {
+
+    console.log(sensors);
+
+}
+
+var roomsCallback = function(rooms) {
+
+    /* iterate over all rooms */
+    for(var i=0; i<rooms.Items.length; i++) {
+        var currentRoom = rooms.Items[i];
+        console.log("raum: " + currentRoom.roomId)
+
+        var calendarPromise = calendarPromiseWrapper(currentRoom);
+        var sensorPromise = sensorPromiseWrapper(currentRoom.roomId);
+
+        /* Wait for all Promises in the list (calendarPromise and motionsPromise) to be finished */
+        Promise.all([calendarPromise, sensorPromise])
+            .then(resp => {
+
+                callback(resp[0]);
+
+            }).catch(err => {
+            console.log(err.message);
+        });
+    }
+}
+
+
+function calendarPromiseWrapper(room) {
+    return new Promise(function(resolve, reject) {
+        calendarServices.getEventsForCalendar(room, resolve);
+    });
+
+}
+
+function sensorPromiseWrapper(roomId) {
+    return new Promise(function(resolve, reject) {
+        sensorServices.getMotionsForRoom(roomId, resolve);
+    });
 
 }
 
 
-var roomsCallback = function(a, rooms) {
-    var items = JSON.parse(rooms.body);
-    console.log(items.Items[0])
 
-
-    //TODO NÄCSHTE SCHRITTE: vollständige backend services implementieren für "get sensors for room" und evtl für alle anderen services auch. also
-    // noch mal eine Schicht dazwischen.
-
-}
