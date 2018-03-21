@@ -76,6 +76,7 @@ function getMotionsForRoom(roomId, callback) {
             var allSensors = resp[0].Items;
             var allProms = [];
 
+
             for(var i=0; i<allSensors.length; i++) {
                 let promise = motionsPromiseWrapper(allSensors[i].sensorId);
                 allProms.push(promise);
@@ -98,7 +99,7 @@ function getMotionsForRoom(roomId, callback) {
 
 function sensorsPromiseWrapper(roomId) {
     return new Promise(function(resolve, reject) {
-        sensorsServices.listSensorsForRoom(roomId, resolve);
+        sensorsServices.getSensorsForRoom(roomId, resolve);
     });
 }
 
@@ -111,6 +112,7 @@ function motionsPromiseWrapper(sensorId) {
 
 
 function getQueryForGetMotionsForSensor(sensorId) {
+    sensorId = sensorId.trim()
 
     /* calculate the timestamp from when db entries will be queried */
     var timeLimit = Date.now() - (10000*motionTimeFrameSizeSec);
