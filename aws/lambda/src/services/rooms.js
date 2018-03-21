@@ -32,6 +32,10 @@ exports.createRoom = (roomName, svcAccountId, svcAccPrivateKey, calendarId, call
     createRoom(roomName, svcAccountId, svcAccPrivateKey, calendarId, callback);
 }
 
+exports.getRoomById = (roomId, callback) => {
+    AWS.config.update({region: awsRegion});
+    getRoomById(roomId, callback);
+}
 
 
 /**
@@ -57,6 +61,34 @@ function getRooms(callback) {
         console.log(err.message);
         callback(err.message);
     });
+}
+
+
+/**
+ * get a room by a given roomId
+ * @param roomId
+ * @param callback
+ */
+function getRoomById(roomId, callback) {
+
+    var searchParams = getSearchParamsForGetRoomById(roomId);
+    var scanSensorsPromiseWrapper = getQueryPromiseWrapper();
+
+    /* create a promise via the wrapper */
+    var roomPromise = scanSensorsPromiseWrapper(searchParams);
+
+    /**
+     * Wait for all Promises to be finished
+     */
+    Promise.all([roomPromise])
+        .then(resp => {
+            callback(resp[0].Items[0]);
+
+        }).catch(err => {
+        console.log(err.message);
+        callback(err.message);
+    });
+
 }
 
 
@@ -112,6 +144,27 @@ function getSearchParamsForGetRooms() {
         TableName: roomsTableName,
         ProjectionExpression: "roomId, calendarId, calendarServiceAccountId, calendarServiceAccountPrivateKey, roomName"
     };
+
+    return searchparams;
+}
+
+/**
+ * create search parameters for "getRooms"
+ */
+function getSearchParamsForGetRoomById(roomId) {
+
+
+    /* sensor database query parameters */
+    var searchparams = {
+        TableName: roomsTableName,
+        ProjectionExpression: "#roomId, calendarId, calendarServiceAccountId, calendarServiceAccountPrivateKey, roomName",
+        FilterExpression:" #roomId = :roomId",
+        ExpressionAttributeNames: {
+            "#roomId": "roomId"
+        }, ExpressionAttributeValues: {
+            ":roomId": roomId
+        }
+    }
 
     return searchparams;
 }

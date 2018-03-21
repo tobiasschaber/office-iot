@@ -7,7 +7,7 @@ variable "region" {
 variable "default_room" {
   default = <<ITEM
   {
-    "roomId": {"N": "0"},
+    "roomId": {"N": "00000000-0000-0000-0000-000000000000"},
     "roomName": {"S": "roomName"},
     "calendarServiceAccountId": {"S": "undefined"},
     "calendarServiceAccountPrivateKey": {"S": "undefined"},
@@ -22,7 +22,7 @@ variable "default_sensor" {
   {
     "sensorId": {"S": "26e98cf9"},
     "description": {"S": "Sensor auf dem Tisch im Jakku"},
-    "attachedInRoom": {"S": "1"}
+    "attachedInRoom": {"S": "00000000-0000-0000-0000-000000000000"}
   }
   ITEM
 }
