@@ -1,6 +1,7 @@
 build/
 deps/
 target/
+mongoose-os/
 *.iml
 docs
 .idea
