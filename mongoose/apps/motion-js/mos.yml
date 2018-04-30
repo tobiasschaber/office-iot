@@ -1,0 +1,25 @@
+author: Tobias Schaber, codecentric AG
+description: AWS based motion sensor thing
+# arch: PLATFORM
+version: 1.0
+manifest_version: 2017-09-29
+libs_version: ${mos.version}
+modules_version: ${mos.version}
+mongoose_os_version: ${mos.version}
+
+config_schema:
+  - ["app", "o", {title: "custom pin settings"}]
+  - ["app.sensorPin", "i", 13, {title: "motion sensor pin"}]
+  - ["app.ledPin", "i", 2, {title: "additional led pin"}]
+  - ["app.pollFrequency", "i", 500, {title: "poll frequency for motion sensor"}]
+
+tags:
+  - js
+
+filesystem:
+  - fs
+
+libs:
+  - origin: https://github.com/mongoose-os-libs/js-demo-bundle
+  - origin: https://github.com/mongoose-os-libs/mqtt
+  - origin: https://github.com/mongoose-os-libs/aws
