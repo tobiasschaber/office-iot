@@ -8,5 +8,6 @@ docs
 *.tfvars
 *.tfstate
 *.backup
+*.pem
 .terraform
 node_modules
