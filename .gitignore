@@ -1,6 +1,5 @@
 build/
 deps/
-mongoose-os/
 target/
 *.iml
 docs
