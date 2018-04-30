@@ -11,7 +11,14 @@ load('api_timer.js');
 let sensorPin = Cfg.get('app.sensorPin');
 let ledPin = Cfg.get('app.ledPin');
 let frequencyMs = Cfg.get('app.pollFrequency');
+let maxNumberOfSkips = Cfg.get('app.maxNumberOfSkips');
 let buttonPin = 0;
+
+/* last motion state which was sent as update. stored to prevent sending masses of messages */
+let lastDetectedState = 0;
+
+/* number of messages that already have been skipped since the last published message */
+let skippedMessagesCount = 0;
 
 /* state document which is used in the thing shadow */
 let state = { motionDetected: false };
@@ -38,9 +45,21 @@ GPIO.set_button_handler(buttonPin, GPIO.PULL_UP, GPIO.INT_EDGE_NEG, 200, functio
   AWS.Shadow.update(0, {desired: {motionDetected: !state.motionDetected}});
 }, null);
 
+
+
 Timer.set(frequencyMs, true, function() {
     print("start by timer...");
     let motion = GPIO.read(sensorPin);
     GPIO.write(ledPin, motion);
-    AWS.Shadow.update(0, {desired: {motionDetected: motion}});
+
+    if(lastDetectedState === motion && skippedMessagesCount < maxNumberOfSkips) {
+        print("skipping as not changed");
+        skippedMessagesCount = skippedMessagesCount + 1;
+
+    } else {
+        lastDetectedState = motion;
+        skippedMessagesCount = 0;
+        AWS.Shadow.update(0, {desired: {motionDetected: motion}});
+
+    }
 }, null);

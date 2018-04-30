@@ -10,8 +10,9 @@ mongoose_os_version: ${mos.version}
 config_schema:
   - ["app", "o", {title: "custom pin settings"}]
   - ["app.sensorPin", "i", 13, {title: "motion sensor pin"}]
-  - ["app.ledPin", "i", 2, {title: "additional led pin"}]
+  - ["app.ledPin", "i", 12, {title: "additional led pin"}]
   - ["app.pollFrequency", "i", 500, {title: "poll frequency for motion sensor"}]
+  - ["app.maxNumberOfSkips", "i", 25, {title: "number of times when no change happecnd until a publish update will be forced"}]
 
 tags:
   - js
