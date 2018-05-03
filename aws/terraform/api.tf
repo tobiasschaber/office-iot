@@ -112,28 +112,29 @@ resource "aws_api_gateway_method" "room_method_post" {
   rest_api_id   = "${aws_api_gateway_rest_api.officeiot_api.id}"
   resource_id   = "${aws_api_gateway_resource.room_resource.id}"
   http_method   = "POST"
-  authorization = "AWS_IAM"
+  authorization = "NONE"
 }
 
 resource "aws_api_gateway_method" "room_method_get" {
   rest_api_id   = "${aws_api_gateway_rest_api.officeiot_api.id}"
   resource_id   = "${aws_api_gateway_resource.room_resource.id}"
   http_method   = "GET"
-  authorization = "AWS_IAM"
+  authorization = "NONE"
 }
 
 resource "aws_api_gateway_method" "sensors_method_post" {
   rest_api_id   = "${aws_api_gateway_rest_api.officeiot_api.id}"
   resource_id   = "${aws_api_gateway_resource.sensor_resource.id}"
   http_method   = "POST"
-  authorization = "AWS_IAM"
+  authorization = "NONE"
+  # authorization was AWS_IAM
 }
 
 resource "aws_api_gateway_method" "sensors_method_delete" {
   rest_api_id   = "${aws_api_gateway_rest_api.officeiot_api.id}"
   resource_id   = "${aws_api_gateway_resource.sensor_resource.id}"
   http_method   = "DELETE"
-  authorization = "AWS_IAM"
+  authorization = "NONE"
 }
 
 
