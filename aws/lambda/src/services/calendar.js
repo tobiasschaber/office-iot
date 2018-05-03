@@ -9,7 +9,7 @@ const awsRegion = 'eu-central-1';
  */
 exports.setLocalTestMode = (awsCredentialsProfile) => {
     AWS.config.update({credentials: new AWS.SharedIniFileCredentials({profile: awsCredentialsProfile})});
-}
+};
 
 
 /**
@@ -18,7 +18,7 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
 exports.getEventsForCalendar = (calendarId, calendarServiceAccountId, calendarServiceAccountPrivateKey, callback) => {
     AWS.config.update({region: awsRegion});
     getEventsForCalendar(calendarId, calendarServiceAccountId, calendarServiceAccountPrivateKey, callback);
-}
+};
 
 
 /**
@@ -32,7 +32,7 @@ exports.getEventsForCalendar = (room, callback) => {
         room.calendarServiceAccountId,
         room.calendarServiceAccountPrivateKey,
         callback);
-}
+};
 
 
 /**
@@ -99,13 +99,11 @@ function getQueryParamsForGetEventsForCalendar(calendarId) {
     console.log("-----------------------------------");
 
     /* calendar query parameters */
-    var calendarQueryParams = {
+    return {
         calendarId: calendarId,
         timeMin: start.toISOString(),
         timeMax: end.toISOString(),
     };
-
-    return calendarQueryParams;
 }
 
 
@@ -118,7 +116,7 @@ function getQueryParamsForGetEventsForCalendar(calendarId) {
  * @returns {{serviceAcctId: *, timezone: string, calendarId: {primary: *}, key: *}}
  */
 function getCalendarConfiguration(calendarId, calendarServiceAccountId, calendarServiceAccountPrivateKey) {
-    var config = {
+    return {
         'serviceAcctId' : calendarServiceAccountId,
         'timezone' : 'UTC+01:00',
         'calendarId' : {
@@ -126,8 +124,6 @@ function getCalendarConfiguration(calendarId, calendarServiceAccountId, calendar
         },
         'key' : calendarServiceAccountPrivateKey
     };
-
-    return config;
 }
 
 

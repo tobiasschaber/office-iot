@@ -12,7 +12,7 @@ const awsRegion = 'eu-central-1';
  */
 exports.setLocalTestMode = (awsCredentialsProfile) => {
     AWS.config.update({credentials: new AWS.SharedIniFileCredentials({profile: awsCredentialsProfile})});
-}
+};
 
 
 /**
@@ -53,7 +53,7 @@ exports.attachSensorToRoom = (event, context, callback) => {
      */
     function attachSensorToRoom(sensorId, roomId, description) {
 
-        var params = {
+        let params = {
             TableName: sensorsTableName,
             Item: {
                 "sensorId": sensorId,
@@ -76,4 +76,4 @@ exports.attachSensorToRoom = (event, context, callback) => {
 
     }
 
-}
+};

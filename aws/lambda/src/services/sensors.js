@@ -94,12 +94,16 @@ function getRoomForSensor(sensorId, callback) {
 /**
  * create search parameters for "listSensorsForRoom"
  * @param roomId
- * @returns {{TableName: string, ProjectionExpression: string, FilterExpression: string, ExpressionAttributeNames: {"#attachedInRoom": string}, ExpressionAttributeValues: {":attachedInRoom": *}}}
+ * @returns {{  TableName: string,
+ *              ProjectionExpression: string,
+ *              FilterExpression: string,
+ *              ExpressionAttributeNames: {"#attachedInRoom": string},
+ *              ExpressionAttributeValues: {":attachedInRoom": *}}}
  */
 function getSearchParamsForListSensorsForRoom(roomId) {
 
     /* sensor database query parameters */
-    var searchparams = {
+    return {
         TableName: sensorsTableName,
         ProjectionExpression: "sensorId, #attachedInRoom, description",
         FilterExpression:" #attachedInRoom = :attachedInRoom",
@@ -109,15 +113,13 @@ function getSearchParamsForListSensorsForRoom(roomId) {
             ":attachedInRoom": roomId
         }
     }
-
-    return searchparams;
 }
 
 
 function getSearchParamsForGetRoomForSensor(sensorId) {
 
     /* sensor database query parameters */
-    var searchparams = {
+    return {
         TableName: sensorsTableName,
         ProjectionExpression: "attachedInRoom, #sensorId",
         FilterExpression:" #sensorId = :sensorId",
@@ -127,8 +129,6 @@ function getSearchParamsForGetRoomForSensor(sensorId) {
             ":sensorId": sensorId
         }
     }
-
-    return searchparams;
 }
 
 

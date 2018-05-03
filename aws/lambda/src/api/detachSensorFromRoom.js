@@ -11,7 +11,7 @@ const awsRegion = 'eu-central-1';
  */
 exports.setLocalTestMode = (awsCredentialsProfile) => {
     AWS.config.update({credentials: new AWS.SharedIniFileCredentials({profile: awsCredentialsProfile})});
-}
+};
 
 
 
@@ -49,11 +49,10 @@ exports.detachSensorFromRoom = (event, context, callback) => {
      * detach a sensor from a room
      * @param sensorId
      * @param roomId
-     * @param description
      */
     function detachSensorFromRoom(sensorId, roomId) {
 
-        var params = {
+        let params = {
             TableName: sensorsTableName,
             Item: {
                 "sensorId": sensorId,
@@ -73,4 +72,4 @@ exports.detachSensorFromRoom = (event, context, callback) => {
 
     }
 
-}
+};

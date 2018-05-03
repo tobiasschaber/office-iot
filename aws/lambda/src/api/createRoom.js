@@ -13,7 +13,7 @@ const awsRegion = 'eu-central-1';
 exports.setLocalTestMode = (awsCredentialsProfile) => {
     AWS.config.update({credentials: new AWS.SharedIniFileCredentials({profile: awsCredentialsProfile})});
     roomsService.setLocalTestMode(awsCredentialsProfile);
-}
+};
 
 
 /**
@@ -40,10 +40,9 @@ exports.createRoom = (event, context, callback) => {
         return;
     }
 
-    var wrapperCallback = function(body) {
-
+    let wrapperCallback = function(body) {
         callback(null, helper.createResponse(200, JSON.stringify(body)));
-    }
+    };
 
     roomsService.createRoom(
         event.queryStringParameters.roomName,
@@ -52,20 +51,4 @@ exports.createRoom = (event, context, callback) => {
         event.queryStringParameters.calendarId,
         wrapperCallback);
 
-
-
-    /**
-     * add a room to the database with the given parameters
-     * @param roomName
-     * @param svcAccountId
-     * @param svcAccPrivateKey
-     * @param calendarId
-     * @returns {*}
-     */
-    function createRoom(roomName, svcAccountId, svcAccPrivateKey, calendarId) {
-
-
-
-    }
-
-}
+};

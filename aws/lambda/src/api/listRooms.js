@@ -12,7 +12,7 @@ const awsRegion = 'eu-central-1';
 exports.setLocalTestMode = (awsCredentialsProfile) => {
     AWS.config.update({credentials: new AWS.SharedIniFileCredentials({profile: awsCredentialsProfile})});
     roomsService.setLocalTestMode(awsCredentialsProfile);
-}
+};
 
 
 /**
@@ -25,16 +25,16 @@ exports.listRooms = (event, context, callback) => {
 
     AWS.config.update({region: awsRegion});
 
-    var wrapperCallback = function(body) {
+    let wrapperCallback = function(body) {
 
         /* remove all private keys from external calls */
-        for(var i=0; i<body.Items.length; i++) {
+        for(let i=0; i<body.Items.length; i++) {
             body.Items[i].calendarServiceAccountPrivateKey = "hidden";
         }
 
         callback(null, helper.createResponse(200, JSON.stringify(body)));
-    }
+    };
 
     roomsService.getRooms(wrapperCallback);
-}
+};
 

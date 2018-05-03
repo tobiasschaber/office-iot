@@ -84,7 +84,8 @@ function getMotionsForRoom(roomId, callback) {
 
             Promise.all(allProms)
                 .then(resp => {
-                    callback(resp);
+                    /* nested data structure */
+                    callback(resp[0]);
 
                 }).catch(err => {
                 console.log(err.message);
@@ -115,20 +116,20 @@ function getQueryForGetMotionsForSensor(sensorId) {
     sensorId = sensorId.trim()
 
     /* calculate the timestamp from when db entries will be queried */
-    var timeLimit = Date.now() - (10000*motionTimeFrameSizeSec);
+    var timeLimit = Date.now() - (1000*motionTimeFrameSizeSec);
 
     /* motions database query parameters to detect relevant events */
     var searchparams = {
         TableName: motionsTableName,
-        ProjectionExpression: "#id, #timestamp, motionDetected",
-        FilterExpression: "#timestamp > :timestmp and #id = :id",
+        ProjectionExpression: "#sensorId, #timestamp, motionDetected",
+        FilterExpression: "#timestamp > :timestmp and #sensorId = :sensorId",
         ExpressionAttributeNames: {
             "#timestamp": "timestamp",
-            "#id": "id"
+            "#sensorId": "sensorId"
         },
         ExpressionAttributeValues: {
             ":timestmp": timeLimit,
-            ":id": sensorId
+            ":sensorId": sensorId
         }
     };
 

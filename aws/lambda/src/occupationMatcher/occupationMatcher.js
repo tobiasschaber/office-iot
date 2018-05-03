@@ -15,7 +15,7 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
     AWS.config.update({credentials: new AWS.SharedIniFileCredentials({profile: awsCredentialsProfile})});
     roomServices.setLocalTestMode("officeiot");
     sensorServices.setLocalTestMode("officeiot");
-}
+};
 
 
 /**
@@ -30,7 +30,7 @@ exports.matchOccupations = (event, context, callback) => {
     AWS.config.update({region: awsRegion});
 
     matchOccupations(callback);
-}
+};
 
 
 function matchOccupations(callback) {
@@ -105,7 +105,7 @@ function matchMotionsToCalendar(calendarEntries, motions) {
 
                 var currentMotionTimestamp = new Date(currentMotion.timestamp);
 
-                /* if there are motions in the calendar entry's timeframe */
+                /* if there are motions in the calendar entry's timeframe. compare 0/1 with true/false with == not === !*/
                 if(currentMotion.motionDetected == true) {
                     if(currentEventStart <= currentMotionTimestamp &&
                         currentEventEnd   >= currentMotionTimestamp) {
@@ -126,11 +126,13 @@ function matchMotionsToCalendar(calendarEntries, motions) {
  * @param motionsDetected
  * @param motionsCount
  * @param currentEvent
+ * @param currentEventStart
+ * @param currentEventEnd
  */
 function handleMotionsDetected(motionsDetected, motionsCount, currentEvent, currentEventStart, currentEventEnd) {
 
 
-    if(motionsDetected != true) {
+    if(motionsDetected !== true) {
         console.log("Found no motions in " + currentEvent.summary + " from " + currentEvent.creator.email);
 
         let now = Date.now();
@@ -149,8 +151,8 @@ function handleMotionsDetected(motionsDetected, motionsCount, currentEvent, curr
             console.log("            °");
             console.log("           ° ");
             console.log("   >-)))°>  ");
-            console.log("Event Start: " + currentEventStart)
-            console.log("Event Endet: " + currentEventEnd)
+            console.log("Event Start: " + currentEventStart);
+            console.log("Event Endet: " + currentEventEnd);
         }
 
 
@@ -170,7 +172,7 @@ function handleMotionsDetected(motionsDetected, motionsCount, currentEvent, curr
 function copyTimeIntoToday(dateTime) {
 
     let newDate   = new Date(dateTime);
-    var targetDate = new Date();
+    let targetDate = new Date();
 
     targetDate.setHours(newDate.getHours());
     targetDate.setMinutes(newDate.getMinutes());
