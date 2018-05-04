@@ -24,3 +24,4 @@ libs:
   - origin: https://github.com/mongoose-os-libs/js-demo-bundle
   - origin: https://github.com/mongoose-os-libs/mqtt
   - origin: https://github.com/mongoose-os-libs/aws
+  - origin: https://github.com/mongoose-os-libs/dash
