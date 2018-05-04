@@ -1,3 +1,5 @@
+
+# create the DynamoDB table for rooms
 resource "aws_dynamodb_table" "room_table" {
   hash_key = "roomId"
   name = "rooms"
@@ -17,6 +19,7 @@ resource "aws_dynamodb_table" "room_table" {
 }
 
 
+# create the DynamoDB table for sensors
 resource "aws_dynamodb_table" "sensors_table" {
   hash_key = "sensorId"
   name = "sensors"
@@ -36,13 +39,7 @@ resource "aws_dynamodb_table" "sensors_table" {
 }
 
 
-
-
-# TODO MOTIONS TABELLE:
-# name: motions
-# partition key: sensorId (String)
-# sort key: timestamp (number)
-
+# create the DynamoDB table for motions
 resource "aws_dynamodb_table" "motions_table" {
   hash_key = "sensorId"
   range_key = "timestamp"
@@ -63,12 +60,15 @@ resource "aws_dynamodb_table" "motions_table" {
 }
 
 
+# create a default example value for a room named "jakku"
 resource "aws_dynamodb_table_item" "jakku_preset" {
   table_name = "${aws_dynamodb_table.room_table.name}"
   hash_key = "${aws_dynamodb_table.room_table.hash_key}"
   item = "${var.default_room}"
 }
 
+
+# create a default example value for a motion sensor
 resource "aws_dynamodb_table_item" "sensor_preset" {
   table_name = "${aws_dynamodb_table.sensors_table.name}"
   hash_key = "${aws_dynamodb_table.sensors_table.hash_key}"

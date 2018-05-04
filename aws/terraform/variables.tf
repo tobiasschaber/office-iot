@@ -4,6 +4,7 @@ variable "region" {
   default = "eu-central-1"
 }
 
+# template for creating a default example room. undefined values will be overwritten
 variable "default_room" {
   default = <<ITEM
   {
@@ -17,6 +18,7 @@ variable "default_room" {
 }
 
 
+# template for creating a default sensor which is located in the default room created above
 variable "default_sensor" {
   default = <<ITEM
   {
