@@ -11,3 +11,4 @@ docs
 *.pem
 .terraform
 node_modules
+secrets
