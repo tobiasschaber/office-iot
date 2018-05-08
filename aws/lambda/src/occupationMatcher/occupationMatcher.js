@@ -5,6 +5,7 @@ const sensorServices = require('../services/sensors');
 const motionsServices = require('../services/motions');
 const calendarServices = require('../services/calendar');
 const slackServices = require('../services/slack')
+const occupationAlertHistory = require('../services/occupationAlertHistory');
 
 
 
@@ -63,14 +64,12 @@ function calendarPromiseWrapper(room) {
     return new Promise(function(resolve, reject) {
         calendarServices.getEventsForCalendar(room, resolve);
     });
-
 }
 
 function motionPromiseWrapper(roomId) {
     return new Promise(function(resolve, reject) {
         motionsServices.getMotionsForRoom(roomId, resolve);
     });
-
 }
 
 
@@ -145,6 +144,8 @@ function handleMotionsDetected(motionsDetected, motionsCount, currentEvent, curr
                 console.log("(Event is not yet started)");
             }
         } else {
+
+            occupationAlertHistory.getNotificationState(currentEvent, handleNotification);
             console.log("Event is over!");
             console.log("");
             console.log("(NOBODY THERE)");
@@ -155,10 +156,7 @@ function handleMotionsDetected(motionsDetected, motionsCount, currentEvent, curr
             console.log("Event Start: " + currentEventStart);
             console.log("Event Endet: " + currentEventEnd);
 
-            //slackServices.writeSlackNotification("Event " + currentEvent.summary + " is over. Did not find any motions. Böseböseböse.");
         }
-
-
 
     } else {
         console.log("FOUND " + motionsCount + " motions in " + currentEvent.summary);
@@ -166,6 +164,27 @@ function handleMotionsDetected(motionsDetected, motionsCount, currentEvent, curr
 
 }
 
+/**
+ * handling for occupation alerts
+ * @param msg
+ */
+function handleNotification(event, msg) {
+    if(msg.length === 0) {
+        console.log("Lege an für " + event.summary);
+        occupationAlertHistory.addNotification(event, publishNotification);
+    } else {
+        console.log("Für " + event.summary + " wurde bereits eine Notification eingestellt.");
+    }
+}
+
+
+/**
+ * publish a notification message
+ */
+function publishNotification(event, message) {
+
+    slackServices.writeSlackNotification("Event " + event.summary + " is over. Did not find any motions. Böseböseböse.");
+}
 
 
 /**

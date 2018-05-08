@@ -56,7 +56,26 @@ resource "aws_dynamodb_table" "motions_table" {
     name = "creationTimestamp"
     type = "N"
   }
+}
 
+
+# create the DynamoDB table for already published occupation warnings
+resource "aws_dynamodb_table" "occupation_alert_history_table" {
+  hash_key = "eventName"
+  range_key = "eventStartTimestamp"
+  name ="occupationAlertHistory"
+  read_capacity = 5
+  write_capacity = 5
+
+  "attribute" {
+    name = "eventName"
+    type = "S"
+  }
+
+  "attribute" {
+    name = "eventStartTimestamp"
+    type = "N"
+  }
 }
 
 
