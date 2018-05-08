@@ -4,7 +4,7 @@ const roomServices   = require('../services/rooms');
 const sensorServices = require('../services/sensors');
 const motionsServices = require('../services/motions');
 const calendarServices = require('../services/calendar');
-const slackApi = require('../api/slackIntegration')
+const slackServices = require('../services/slack')
 
 
 
@@ -131,6 +131,7 @@ function matchMotionsToCalendar(calendarEntries, motions) {
  * @param currentEventEnd
  */
 function handleMotionsDetected(motionsDetected, motionsCount, currentEvent, currentEventStart, currentEventEnd) {
+    console.log(currentEvent)
 
     if(motionsDetected !== true) {
         console.log("Found no motions in " + currentEvent.summary + " from " + currentEvent.creator.email);
@@ -154,7 +155,7 @@ function handleMotionsDetected(motionsDetected, motionsCount, currentEvent, curr
             console.log("Event Start: " + currentEventStart);
             console.log("Event Endet: " + currentEventEnd);
 
-            slackApi.writeSlackNotification("Event " + currentEvent.summary + " is over. Did not find any motions. Böseböseböse.");
+            //slackServices.writeSlackNotification("Event " + currentEvent.summary + " is over. Did not find any motions. Böseböseböse.");
         }
 
 

@@ -3,7 +3,6 @@
 const request = require('request');
 
 
-
 /**
  * send a message via slack incoming webhook
  * @param body
@@ -16,7 +15,7 @@ exports.writeSlackNotification = (text) => {
 
     //TODO OBFUSCATE HOOK URL
     request({
-        url: "<<your webhook url hier",
+        url: "<<your webhook url here",
         method: "POST",
         json: true,
         body: body
