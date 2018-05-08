@@ -4,6 +4,7 @@ const roomServices   = require('../services/rooms');
 const sensorServices = require('../services/sensors');
 const motionsServices = require('../services/motions');
 const calendarServices = require('../services/calendar');
+const slackApi = require('../api/slackIntegration')
 
 
 
@@ -152,6 +153,8 @@ function handleMotionsDetected(motionsDetected, motionsCount, currentEvent, curr
             console.log("   >-)))°>  ");
             console.log("Event Start: " + currentEventStart);
             console.log("Event Endet: " + currentEventEnd);
+
+            slackApi.writeSlackNotification("Event " + currentEvent.summary + " is over. Did not find any motions. Böseböseböse.");
         }
 
 
