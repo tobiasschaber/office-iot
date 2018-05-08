@@ -42,7 +42,6 @@ var roomsCallback = function(rooms) {
     /* iterate over all rooms */
     for(var i=0; i<rooms.Items.length; i++) {
         var currentRoom = rooms.Items[i];
-        console.log("matche raum: " + currentRoom.roomId);
 
         var calendarPromise = calendarPromiseWrapper(currentRoom);
         var motionPromise = motionPromiseWrapper(currentRoom.roomId);
@@ -90,6 +89,7 @@ function matchMotionsToCalendar(calendarEntries, motions) {
         if(currentEvent.status !== 'cancelled') {
             console.log("===============================================================");
             console.log("Scanning: " + currentEvent.summary + " " + (currentEvent.recurrence? "[recurring event]":""));
+            console.log("Terminstatus: " + currentEvent.status);
 
             /* it looks like on recurring events, the date stays the same (date of creation) and
             only the time needs to be taken into consideration */
@@ -103,7 +103,7 @@ function matchMotionsToCalendar(calendarEntries, motions) {
             for(j=0; j<motions.length; j++) {
                 var currentMotion = motions[j];
 
-                var currentMotionTimestamp = new Date(currentMotion.timestamp);
+                var currentMotionTimestamp = new Date(currentMotion.creationTimestamp);
 
                 /* if there are motions in the calendar entry's timeframe. compare 0/1 with true/false with == not === !*/
                 if(currentMotion.motionDetected == true) {
@@ -130,7 +130,6 @@ function matchMotionsToCalendar(calendarEntries, motions) {
  * @param currentEventEnd
  */
 function handleMotionsDetected(motionsDetected, motionsCount, currentEvent, currentEventStart, currentEventEnd) {
-
 
     if(motionsDetected !== true) {
         console.log("Found no motions in " + currentEvent.summary + " from " + currentEvent.creator.email);

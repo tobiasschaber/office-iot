@@ -42,6 +42,7 @@ exports.getMotionsForRoom = (roomId, callback) => {
  * @param callback
  */
 function getMotionsForSensor(sensorId, callback) {
+
     var searchParams = getQueryForGetMotionsForSensor(sensorId);
     var scanMotionsPromiseWrapper = getQueryPromiseWrapper();
 
@@ -72,6 +73,7 @@ function getMotionsForRoom(roomId, callback) {
     Promise.all([sensorPromise])
         .then(resp => {
 
+
             /* resp[0] now contains all sensors attached to the room */
             var allSensors = resp[0].Items;
             var allProms = [];
@@ -85,7 +87,10 @@ function getMotionsForRoom(roomId, callback) {
             Promise.all(allProms)
                 .then(resp => {
                     /* nested data structure */
-                    callback(resp[0]);
+
+
+
+                    callback(flatten(resp));
 
                 }).catch(err => {
                 console.log(err.message);
@@ -95,6 +100,16 @@ function getMotionsForRoom(roomId, callback) {
         console.log(err.message);
     })
 
+}
+
+/**
+ * helper function to create a flattened list out of a nested one
+ * @param arr
+ */
+function flatten(arr) {
+    return arr.reduce(function (flat, toFlatten) {
+        return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
+    }, []);
 }
 
 
@@ -118,15 +133,12 @@ function getQueryForGetMotionsForSensor(sensorId) {
     /* calculate the timestamp from when db entries will be queried */
     var timeLimit = Date.now() - (1000*motionTimeFrameSizeSec);
 
+
     /* motions database query parameters to detect relevant events */
     var searchparams = {
         TableName: motionsTableName,
-        ProjectionExpression: "#sensorId, #timestamp, motionDetected",
-        FilterExpression: "#timestamp > :timestmp and #sensorId = :sensorId",
-        ExpressionAttributeNames: {
-            "#timestamp": "timestamp",
-            "#sensorId": "sensorId"
-        },
+        ProjectionExpression: "sensorId, creationTimestamp, motionDetected",
+        FilterExpression: "creationTimestamp > :timestmp and sensorId = :sensorId",
         ExpressionAttributeValues: {
             ":timestmp": timeLimit,
             ":sensorId": sensorId

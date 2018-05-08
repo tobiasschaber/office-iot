@@ -24,4 +24,16 @@ var event = {
     }
 }
 
-attach.attachSensorToRoom(event, null, callback);
+
+
+
+var secondarySensor = {
+    queryStringParameters: {
+        sensorId: "72b7343c",
+        roomId: "00000000-0000-0000-0000-000000000000",
+        description: "second sensor attached in room Jakku"
+
+    }
+}
+
+attach.attachSensorToRoom(secondarySensor, null, callback);

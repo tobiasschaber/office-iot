@@ -33,7 +33,7 @@ resource "aws_iam_role_policy_attachment" "attach_motions_table_update_role" {
 //  name = "motionEventForwarder"
 //  description = "Rule which listens on all thing shadow updates and writes motion updates into a motion dynamodb table"
 //  enabled = true
-//  sql = "SELECT *, timestamp() AS timestamp, clientToken as sensorId, state.reported.motionDetected as motionDetected FROM '$aws/things/+/shadow/update' "
+//  sql = "SELECT *, timestamp() AS creationTimestamp, clientToken as sensorId, state.reported.motionDetected as motionDetected FROM '$aws/things/+/shadow/update' "
 //  sql_version = "2016-03-23"
 //
   # HIER FEHLT EINE ACTION FÜR DYNAMODB V2 (SPLIT MESSAGE TO DIFFERENT COLUMNS) habe ich in tf noch nicht gefunden..

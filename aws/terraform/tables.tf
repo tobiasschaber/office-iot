@@ -42,7 +42,7 @@ resource "aws_dynamodb_table" "sensors_table" {
 # create the DynamoDB table for motions
 resource "aws_dynamodb_table" "motions_table" {
   hash_key = "sensorId"
-  range_key = "timestamp"
+  range_key = "creationTimestamp"
   name ="motions"
   read_capacity = 5
   write_capacity = 5
@@ -53,7 +53,7 @@ resource "aws_dynamodb_table" "motions_table" {
   }
 
   "attribute" {
-    name = "timestamp"
+    name = "creationTimestamp"
     type = "N"
   }
 
