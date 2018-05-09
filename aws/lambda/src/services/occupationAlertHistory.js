@@ -41,6 +41,7 @@ function getNotificationState(event, callback) {
     /* Wait for all promises to be finished */
     Promise.all([statePromise])
         .then(resp => {
+            console.log("=============================")
             callback(event, resp[0].Items);
         }).catch(err => {
             console.log(err.message);
@@ -55,7 +56,7 @@ function getQueryForGetNotificationState(event) {
     /* motions database query parameters to detect relevant events */
     var searchparams = {
         TableName: notificationsTableName,
-        ProjectionExpression: "eventName, eventStartTimestamp",
+        ProjectionExpression: "eventName, eventStartTimestamp, lastNotificationSendOnDate",
         FilterExpression: "eventName = :eventName and eventStartTimestamp = :eventStartTimestamp",
         ExpressionAttributeValues: {
             ":eventName": event.summary,
@@ -97,7 +98,8 @@ function getInsertParamsForAddNotification(event) {
         TableName: notificationsTableName,
         Item: {
             "eventName": event.summary,
-            "eventStartTimestamp": new Date(event.start.dateTime).getTime()
+            "eventStartTimestamp": new Date(event.start.dateTime).getTime(),
+            "lastNotificationSendOnDate": new Date().getTime()
         }
     }
     return params;

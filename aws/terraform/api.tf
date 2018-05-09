@@ -29,7 +29,17 @@ resource "aws_iam_role_policy_attachment" "attach_lambda_execution_role" {
 
 
 
-
+# the lambda function for the occupation matcher
+resource "aws_lambda_function" "occupation_matcher_lambda" {
+  description = "match motion events with occupation of rooms"
+  filename = "../lambda/build/lambda.zip"
+  function_name = "matchOccupations"
+  handler = "occupationMatcher/occupationMatcher.matchOccupations"
+  role = "${aws_iam_role.lambda_execution_role.arn}"
+  runtime = "nodejs6.10"
+  source_code_hash = "${base64sha256(file("../lambda/build/lambda.zip"))}"
+  timeout = "10"
+}
 
 
 # the API lambda to work with rooms
@@ -193,6 +203,13 @@ resource "aws_api_gateway_deployment" "deployment" {
 
 
 
+resource "aws_lambda_permission" "occupation_matcher_permission" {
+  statement_id  = "AllowCloudWatchTriggerInvoke1"
+  action        = "lambda:InvokeFunction"
+  function_name = "${aws_lambda_function.occupation_matcher_lambda.arn}"
+  principal     = "events.amazonaws.com"
+  source_arn    = "${aws_cloudwatch_event_rule.time_based_occupation_matcher_trigger_event_rule.arn}"
+}
 
 resource "aws_lambda_permission" "create_room_permission" {
   statement_id  = "AllowAPIGatewayInvoke1"
@@ -200,9 +217,6 @@ resource "aws_lambda_permission" "create_room_permission" {
   function_name = "${aws_lambda_function.create_room_lambda.arn}"
   principal     = "apigateway.amazonaws.com"
 }
-
-
-
 
 resource "aws_lambda_permission" "list_rooms_permission" {
   statement_id  = "AllowAPIGatewayInvoke2"

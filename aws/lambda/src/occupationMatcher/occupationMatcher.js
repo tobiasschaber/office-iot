@@ -166,15 +166,47 @@ function handleMotionsDetected(motionsDetected, motionsCount, currentEvent, curr
 
 /**
  * handling for occupation alerts
- * @param msg
+ * @param
  */
-function handleNotification(event, msg) {
-    if(msg.length === 0) {
+function handleNotification(event, reply) {
+
+    var sendNotification = false;
+
+    /* empty reply event means there was never send a notification for this event */
+    if(reply == null || reply[0] == null) {
+        sendNotification = true;
+
+    } else {
+
+        /* check if the last notification sent for this event was before today */
+        let lastNotificationSend = new Date(reply[0].lastNotificationSendOnDate);
+        let now = new Date();
+        now.setHours(0);
+        now.setMinutes(0);
+        now.setSeconds(0);
+        now.setMilliseconds(0);
+
+        if(lastNotificationSend < now) {
+            sendNotification = true;
+        }
+
+
+        console.log(now)
+        console.log(lastNotificationSend)
+    }
+
+
+
+
+    if(sendNotification) {
         console.log("Lege an für " + event.summary);
         occupationAlertHistory.addNotification(event, publishNotification);
     } else {
         console.log("Für " + event.summary + " wurde bereits eine Notification eingestellt.");
     }
+
+
+
 }
 
 
