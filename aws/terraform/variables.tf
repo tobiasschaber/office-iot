@@ -4,6 +4,11 @@ variable "region" {
   default = "eu-central-1"
 }
 
+# polling interval in which the occupation matcher is triggered
+variable "occupation_matcher_polling_interval" {
+  default = "rate(5 minutes)"
+}
+
 # template for creating a default example room. undefined values will be overwritten
 variable "default_room" {
   default = <<ITEM
