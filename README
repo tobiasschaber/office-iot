@@ -1,0 +1,14 @@
+
+
+
+# How to start
+
+go to aws/terraform folder and run
+terraform apply
+
+# if you want to use kibana, do this after terraform finished:
+go to aws/kibana
+./postSetupElasticsearch.sh (maybe you need to adjust the endpoint url at 2 places)
+import the three export_* files into kibana via kibana UI
+
+

@@ -1,5 +1,10 @@
 
 
+# the IP from where the ELK cluster is accessible
+variable "elasticsearch_policy_open_ip" {
+  default = "109.109.204.162"
+}
+
 variable "region" {
   default = "eu-central-1"
 }

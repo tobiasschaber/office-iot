@@ -1,0 +1,25 @@
+[
+  {
+    "_id": "631338a0-529c-11e8-b864-e1ef6a660892",
+    "_type": "dashboard",
+    "_source": {
+      "title": "motion-overview",
+      "hits": 0,
+      "description": "",
+      "panelsJSON": "[{\"panelIndex\":\"1\",\"gridData\":{\"x\":0,\"y\":0,\"w\":12,\"h\":3,\"i\":\"1\"},\"version\":\"6.2.2\",\"type\":\"visualization\",\"id\":\"221ad600-529c-11e8-b864-e1ef6a660892\"},{\"panelIndex\":\"2\",\"gridData\":{\"x\":0,\"y\":3,\"w\":5,\"h\":3,\"i\":\"2\"},\"version\":\"6.2.2\",\"type\":\"search\",\"id\":\"47f9a900-529c-11e8-b864-e1ef6a660892\"}]",
+      "optionsJSON": "{\"darkTheme\":false,\"useMargins\":true,\"hidePanelTitles\":false}",
+      "version": 1,
+      "timeRestore": true,
+      "timeTo": "now",
+      "timeFrom": "now-15m",
+      "refreshInterval": {
+        "display": "Off",
+        "pause": false,
+        "value": 0
+      },
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[],\"highlightAll\":true,\"version\":true}"
+      }
+    }
+  }
+]

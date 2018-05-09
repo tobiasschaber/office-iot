@@ -1,5 +1,13 @@
 
 
+# zip the source archive
+data "archive_file" "lambda_archive_file" {
+    type = "zip"
+    source_dir = "../lambda/src"
+    output_path = "../lambda/src/build/lambda.zip"
+}
+
+
 # role which will be used for lambda execution
 resource "aws_iam_role" "lambda_execution_role" {
   name = "lambda_execution_role"
@@ -37,7 +45,8 @@ resource "aws_lambda_function" "occupation_matcher_lambda" {
   handler = "occupationMatcher/occupationMatcher.matchOccupations"
   role = "${aws_iam_role.lambda_execution_role.arn}"
   runtime = "nodejs6.10"
-  source_code_hash = "${base64sha256(file("../lambda/build/lambda.zip"))}"
+  source_code_hash = "${data.archive_file.lambda_archive_file.output_base64sha256}"
+  #source_code_hash = "${base64sha256(file("../lambda/build/lambda.zip"))}"
   timeout = "10"
 }
 
@@ -50,7 +59,8 @@ resource "aws_lambda_function" "create_room_lambda" {
   handler = "api/createRoom.createRoom"
   role = "${aws_iam_role.lambda_execution_role.arn}"
   runtime = "nodejs6.10"
-  source_code_hash = "${base64sha256(file("../lambda/build/lambda.zip"))}"
+  source_code_hash = "${data.archive_file.lambda_archive_file.output_base64sha256}"
+  #source_code_hash = "${base64sha256(file("../lambda/build/lambda.zip"))}"
   timeout = "10"
 }
 
@@ -62,7 +72,8 @@ resource "aws_lambda_function" "attach_sensor_to_room_lambda" {
   handler = "api/attachSensorToRoom.attachSensorToRoom"
   role = "${aws_iam_role.lambda_execution_role.arn}"
   runtime = "nodejs6.10"
-  source_code_hash = "${base64sha256(file("../lambda/build/lambda.zip"))}"
+  source_code_hash = "${data.archive_file.lambda_archive_file.output_base64sha256}"
+  #source_code_hash = "${base64sha256(file("../lambda/build/lambda.zip"))}"
   timeout = "10"
 }
 
@@ -74,7 +85,8 @@ resource "aws_lambda_function" "detach_sensor_from_room_lambda" {
   handler = "api/detachSensorFromRoom.detachSensorFromRoom"
   role = "${aws_iam_role.lambda_execution_role.arn}"
   runtime = "nodejs6.10"
-  source_code_hash = "${base64sha256(file("../lambda/build/lambda.zip"))}"
+  source_code_hash = "${data.archive_file.lambda_archive_file.output_base64sha256}"
+  #source_code_hash = "${base64sha256(file("../lambda/build/lambda.zip"))}"
   timeout = "10"
 }
 
@@ -86,7 +98,8 @@ resource "aws_lambda_function" "list_rooms_lambda" {
   handler = "api/listRooms.listRooms"
   role = "${aws_iam_role.lambda_execution_role.arn}"
   runtime = "nodejs6.10"
-  source_code_hash = "${base64sha256(file("../lambda/build/lambda.zip"))}"
+  source_code_hash = "${data.archive_file.lambda_archive_file.output_base64sha256}"
+  #source_code_hash = "${base64sha256(file("../lambda/build/lambda.zip"))}"
   timeout = "10"
 }
 

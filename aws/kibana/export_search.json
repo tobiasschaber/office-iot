@@ -1,0 +1,23 @@
+[
+  {
+    "_id": "47f9a900-529c-11e8-b864-e1ef6a660892",
+    "_type": "search",
+    "_source": {
+      "title": "motion sensor logs",
+      "description": "",
+      "hits": 0,
+      "columns": [
+        "motionDetected",
+        "clientToken"
+      ],
+      "sort": [
+        "_score",
+        "desc"
+      ],
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"5f935620-529b-11e8-b864-e1ef6a660892\",\"highlightAll\":true,\"version\":true,\"query\":{\"language\":\"lucene\",\"query\":\"*\"},\"filter\":[]}"
+      }
+    }
+  }
+]
