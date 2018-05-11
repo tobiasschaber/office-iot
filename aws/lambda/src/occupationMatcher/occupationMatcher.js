@@ -1,4 +1,6 @@
 
+
+
 const AWS = require('aws-sdk');
 const roomServices   = require('../services/rooms');
 const sensorServices = require('../services/sensors');
@@ -6,6 +8,7 @@ const motionsServices = require('../services/motions');
 const calendarServices = require('../services/calendar');
 const slackServices = require('../services/slack')
 const occupationAlertHistory = require('../services/occupationAlertHistory');
+const feiertage = require('feiertagejs');
 
 
 
@@ -81,42 +84,55 @@ function motionPromiseWrapper(roomId) {
  */
 function matchMotionsToCalendar(calendarEntries, motions) {
 
-    /* iterate over all calendar entries */
-    for(i=0; i<calendarEntries.length; i++) {
-        var currentEvent = calendarEntries[i];
+    /* check if today is a public holiday */
+    if(!feiertage.isHoliday(new Date(), 'BW')) {
 
-        /* ignore cancelled events */
-        if(currentEvent.status !== 'cancelled') {
-            console.log("===============================================================");
-            console.log("Scanning: " + currentEvent.summary + " " + (currentEvent.recurrence? "[recurring event]":""));
-            console.log("Terminstatus: " + currentEvent.status);
+        /* iterate over all calendar entries */
+        for(i=0; i<calendarEntries.length; i++) {
+            var currentEvent = calendarEntries[i];
 
-            /* it looks like on recurring events, the date stays the same (date of creation) and
-            only the time needs to be taken into consideration */
-            let currentEventStart = copyTimeIntoToday(currentEvent.start.dateTime);
-            let currentEventEnd   = copyTimeIntoToday(currentEvent.end.dateTime);
+            /* ignore cancelled events */
+            if (currentEvent.status !== 'cancelled') {
+                console.log("===============================================================");
+                console.log("Scanning: " + currentEvent.summary + " " + (currentEvent.recurrence ? "[recurring event]" : ""));
+                console.log("Terminstatus: " + currentEvent.status);
 
-            var motionsDetected = false;
-            var motionsCount = 0;
+                /* it looks like on recurring events, the date stays the same (date of creation) and
+                only the time needs to be taken into consideration */
+                let currentEventStart = copyTimeIntoToday(currentEvent.start.dateTime);
+                let currentEventEnd = copyTimeIntoToday(currentEvent.end.dateTime);
 
-            /* iterate over all motions */
-            for(j=0; j<motions.length; j++) {
-                var currentMotion = motions[j];
+                var motionsDetected = false;
+                var nomotionsDetected = false;
+                var motionsCount = 0;
+                var nomotionsCount = 0;
 
-                var currentMotionTimestamp = new Date(currentMotion.creationTimestamp);
+                /* iterate over all motions */
+                for (j = 0; j < motions.length; j++) {
+                    var currentMotion = motions[j];
 
-                /* if there are motions in the calendar entry's timeframe. compare 0/1 with true/false with == not === !*/
-                if(currentMotion.motionDetected == true) {
-                    if(currentEventStart <= currentMotionTimestamp &&
-                        currentEventEnd   >= currentMotionTimestamp) {
-                        motionsDetected = true;
-                        ++motionsCount;
+                    var currentMotionTimestamp = new Date(currentMotion.creationTimestamp);
+
+                    /* if there are motions in the calendar entry's timeframe. compare 0/1 with true/false with == not === !*/
+
+                    if (currentEventStart <= currentMotionTimestamp &&
+                        currentEventEnd >= currentMotionTimestamp) {
+                        if (currentMotion.motionDetected == true) {
+                            motionsDetected = true;
+                            ++motionsCount;
+                        } else {
+                            nomotionsDetected = true;
+                            ++nomotionsCount;
+                        }
                     }
                 }
-            }
 
-            handleMotionsDetected(motionsDetected, motionsCount, currentEvent, currentEventStart, currentEventEnd);
+                handleMotionsDetected(motionsDetected, nomotionsDetected, motionsCount, currentEvent, currentEventStart, currentEventEnd);
+            }
         }
+    }
+    else {
+        console.log("Not scanning due to holiday today");
     }
 }
 
@@ -129,33 +145,39 @@ function matchMotionsToCalendar(calendarEntries, motions) {
  * @param currentEventStart
  * @param currentEventEnd
  */
-function handleMotionsDetected(motionsDetected, motionsCount, currentEvent, currentEventStart, currentEventEnd) {
+function handleMotionsDetected(motionsDetected, nomotionsDetected, motionsCount, currentEvent, currentEventStart, currentEventEnd) {
     console.log(currentEvent)
 
     if(motionsDetected !== true) {
         console.log("Found no motions in " + currentEvent.summary + " from " + currentEvent.creator.email);
 
-        let now = Date.now();
+        if(nomotionsDetected !== true) {
+            console.log("There are no motions and no nomotion events detected. It seems like there was no sensor sending data!")
 
-        if(currentEventEnd > now) {
-            if(currentEventStart < now) {
-                console.log("(Event is currently running)");
-            } else {
-                console.log("(Event is not yet started)");
-            }
         } else {
 
-            occupationAlertHistory.getNotificationState(currentEvent, handleNotification);
-            console.log("Event is over!");
-            console.log("");
-            console.log("(NOBODY THERE)");
-            console.log("             ");
-            console.log("            °");
-            console.log("           ° ");
-            console.log("   >-)))°>  ");
-            console.log("Event Start: " + currentEventStart);
-            console.log("Event Endet: " + currentEventEnd);
+            let now = Date.now();
 
+            if (currentEventEnd > now) {
+                if (currentEventStart < now) {
+                    console.log("(Event is currently running)");
+                } else {
+                    console.log("(Event is not yet started)");
+                }
+            } else {
+
+                occupationAlertHistory.getNotificationState(currentEvent, handleNotification);
+                console.log("Event is over!");
+                console.log("");
+                console.log("(NOBODY THERE)");
+                console.log("             ");
+                console.log("            °");
+                console.log("           ° ");
+                console.log("   >-)))°>  ");
+                console.log("Event Start: " + currentEventStart);
+                console.log("Event Endet: " + currentEventEnd);
+
+            }
         }
 
     } else {
