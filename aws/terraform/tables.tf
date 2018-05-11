@@ -56,6 +56,13 @@ resource "aws_dynamodb_table" "motions_table" {
     name = "creationTimestamp"
     type = "N"
   }
+
+  ttl {
+    attribute_name = "ttl"
+    enabled = true
+  }
+
+
 }
 
 
