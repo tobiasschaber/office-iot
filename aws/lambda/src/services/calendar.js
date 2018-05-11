@@ -103,6 +103,7 @@ function getQueryParamsForGetEventsForCalendar(calendarId) {
         calendarId: calendarId,
         timeMin: start.toISOString(),
         timeMax: end.toISOString(),
+        singleEvents: true // ensure that recurring events are shown with start date "today" and not "day of event creation"
     };
 }
 
