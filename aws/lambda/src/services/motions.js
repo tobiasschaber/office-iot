@@ -38,6 +38,7 @@ exports.getMotionsForRoom = (roomId, callback) => {
 
 /**
  * get all motions for a sensor
+ * uses pagination if there are the results are divided into multiple pages
  * @param sensorId
  * @param callback
  */
