@@ -1,5 +1,12 @@
 
 
+
+
+# time-to-live in hours for motion events in the dynamodb table
+variable "iot_motions_ttl" {
+  default = "24"
+}
+
 # the IP from where the ELK cluster is accessible
 variable "elasticsearch_policy_open_ip" {
   default = "109.109.204.162"
