@@ -44,7 +44,7 @@ resource "aws_dynamodb_table" "motions_table" {
   hash_key = "sensorId"
   range_key = "creationTimestamp"
   name ="motions"
-  read_capacity = 5
+  read_capacity = 25
   write_capacity = 5
 
   "attribute" {
