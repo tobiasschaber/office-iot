@@ -41,10 +41,12 @@ exports.getMotionsForRoom = (roomId, callback) => {
  * @param sensorId
  * @param callback
  */
-function getMotionsForSensor(sensorId, callback) {
+function getMotionsForSensor(sensorId, callback, lastEvaluatedKey, pagedItems) {
 
-    var searchParams = getQueryForGetMotionsForSensor(sensorId);
+    var searchParams = getQueryForGetMotionsForSensor(sensorId, lastEvaluatedKey);
     var scanMotionsPromiseWrapper = getQueryPromiseWrapper();
+
+    if(!pagedItems) var pagedItems = [];
 
     /* create a promise via the wrapper */
     var roomPromise = scanMotionsPromiseWrapper(searchParams);
@@ -52,13 +54,24 @@ function getMotionsForSensor(sensorId, callback) {
     /* Wait for all Promises to be finished */
     Promise.all([roomPromise])
         .then(resp => {
-            callback(resp[0].Items);
+
+            if(resp[0].LastEvaluatedKey) {
+                pagedItems = pagedItems.concat(resp[0].Items)
+                getMotionsForSensor(sensorId, callback, resp[0].LastEvaluatedKey, pagedItems);
+
+            } else {
+                pagedItems = pagedItems.concat(resp[0].Items)
+                callback(pagedItems);
+            }
+
+
 
         }).catch(err => {
         console.log(err.message);
         callback(err.message);
     });
 }
+
 
 
 /**
@@ -122,12 +135,12 @@ function sensorsPromiseWrapper(roomId) {
 
 function motionsPromiseWrapper(sensorId) {
     return new Promise(function(resolve, reject) {
-        getMotionsForSensor(sensorId, resolve);
+        getMotionsForSensor(sensorId, resolve, undefined);
     });
 }
 
 
-function getQueryForGetMotionsForSensor(sensorId) {
+function getQueryForGetMotionsForSensor(sensorId, lastEvaluatedKey) {
     sensorId = sensorId.trim()
 
     /* calculate the timestamp from when db entries will be queried */
@@ -144,6 +157,10 @@ function getQueryForGetMotionsForSensor(sensorId) {
             ":sensorId": sensorId
         }
     };
+
+    if(lastEvaluatedKey) {
+        searchparams.ExclusiveStartKey = lastEvaluatedKey;
+    }
 
     return searchparams;
 }

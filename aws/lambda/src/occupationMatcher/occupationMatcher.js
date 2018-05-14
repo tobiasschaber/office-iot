@@ -106,12 +106,15 @@ function matchMotionsToCalendar(calendarEntries, motions) {
                 var nomotionsDetected = false;
                 var motionsCount = 0;
                 var nomotionsCount = 0;
-
+                
                 /* iterate over all motions */
                 for (j = 0; j < motions.length; j++) {
                     var currentMotion = motions[j];
 
+
+
                     var currentMotionTimestamp = new Date(currentMotion.creationTimestamp);
+
 
                     /* if there are motions in the calendar entry's timeframe. compare 0/1 with true/false with == not === !*/
 
@@ -140,13 +143,16 @@ function matchMotionsToCalendar(calendarEntries, motions) {
 /**
  * decide what to do depending on the motion detection status
  * @param motionsDetected
+ * @param nomotionsDetected
  * @param motionsCount
  * @param currentEvent
  * @param currentEventStart
  * @param currentEventEnd
  */
 function handleMotionsDetected(motionsDetected, nomotionsDetected, motionsCount, currentEvent, currentEventStart, currentEventEnd) {
-    console.log(currentEvent)
+    //console.log(currentEvent)
+    console.log("motionsDetected: " + motionsDetected)
+    console.log("nomotionsDetected: " +nomotionsDetected)
 
     if(motionsDetected !== true) {
         console.log("Found no motions in " + currentEvent.summary + " from " + currentEvent.creator.email);
