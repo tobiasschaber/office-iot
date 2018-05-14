@@ -3,7 +3,7 @@
  */
 
 load('api_config.js');
-load('api_aws.js');
+load('api_shadow.js');
 load('api_gpio.js');
 load('api_timer.js');
 
@@ -26,11 +26,10 @@ let state = { motionDetected: 0 };
 GPIO.set_mode(sensorPin, GPIO.MODE_INPUT);
 GPIO.set_mode(ledPin, GPIO.MODE_OUTPUT);
 
-AWS.Shadow.setStateHandler(
-  function(data, event, reported, desired, reported_metadata, desired_metadata) {
-    if (event === AWS.Shadow.CONNECTED) {
-        AWS.Shadow.
-      AWS.Shadow.update(0, state);  // Report device state
+Shadow.addHandler(
+  function(event, obj) {
+    if (event === 'CONNECTED') {
+      Shadow.update(0, state);  // Report device state
 
     }
 
@@ -49,7 +48,7 @@ Timer.set(frequencyMs, true, function() {
     } else {
         lastDetectedState = motion;
         skippedMessagesCount = 0;
-        AWS.Shadow.update(0, {motionDetected: motion});
+        Shadow.update(0, {motionDetected: motion});
 
     }
 }, null);
