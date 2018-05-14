@@ -158,7 +158,14 @@ function handleMotionsDetected(motionsDetected, nomotionsDetected, motionsCount,
         console.log("Found no motions in " + currentEvent.summary + " from " + currentEvent.creator.email);
 
         if(nomotionsDetected !== true) {
-            console.log("There are no motions and no nomotion events detected. It seems like there was no sensor sending data!")
+
+            if (currentEventEnd > now) {
+                if (currentEventStart < now) {
+                    console.log("There are no motions and no nomotion events detected. It seems like there was no sensor sending data!")
+                } else {
+                    console.log("(Event is not yet started)");
+                }
+            }
 
         } else {
 
@@ -243,7 +250,7 @@ function handleNotification(event, reply) {
  */
 function publishNotification(event, message) {
 
-    slackServices.writeSlackNotification("Lieber @" + event.creator.email + ", hast du vielleicht im Termin \"" +event.summary + "\" den Raum \"" + event.organizer.displayName + "\" blockiert?");
+    slackServices.writeSlackNotification("Liebe(r) @" + event.creator.email + ", hast du vielleicht im Termin \"" +event.summary + "\" den Raum \"" + event.organizer.displayName + "\" blockiert?");
 }
 
 
