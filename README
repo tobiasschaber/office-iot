@@ -11,4 +11,15 @@ go to aws/kibana
 ./postSetupElasticsearch.sh (maybe you need to adjust the endpoint url at 2 places)
 import the three export_* files into kibana via kibana UI
 
+# Please Note
+
+Currently there is a resource type missing in terraform, thus you need to adjust the IOT rule which is created.
+
+Under "IOT Core" -> "Act" -> motionEventForwarder, you need to
+    - enable the rule
+    - add a new action "DynamoDB / Split message into multiple columns of a database table (DynamoDB Version 2)" with
+      the following parameters:
+        - Tabel name: motions
+        - IAM Role: motions_table_update_role (click apply)
+
 
