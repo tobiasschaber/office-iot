@@ -106,7 +106,7 @@ function matchMotionsToCalendar(calendarEntries, motions) {
                 var nomotionsDetected = false;
                 var motionsCount = 0;
                 var nomotionsCount = 0;
-                
+
                 /* iterate over all motions */
                 for (j = 0; j < motions.length; j++) {
                     var currentMotion = motions[j];
@@ -150,7 +150,7 @@ function matchMotionsToCalendar(calendarEntries, motions) {
  * @param currentEventEnd
  */
 function handleMotionsDetected(motionsDetected, nomotionsDetected, motionsCount, currentEvent, currentEventStart, currentEventEnd) {
-    //console.log(currentEvent)
+
     console.log("motionsDetected: " + motionsDetected)
     console.log("nomotionsDetected: " +nomotionsDetected)
 
@@ -243,7 +243,7 @@ function handleNotification(event, reply) {
  */
 function publishNotification(event, message) {
 
-    slackServices.writeSlackNotification("Event " + event.summary + " is over. Did not find any motions. Böseböseböse.");
+    slackServices.writeSlackNotification("Lieber @" + event.creator.email + ", hast du vielleicht im Termin \"" +event.summary + "\" den Raum \"" + event.organizer.displayName + "\" blockiert?");
 }
 
 
