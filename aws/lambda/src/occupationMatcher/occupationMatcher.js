@@ -154,6 +154,8 @@ function handleMotionsDetected(motionsDetected, nomotionsDetected, motionsCount,
     console.log("motionsDetected: " + motionsDetected)
     console.log("nomotionsDetected: " +nomotionsDetected)
 
+    let now = Date.now();
+
     if(motionsDetected !== true) {
         console.log("Found no motions in " + currentEvent.summary + " from " + currentEvent.creator.email);
 
@@ -168,8 +170,6 @@ function handleMotionsDetected(motionsDetected, nomotionsDetected, motionsCount,
             }
 
         } else {
-
-            let now = Date.now();
 
             if (currentEventEnd > now) {
                 if (currentEventStart < now) {
