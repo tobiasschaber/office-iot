@@ -117,9 +117,10 @@ function matchMotionsToCalendar(calendarEntries, motions) {
 
 
                     /* if there are motions in the calendar entry's timeframe. compare 0/1 with true/false with == not === !*/
+                    /* reduce event end by 5 minutes offset */
 
                     if (currentEventStart <= currentMotionTimestamp &&
-                        currentEventEnd >= currentMotionTimestamp) {
+                        currentEventEnd >= (currentMotionTimestamp-(1000*60*5))) {
                         if (currentMotion.motionDetected == true) {
                             motionsDetected = true;
                             ++motionsCount;
