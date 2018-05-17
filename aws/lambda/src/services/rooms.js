@@ -32,9 +32,24 @@ exports.createRoom = (roomName, svcAccountId, svcAccPrivateKey, calendarId, call
     createRoom(roomName, svcAccountId, svcAccPrivateKey, calendarId, callback);
 }
 
+/**
+ * get a room by its id
+ * @param roomId
+ * @param callback
+ */
 exports.getRoomById = (roomId, callback) => {
     AWS.config.update({region: awsRegion});
     getRoomById(roomId, callback);
+}
+
+/**
+ * delete a room identified by roomId
+ * @param roomId
+ * @param callback
+ */
+exports.deleteRoom = (roomId, callback) => {
+    AWS.config.update({region: awsRegion});
+    deleteRoom(roomId, callback)
 }
 
 
@@ -93,7 +108,12 @@ function getRoomById(roomId, callback) {
 
 
 /**
- * create a room
+ * create a new room. the roomId is randomly generated
+ * @param roomName
+ * @param svcAccountId
+ * @param svcAccPrivateKey
+ * @param calendarId
+ * @param callback
  */
 function createRoom(roomName, svcAccountId, svcAccPrivateKey, calendarId, callback) {
 
@@ -112,11 +132,39 @@ function createRoom(roomName, svcAccountId, svcAccPrivateKey, calendarId, callba
         }
     });
 
-
-
 }
 
 
+/**
+ * delete a room, identified by roomId
+ * @param roomId
+ * @callback
+ */
+function deleteRoom(roomId, callback) {
+
+    const docClient = new AWS.DynamoDB.DocumentClient();
+    var deleteParams = getDeleteParamsForDeleteByRoomId(roomId);
+
+    docClient.delete(deleteParams, function (err, data) {
+        if(err) {
+            console.log(err);
+            callback(false);
+        } else {
+            callback(true);
+        }
+    });
+}
+
+
+/**
+ * create aws dynamodb insert parameters for a new room
+ * @param uuid
+ * @param roomName
+ * @param svcAccountId
+ * @param svcAccPrivateKey
+ * @param calendarId
+ * @return {{TableName: string, Item: {roomId: *, roomName: *, calendarServiceAccountId: *, calendarServiceAccountPrivateKey: *, calendarId: *}}}
+ */
 function getInsertParamsForCreateRoom(uuid, roomName, svcAccountId, svcAccPrivateKey, calendarId) {
 
     var params = {
@@ -135,6 +183,23 @@ function getInsertParamsForCreateRoom(uuid, roomName, svcAccountId, svcAccPrivat
 
 
 /**
+ * create the search parameters for deleting a room by roomId
+ */
+function getDeleteParamsForDeleteByRoomId(roomId) {
+
+    var deleteParams = {
+        TableName:roomsTableName,
+        Key:{
+            "roomId":roomId
+        }
+    };
+
+    return deleteParams;
+}
+
+
+
+/**
  * create search parameters for "getRooms"
  */
 function getSearchParamsForGetRooms() {
@@ -148,11 +213,11 @@ function getSearchParamsForGetRooms() {
     return searchparams;
 }
 
+
 /**
  * create search parameters for "getRooms"
  */
 function getSearchParamsForGetRoomById(roomId) {
-
 
     /* sensor database query parameters */
     var searchparams = {
@@ -168,7 +233,6 @@ function getSearchParamsForGetRoomById(roomId) {
 
     return searchparams;
 }
-
 
 
 /**
