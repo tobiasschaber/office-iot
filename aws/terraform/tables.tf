@@ -3,8 +3,8 @@
 resource "aws_dynamodb_table" "room_table" {
   hash_key = "roomId"
   name = "rooms"
-  read_capacity = 5
-  write_capacity = 5
+  read_capacity = 2
+  write_capacity = 1
 
   "attribute" {
     name = "roomId"
@@ -23,8 +23,8 @@ resource "aws_dynamodb_table" "room_table" {
 resource "aws_dynamodb_table" "sensors_table" {
   hash_key = "sensorId"
   name = "sensors"
-  read_capacity = 5
-  write_capacity = 5
+  read_capacity = 2
+  write_capacity = 1
 
   "attribute" {
     name = "sensorId"
@@ -44,7 +44,7 @@ resource "aws_dynamodb_table" "motions_table" {
   hash_key = "sensorId"
   range_key = "creationTimestamp"
   name ="motions"
-  read_capacity = 25
+  read_capacity = 15
   write_capacity = 5
 
   "attribute" {
@@ -71,8 +71,8 @@ resource "aws_dynamodb_table" "occupation_alert_history_table" {
   hash_key = "eventName"
   range_key = "eventStartTimestamp"
   name ="occupationAlertHistory"
-  read_capacity = 5
-  write_capacity = 5
+  read_capacity = 2
+  write_capacity = 2
 
   "attribute" {
     name = "eventName"
