@@ -117,6 +117,19 @@ resource "aws_lambda_function" "list_rooms_lambda" {
   timeout = "10"
 }
 
+# the API lambda to show occupation state for all rooms
+resource "aws_lambda_function" "get_current_room_occupation" {
+  description = "get current occupation state for all rooms"
+  filename = "${data.archive_file.lambda_archive_file.output_path}"
+  function_name = "getCurrentRoomOccupation"
+  handler = "api/getCurrentRoomOccupation.getCurrentRoomOccupation"
+  role = "${aws_iam_role.lambda_execution_role.arn}"
+  runtime = "nodejs6.10"
+  source_code_hash = "${data.archive_file.lambda_archive_file.output_base64sha256}"
+  #source_code_hash = "${base64sha256(file("../lambda/build/lambda.zip"))}"
+  timeout = "10"
+}
+
 
 
 # the API gateway for the whole office iot project
@@ -139,6 +152,12 @@ resource "aws_api_gateway_resource" "sensor_resource" {
   rest_api_id = "${aws_api_gateway_rest_api.officeiot_api.id}"
   parent_id   = "${aws_api_gateway_rest_api.officeiot_api.root_resource_id}"
   path_part   = "sensorAttachment"
+}
+
+resource "aws_api_gateway_resource" "occupation_resource" {
+  rest_api_id = "${aws_api_gateway_rest_api.officeiot_api.id}"
+  parent_id   = "${aws_api_gateway_rest_api.officeiot_api.root_resource_id}"
+  path_part   = "occupation"
 }
 
 
@@ -171,6 +190,13 @@ resource "aws_api_gateway_method" "sensors_method_delete" {
   rest_api_id   = "${aws_api_gateway_rest_api.officeiot_api.id}"
   resource_id   = "${aws_api_gateway_resource.sensor_resource.id}"
   http_method   = "DELETE"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_method" "occupation_method_get" {
+  rest_api_id   = "${aws_api_gateway_rest_api.officeiot_api.id}"
+  resource_id   = "${aws_api_gateway_resource.occupation_resource.id}"
+  http_method   = "GET"
   authorization = "NONE"
 }
 
@@ -213,6 +239,15 @@ resource "aws_api_gateway_integration" "sensor_delete_integration" {
   uri                     = "${aws_lambda_function.detach_sensor_from_room_lambda.invoke_arn}"
 }
 
+resource "aws_api_gateway_integration" "occupation_get_integration" {
+  rest_api_id             = "${aws_api_gateway_rest_api.officeiot_api.id}"
+  resource_id             = "${aws_api_gateway_resource.occupation_resource.id}"
+  http_method             = "${aws_api_gateway_method.occupation_method_get.http_method}"
+  integration_http_method = "POST" /* attention: always use POST for lambda invocation internally! */
+  type                    = "AWS_PROXY"
+  uri                     = "${aws_lambda_function.get_current_room_occupation.invoke_arn}"
+}
+
 
 
 
@@ -221,7 +256,8 @@ resource "aws_api_gateway_deployment" "deployment" {
     "aws_api_gateway_integration.room_post_integration",
     "aws_api_gateway_integration.room_get_integration",
     "aws_api_gateway_integration.sensor_post_integration",
-    "aws_api_gateway_integration.sensor_delete_integration"
+    "aws_api_gateway_integration.sensor_delete_integration",
+    "aws_api_gateway_integration.occupation_get_integration"
   ]
 
   rest_api_id = "${aws_api_gateway_rest_api.officeiot_api.id}"
@@ -266,5 +302,11 @@ resource "aws_lambda_permission" "detach_sensor_permission" {
   principal     = "apigateway.amazonaws.com"
 }
 
+resource "aws_lambda_permission" "get_current_room_occupation_permission" {
+  statement_id  = "AllowAPIGatewayInvoke4"
+  action        = "lambda:InvokeFunction"
+  function_name = "${aws_lambda_function.get_current_room_occupation.arn}"
+  principal     = "apigateway.amazonaws.com"
+}
 
 
