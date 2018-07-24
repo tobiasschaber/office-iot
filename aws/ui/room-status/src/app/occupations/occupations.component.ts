@@ -29,8 +29,8 @@ export class OccupationsComponent implements OnInit {
 
   ngOnInit() {
     console.log("=========== INIT ===============");
-    var occ = new Occupation("someRoomId", "someStatus");
-    var occ2 = new Occupation("someRoomId2", "someStatus2");
+    var occ = new Occupation("someRoomId", "name", "free");
+    var occ2 = new Occupation("someRoomId2", "anderer name", "free");
     this.occupations.push(occ);
     this.occupations.push(occ2);
 

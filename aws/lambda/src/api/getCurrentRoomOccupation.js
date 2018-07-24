@@ -23,7 +23,7 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
  */
 exports.getCurrentRoomOccupation = (event, context, callback) => {
 
-    let useTimeFrame = checkedTimeFrame;
+    var useTimeFrame = checkedTimeFrame;
 
     if(event && event.queryStringParameters && event.queryStringParameters.timeFrame) {
         useTimeFrame = event.queryStringParameters.timeFrame;
@@ -69,7 +69,11 @@ exports.getCurrentRoomOccupation = (event, context, callback) => {
             }
 
 
-            var roomResult = {"roomId" : items[i].roomId, "status" : roomStatus}
+            var roomResult = {
+                "roomId" : items[i].roomId,
+                "roomName" : items[i].roomName,
+                "status" : roomStatus
+            }
 
             result.rooms.push(roomResult);
 
@@ -84,6 +88,6 @@ exports.getCurrentRoomOccupation = (event, context, callback) => {
     };
 
 
-    occupationService.getAllRoomOccupations(filterCallback);
+    occupationService.getAllRoomOccupationsWithTimeLimit(useTimeFrame, filterCallback);
 };
 

@@ -9,6 +9,10 @@ exports.createResponse = (responseCode, message) => {
     return {
         "statusCode": responseCode,
         "headers": {
+            "Access-Control-Allow-Origin" : "*", // Required for CORS support to work
+            "Access-Control-Allow-Credentials" : true,
+            "Access-Control-Allow-Headers" : true
+
         },
         "body": message,
         "isBase64Encoded": false

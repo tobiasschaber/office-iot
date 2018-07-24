@@ -19,9 +19,9 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
  * @param sensorId
  * @param callback
  */
-exports.getMotionsForSensor = (sensorId, callback) => {
+exports.getMotionsForSensor = (sensorId, timeLimitOverride, callback) => {
     AWS.config.update({region: awsRegion});
-    getMotionsForSensor(sensorId.trim(), callback);
+    getMotionsForSensor(sensorId.trim(), timeLimitOverride, callback);
 }
 
 
@@ -30,10 +30,11 @@ exports.getMotionsForSensor = (sensorId, callback) => {
  * @param roomId
  * @param callback
  */
-exports.getMotionsForRoom = (roomId, callback) => {
+exports.getMotionsForRoom = (roomId, timeLimitOverride, callback) => {
     AWS.config.update({region: awsRegion});
-    getMotionsForRoom(roomId, callback);
+    getMotionsForRoom(roomId, timeLimitOverride, callback);
 }
+
 
 
 /**
@@ -42,9 +43,9 @@ exports.getMotionsForRoom = (roomId, callback) => {
  * @param sensorId
  * @param callback
  */
-function getMotionsForSensor(sensorId, callback, lastEvaluatedKey, pagedItems) {
+function getMotionsForSensor(sensorId, timeLimitOverride, callback, lastEvaluatedKey, pagedItems) {
 
-    var searchParams = getQueryForGetMotionsForSensor(sensorId, lastEvaluatedKey);
+    var searchParams = getQueryForGetMotionsForSensor(sensorId, lastEvaluatedKey, timeLimitOverride);
     var scanMotionsPromiseWrapper = getQueryPromiseWrapper();
 
     if(!pagedItems) var pagedItems = [];
@@ -58,7 +59,7 @@ function getMotionsForSensor(sensorId, callback, lastEvaluatedKey, pagedItems) {
 
             if(resp[0].LastEvaluatedKey) {
                 pagedItems = pagedItems.concat(resp[0].Items)
-                getMotionsForSensor(sensorId, callback, resp[0].LastEvaluatedKey, pagedItems);
+                getMotionsForSensor(sensorId, timeLimitOverride, callback, resp[0].LastEvaluatedKey, pagedItems);
 
             } else {
                 pagedItems = pagedItems.concat(resp[0].Items)
@@ -80,7 +81,7 @@ function getMotionsForSensor(sensorId, callback, lastEvaluatedKey, pagedItems) {
  * @param roomId
  * @param callback
  */
-function getMotionsForRoom(roomId, callback) {
+function getMotionsForRoom(roomId, timeLimitOverride, callback) {
     var sensorPromise = sensorsPromiseWrapper(roomId);
 
     /* Wait for all sensors to be collected */
@@ -94,7 +95,7 @@ function getMotionsForRoom(roomId, callback) {
 
 
             for(var i=0; i<allSensors.length; i++) {
-                let promise = motionsPromiseWrapper(allSensors[i].sensorId);
+                let promise = motionsPromiseWrapper(allSensors[i].sensorId, timeLimitOverride);
                 allProms.push(promise);
             }
 
@@ -134,18 +135,28 @@ function sensorsPromiseWrapper(roomId) {
 }
 
 
-function motionsPromiseWrapper(sensorId) {
+function motionsPromiseWrapper(sensorId, timeLimitOverride) {
     return new Promise(function(resolve, reject) {
-        getMotionsForSensor(sensorId, resolve, undefined);
+        getMotionsForSensor(sensorId, timeLimitOverride, resolve, undefined);
     });
 }
 
 
-function getQueryForGetMotionsForSensor(sensorId, lastEvaluatedKey) {
+function getQueryForGetMotionsForSensor(sensorId, lastEvaluatedKey, timeLimitOverride) {
     sensorId = sensorId.trim()
+    var now = Date.now();
 
     /* calculate the timestamp from when db entries will be queried */
-    var timeLimit = Date.now() - (1000*motionTimeFrameSizeSec);
+    var timeLimit = now - (1000 * motionTimeFrameSizeSec);
+
+    console.log("hard config:" + timeLimit);
+    if(timeLimitOverride) {
+        // console.log("overriding time limit");
+        timeLimit = now - timeLimitOverride;
+    }
+    console.log("using search time limit: " + timeLimit);
+
+    console.log("override co:" + timeLimit);
 
 
     /* motions database query parameters to detect relevant events */

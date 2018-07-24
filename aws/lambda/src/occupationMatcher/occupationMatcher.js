@@ -71,7 +71,7 @@ function calendarPromiseWrapper(room) {
 
 function motionPromiseWrapper(roomId) {
     return new Promise(function(resolve, reject) {
-        motionsServices.getMotionsForRoom(roomId, resolve);
+        motionsServices.getMotionsForRoom(roomId, undefined, resolve);
     });
 }
 

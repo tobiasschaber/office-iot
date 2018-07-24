@@ -17,12 +17,19 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
 
 exports.getAllRoomOccupations = (callback) => {
     AWS.config.update({region: awsRegion});
-    getAllRoomOccupations(callback);
+    getAllRoomOccupationsFull(undefined, callback);
 }
 
 
 
-function getAllRoomOccupations(callback) {
+exports.getAllRoomOccupationsWithTimeLimit = (timeLimitOverride, callback) => {
+    AWS.config.update({region: awsRegion});
+    getAllRoomOccupationsFull(timeLimitOverride, callback);
+}
+
+
+
+function getAllRoomOccupationsFull(timeLimitOverride, callback) {
 
     var allRoomsPromiseWrapper = getAllRoomsPromiseWrapper();
 
@@ -33,7 +40,7 @@ function getAllRoomOccupations(callback) {
         .then(resp => {
             var rooms = resp[0];
 
-            return getMotionsForRooms(rooms, callback);
+            return getMotionsForRooms(rooms, timeLimitOverride, callback);
 
 
 
@@ -45,7 +52,7 @@ function getAllRoomOccupations(callback) {
 }
 
 
-function getMotionsForRooms(rooms, callback) {
+function getMotionsForRooms(rooms, timeLimitOverride, callback) {
 
     var allMotions = {items: []};
 
@@ -56,7 +63,7 @@ function getMotionsForRooms(rooms, callback) {
     for(var i=0; i<rooms.Items.length; i++) {
         var currentRoom = rooms.Items[i];
 
-        roomsPromises.push(getMotionPromiseWrapper(currentRoom.roomId));
+        roomsPromises.push(getMotionPromiseWrapper(currentRoom.roomId, timeLimitOverride));
 
     }
 
@@ -64,7 +71,7 @@ function getMotionsForRooms(rooms, callback) {
     .then(motions => {
 
         for(var j=0; j<motions.length; j++) {
-            allMotions.items.push({"roomId" : currentRoom.roomId, "motions" : motions[j]});
+            allMotions.items.push({"roomId" : currentRoom.roomId, "roomName" : currentRoom.roomName, "motions" : motions[j]});
         }
 
         callback(allMotions);
@@ -82,9 +89,9 @@ function getAllRoomsPromiseWrapper() {
 }
 
 
-function getMotionPromiseWrapper(roomId) {
+function getMotionPromiseWrapper(roomId, timeLimitOverride) {
     return new Promise(function(resolve, reject) {
-        motionServices.getMotionsForRoom(roomId, resolve);
+        motionServices.getMotionsForRoom(roomId, timeLimitOverride, resolve);
     });
 }
 
