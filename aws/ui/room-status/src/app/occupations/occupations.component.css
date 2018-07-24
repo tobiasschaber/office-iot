@@ -1,0 +1,20 @@
+#content {
+  justify-content: center;
+}
+
+#search {
+  margin-top: 1rem;
+  width: 30%;
+}
+
+#station-list {
+  margin: auto;
+  padding-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+#content select {
+  width: 30%;
+}
