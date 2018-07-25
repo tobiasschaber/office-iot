@@ -68,13 +68,19 @@ resource "aws_iot_topic_rule" "motion_detection_forwarder_rule" {
 
 
 
-  elasticsearch {
-    endpoint = "https://${aws_elasticsearch_domain.elasticsearch_cluster.endpoint}"
-    id = "$${newuuid()}"  # escape $ sign
-    index = "motions"
-    role_arn = "${aws_iam_role.elasticsearch_update_role.arn}"
-    type = "motion"
+  lambda {
+    function_arn = "${aws_lambda_function.update_current_room_occupation.arn}"
   }
+
+
+
+//  elasticsearch {
+//    endpoint = "https://${aws_elasticsearch_domain.elasticsearch_cluster.endpoint}"
+//    id = "$${newuuid()}"  # escape $ sign
+//    index = "motions"
+//    role_arn = "${aws_iam_role.elasticsearch_update_role.arn}"
+//    type = "motion"
+//  }
 
 
     #role_arn = "${aws_iam_role.motions_table_update_role.arn}"

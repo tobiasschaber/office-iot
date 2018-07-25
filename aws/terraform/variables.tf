@@ -45,3 +45,15 @@ variable "default_sensor" {
   }
   ITEM
 }
+
+
+# template for creating a default current occupation for jakku. undefined values will be overwritten
+variable "default_current_occupation" {
+  default = <<ITEM
+  {
+    "roomId": {"S": "00000000-0000-0000-0000-000000000000"},
+    "occupationStatus": {"S": "free"},
+    "lastUpdatedTimestamp": {"N": "0"}
+  }
+  ITEM
+}

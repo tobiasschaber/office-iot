@@ -44,8 +44,8 @@ resource "aws_dynamodb_table" "motions_table" {
   hash_key = "sensorId"
   range_key = "creationTimestamp"
   name ="motions"
-  read_capacity = 15
-  write_capacity = 5
+  read_capacity = 7
+  write_capacity = 2
 
   "attribute" {
     name = "sensorId"
@@ -86,6 +86,21 @@ resource "aws_dynamodb_table" "occupation_alert_history_table" {
 }
 
 
+
+# create the DynamoDB table for currenr room occupations ("cached")
+resource "aws_dynamodb_table" "current_room_occupation_table" {
+  hash_key = "roomId"
+  name ="currentRoomOccupation"
+  read_capacity = 5
+  write_capacity = 2
+
+  "attribute" {
+    name = "roomId"
+    type = "S"
+  }
+}
+
+
 # create a default example value for a room named "jakku"
 resource "aws_dynamodb_table_item" "jakku_preset" {
   table_name = "${aws_dynamodb_table.room_table.name}"
@@ -99,4 +114,12 @@ resource "aws_dynamodb_table_item" "sensor_preset" {
   table_name = "${aws_dynamodb_table.sensors_table.name}"
   hash_key = "${aws_dynamodb_table.sensors_table.hash_key}"
   item = "${var.default_sensor}"
+}
+
+
+# create a default example current room occupation value for a room named "jakku"
+resource "aws_dynamodb_table_item" "occupation_jakku_preset" {
+  table_name = "${aws_dynamodb_table.current_room_occupation_table.name}"
+  hash_key = "${aws_dynamodb_table.current_room_occupation_table.hash_key}"
+  item = "${var.default_current_occupation}"
 }
