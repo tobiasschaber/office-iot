@@ -1,12 +1,72 @@
 
 .free {
-  color: green;
+  color: #3cb371;
 }
 
 .occupied {
-  color: red;
+  color: #761c19;
 }
 
 .nodata {
-  color: blue;
+  color: #888888;
 }
+
+
+.occupationTable {
+  width: 500px;
+  display: block;
+  horiz-align: center;
+
+}
+
+
+.box-head {
+  border-bottom: 1px solid #999999;
+  font-family: Lato, cursive;
+  font-size: 1em;
+  padding-bottom: 10px;
+}
+
+
+.occupation {
+  padding: 3em;
+  margin: 0 auto;
+  width: 500px;
+}
+
+.occupations {
+  display: table;
+  border-collapse: collapse;
+  width: 500px;
+  border-bottom: 0px solid #1C6EA4;
+}
+
+.occupations .box-row {
+  display: table-row;
+}
+
+.occupations .box {
+  display: table-cell;
+  text-align: left;
+  vertical-align: middle;
+  border: 0px solid black;
+  padding-top: 10px;
+  width:400px;
+
+  font-family: Lato, cursive;
+  font-size: 1em;
+}
+
+.status-box {
+
+  display: table-cell;
+  text-align: left;
+  vertical-align: middle;
+  border: 0px solid black;
+  padding-top: 10px;
+
+  font-family: Lato, cursive;
+  font-size: 2em;
+}
+
+

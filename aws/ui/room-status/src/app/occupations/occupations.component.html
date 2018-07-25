@@ -1,20 +1,18 @@
 <div class="occupation">
 
-  <div id="occupations">
+  <div class="box-head">Status of all rooms:</div>
 
     <div class="occupations"
       *ngFor="let occupation of occupations"
       [ngClass]="{'free':occupation.status === 'free', 'occupied':occupation.status === 'occupied', 'nodata':occupation.status === 'no sensor data'}"
     >
-        <table>
-          <tr>
-            <td><div id="roomName">{{occupation.roomName}}:</div></td>
-            <td><div id="status">{{occupation.status}}</div>
-          </tr>
-        </table>
+      <div class="box-row">
+        <div class="box" id="roomName">{{occupation.roomName}}</div>
+        <div class="status-box" id="status"><!--{{occupation.status}}--> &#9679;</div>
+      </div>
+
 
     </div>
-  </div>
 
 
 </div>
