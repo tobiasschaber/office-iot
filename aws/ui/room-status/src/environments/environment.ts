@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  occupationServiceUrl: 'https://tw2a648px5.execute-api.eu-central-1.amazonaws.com/prod/occupation?timeFrame=10000'
+  occupationServiceUrl: 'https://tw2a648px5.execute-api.eu-central-1.amazonaws.com/prod/occupation'
 };
 
 /*

@@ -23,6 +23,14 @@ exports.updateCurrentRoomOccupation = (sensorId, motionDetected, creationTimesta
 
 
 
+exports.getCurrentRoomOccupation = (roomId, roomName, callback) => {
+    AWS.config.update({region: awsRegion});
+    getCurrentRoomOccupation(roomId, roomName, callback);
+}
+
+
+
+
 /**
  * function to update the current room occupation table
  * @param sensorId
@@ -37,7 +45,7 @@ function updateCurrentRoomOccupation(sensorId, motionDetected, creationTimestamp
         .then(resp => {
 
             let roomId = resp[0].attachedInRoom;
-            getCurrentRoomOccupation(roomId, motionDetected, creationTimestamp, updateCurrentRoomOccupationTable);
+            getCurrentRoomOccupationEnriched(roomId, motionDetected, creationTimestamp, updateCurrentRoomOccupationTable);
 
 
 
@@ -48,14 +56,12 @@ function updateCurrentRoomOccupation(sensorId, motionDetected, creationTimestamp
 
 function updateCurrentRoomOccupationTable(roomId, motionDetected, creationTimestamp, currentCreationTimestamp, currentMotionDetected) {
 
-     console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" + roomId + " " + currentCreationTimestamp + " " + currentMotionDetected);
-
      /* switch from "free" to "occupied" */
      if(motionDetected === 1) {
          updateCurrentOccupation(getInsertParamsForUpdateCurrentOccupation(roomId, creationTimestamp, "occupied"));
 
      } else {
-         if(currentMotionDetected === "occupied" && motionDetected === 0) {
+         if(motionDetected === 0) {
              if(creationTimestamp >= (currentCreationTimestamp + 10000)) {
                  updateCurrentOccupation(getInsertParamsForUpdateCurrentOccupation(roomId, creationTimestamp, "free"));
              }
@@ -99,9 +105,31 @@ function updateCurrentOccupation(insertParams) {
 }
 
 
+function getCurrentRoomOccupation(roomId, roomName, callback) {
 
-function getCurrentRoomOccupation(roomId, motionDetected, creationTimestamp, callback) {
-    console.log(roomId);
+    var searchParams = getQueryForGetCurrentRoomOccupation(roomId);
+    var getCurrentRoomOccupationPromiseWrapper = getQueryPromiseWrapper();
+
+    var occupationPromise = getCurrentRoomOccupationPromiseWrapper(searchParams);
+
+    Promise.all([occupationPromise])
+        .then(resp => {
+            let currentCreationTimestamp = resp[0].Items[0].lastUpdatedTimestamp;
+            let currentMotionDetected = resp[0].Items[0].occupationStatus;
+
+            let currentOccupationStatus = {
+                "roomId": roomId,
+                "roomName": roomName,
+                "creationTimestamp": currentCreationTimestamp,
+                "motionDetected": currentMotionDetected
+            }
+            callback(currentOccupationStatus);
+        });
+}
+
+
+function getCurrentRoomOccupationEnriched(roomId, motionDetected, creationTimestamp, callback) {
+
     var searchParams = getQueryForGetCurrentRoomOccupation(roomId);
     var getCurrentRoomOccupationPromiseWrapper = getQueryPromiseWrapper();
 
