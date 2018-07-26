@@ -10,7 +10,9 @@ resource "aws_api_gateway_rest_api" "officeiot_api" {
 
 
 
-
+# -------------------------------------------------------
+# resources
+# -------------------------------------------------------
 
 resource "aws_api_gateway_resource" "room_resource" {
   rest_api_id = "${aws_api_gateway_rest_api.officeiot_api.id}"
@@ -32,7 +34,9 @@ resource "aws_api_gateway_resource" "occupation_resource" {
 
 
 
-
+# -------------------------------------------------------
+# methods
+# -------------------------------------------------------
 
 resource "aws_api_gateway_method" "room_method_post" {
   rest_api_id   = "${aws_api_gateway_rest_api.officeiot_api.id}"
@@ -78,6 +82,8 @@ resource "aws_api_gateway_method" "occupation_method_options" {
 }
 
 
+
+
 resource "aws_api_gateway_integration" "occupation_options_integration" {
   rest_api_id             = "${aws_api_gateway_rest_api.officeiot_api.id}"
   resource_id             = "${aws_api_gateway_resource.occupation_resource.id}"
@@ -118,14 +124,12 @@ resource "aws_api_gateway_integration_response" "occupation_options_integration_
     "method.response.header.Access-Control-Allow-Credentials" = "'true'",
     "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS'"
   }
-
-
-//  response_templates {
-//
-//
-//  }
 }
 
+
+# -------------------------------------------------------
+# integrations
+# -------------------------------------------------------
 
 resource "aws_api_gateway_integration" "room_post_integration" {
   rest_api_id             = "${aws_api_gateway_rest_api.officeiot_api.id}"
@@ -190,6 +194,9 @@ resource "aws_api_gateway_deployment" "deployment" {
 }
 
 
+# -------------------------------------------------------
+# permissions
+# -------------------------------------------------------
 
 resource "aws_lambda_permission" "occupation_matcher_permission" {
   statement_id  = "AllowCloudWatchTriggerInvoke1"
