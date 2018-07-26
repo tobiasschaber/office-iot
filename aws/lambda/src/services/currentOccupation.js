@@ -2,6 +2,7 @@ const AWS = require('aws-sdk');
 const awsRegion = 'eu-central-1';
 const sensorsService = require('./sensors');
 const roomsService = require('./rooms');
+const delayOccupiedToFreeMs = 5000;
 
 
 const currentRoomOccupationTableName = 'currentRoomOccupation';
@@ -62,7 +63,7 @@ function updateCurrentRoomOccupationTable(roomId, motionDetected, creationTimest
 
      } else {
          if(motionDetected === 0) {
-             if(creationTimestamp >= (currentCreationTimestamp + 10000)) {
+             if(creationTimestamp >= (currentCreationTimestamp + delayOccupiedToFreeMs)) {
                  updateCurrentOccupation(getInsertParamsForUpdateCurrentOccupation(roomId, creationTimestamp, "free"));
              }
          }

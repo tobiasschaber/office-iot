@@ -34,7 +34,7 @@ export class OccupationsComponent implements OnInit {
     this.occupations.push(occ);
     this.occupations.push(occ2);
 
-    this.timerSubscription = timer(50, 3000).subscribe(() => {
+    this.timerSubscription = timer(50, 800).subscribe(() => {
       this.loadOccupations();
     });
   }
