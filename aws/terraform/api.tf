@@ -70,7 +70,61 @@ resource "aws_api_gateway_method" "occupation_method_get" {
   authorization = "NONE"
 }
 
+resource "aws_api_gateway_method" "occupation_method_options" {
+  rest_api_id   = "${aws_api_gateway_rest_api.officeiot_api.id}"
+  resource_id   = "${aws_api_gateway_resource.occupation_resource.id}"
+  http_method   = "OPTIONS"
+  authorization = "NONE"
+}
 
+
+resource "aws_api_gateway_integration" "occupation_options_integration" {
+  rest_api_id             = "${aws_api_gateway_rest_api.officeiot_api.id}"
+  resource_id             = "${aws_api_gateway_resource.occupation_resource.id}"
+  http_method             = "${aws_api_gateway_method.occupation_method_options.http_method}"
+  type                    = "MOCK"
+}
+
+
+
+resource "aws_api_gateway_method_response" "occupation_options_200" {
+  rest_api_id = "${aws_api_gateway_rest_api.officeiot_api.id}"
+  resource_id = "${aws_api_gateway_resource.occupation_resource.id}"
+  http_method = "${aws_api_gateway_method.occupation_method_options.http_method}"
+  status_code = "200"
+
+  response_models {
+    "application/json" = "Empty"
+  }
+
+  response_parameters {
+    "method.response.header.Access-Control-Allow-Headers" = true,
+    "method.response.header.Access-Control-Allow-Origin" = true,
+    "method.response.header.Access-Control-Allow-Credentials" = true,
+    "method.response.header.Access-Control-Allow-Methods" = true
+  }
+}
+
+
+resource "aws_api_gateway_integration_response" "occupation_options_integration_response" {
+  rest_api_id   = "${aws_api_gateway_rest_api.officeiot_api.id}"
+  resource_id   = "${aws_api_gateway_resource.occupation_resource.id}"
+  http_method   = "${aws_api_gateway_method.occupation_method_options.http_method}"
+  status_code   = "${aws_api_gateway_method_response.occupation_options_200.status_code}"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+    "method.response.header.Access-Control-Allow-Origin" = "'*'",
+    "method.response.header.Access-Control-Allow-Credentials" = "'true'",
+    "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS'"
+  }
+
+
+//  response_templates {
+//
+//
+//  }
+}
 
 
 resource "aws_api_gateway_integration" "room_post_integration" {
@@ -127,7 +181,8 @@ resource "aws_api_gateway_deployment" "deployment" {
     "aws_api_gateway_integration.room_get_integration",
     "aws_api_gateway_integration.sensor_post_integration",
     "aws_api_gateway_integration.sensor_delete_integration",
-    "aws_api_gateway_integration.occupation_get_integration"
+    "aws_api_gateway_integration.occupation_get_integration",
+    "aws_api_gateway_integration.occupation_options_integration"
   ]
 
   rest_api_id = "${aws_api_gateway_rest_api.officeiot_api.id}"
