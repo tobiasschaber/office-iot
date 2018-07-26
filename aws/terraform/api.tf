@@ -74,14 +74,14 @@ resource "aws_api_gateway_method" "occupation_method_get" {
   authorization = "NONE"
 }
 
+
+# for CORS HTTP "OPTIONS" calls
 resource "aws_api_gateway_method" "occupation_method_options" {
   rest_api_id   = "${aws_api_gateway_rest_api.officeiot_api.id}"
   resource_id   = "${aws_api_gateway_resource.occupation_resource.id}"
   http_method   = "OPTIONS"
   authorization = "NONE"
 }
-
-
 
 
 resource "aws_api_gateway_integration" "occupation_options_integration" {
@@ -93,6 +93,7 @@ resource "aws_api_gateway_integration" "occupation_options_integration" {
 
 
 
+# configuration for CORS
 resource "aws_api_gateway_method_response" "occupation_options_200" {
   rest_api_id = "${aws_api_gateway_rest_api.officeiot_api.id}"
   resource_id = "${aws_api_gateway_resource.occupation_resource.id}"
@@ -103,6 +104,7 @@ resource "aws_api_gateway_method_response" "occupation_options_200" {
     "application/json" = "Empty"
   }
 
+  # CORS headers
   response_parameters {
     "method.response.header.Access-Control-Allow-Headers" = true,
     "method.response.header.Access-Control-Allow-Origin" = true,
@@ -118,6 +120,7 @@ resource "aws_api_gateway_integration_response" "occupation_options_integration_
   http_method   = "${aws_api_gateway_method.occupation_method_options.http_method}"
   status_code   = "${aws_api_gateway_method_response.occupation_options_200.status_code}"
 
+  # CORS response headers
   response_parameters = {
     "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
     "method.response.header.Access-Control-Allow-Origin" = "'*'",
