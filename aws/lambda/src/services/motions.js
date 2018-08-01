@@ -19,9 +19,9 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
  * @param sensorId
  * @param callback
  */
-exports.getMotionsForSensor = (sensorId, timeLimitOverride, callback) => {
+ exports.getMotionsForSensor = async(sensorId, timeLimitOverride) => {
     AWS.config.update({region: awsRegion});
-    getMotionsForSensor(sensorId.trim(), timeLimitOverride, callback);
+    return getMotionsForSensor(sensorId.trim(), timeLimitOverride);
 }
 
 
@@ -30,9 +30,9 @@ exports.getMotionsForSensor = (sensorId, timeLimitOverride, callback) => {
  * @param roomId
  * @param callback
  */
-exports.getMotionsForRoom = (roomId, timeLimitOverride, callback) => {
+exports.getMotionsForRoom = async (roomId, timeLimitOverride) => {
     AWS.config.update({region: awsRegion});
-    getMotionsForRoom(roomId, timeLimitOverride, callback);
+    return getMotionsForRoom(roomId, timeLimitOverride);
 }
 
 
@@ -43,35 +43,22 @@ exports.getMotionsForRoom = (roomId, timeLimitOverride, callback) => {
  * @param sensorId
  * @param callback
  */
-function getMotionsForSensor(sensorId, timeLimitOverride, callback, lastEvaluatedKey, pagedItems) {
+async function getMotionsForSensor(sensorId, timeLimitOverride, lastEvaluatedKey, pagedItems) {
 
     var searchParams = getQueryForGetMotionsForSensor(sensorId, lastEvaluatedKey, timeLimitOverride);
-    var scanMotionsPromiseWrapper = getQueryPromiseWrapper();
 
     if(!pagedItems) var pagedItems = [];
 
-    /* create a promise via the wrapper */
-    var roomPromise = scanMotionsPromiseWrapper(searchParams);
+    let resp = await getQueryPromiseWrapper(searchParams);
 
-    /* Wait for all Promises to be finished */
-    Promise.all([roomPromise])
-        .then(resp => {
+    if(resp.LastEvaluatedKey) {
+        pagedItems = pagedItems.concat(resp.Items);
+        return getMotionsForSensor(sensorId, timeLimitOverride, resp.LastEvaluatedKey, pagedItems);
 
-            if(resp[0].LastEvaluatedKey) {
-                pagedItems = pagedItems.concat(resp[0].Items)
-                getMotionsForSensor(sensorId, timeLimitOverride, callback, resp[0].LastEvaluatedKey, pagedItems);
-
-            } else {
-                pagedItems = pagedItems.concat(resp[0].Items)
-                callback(pagedItems);
-            }
-
-
-
-        }).catch(err => {
-        console.log(err.message);
-        callback(err.message);
-    });
+    } else {
+        pagedItems = pagedItems.concat(resp.Items);
+        return pagedItems;
+    }
 }
 
 
@@ -81,41 +68,26 @@ function getMotionsForSensor(sensorId, timeLimitOverride, callback, lastEvaluate
  * @param roomId
  * @param callback
  */
-function getMotionsForRoom(roomId, timeLimitOverride, callback) {
-    var sensorPromise = sensorsPromiseWrapper(roomId);
+async function getMotionsForRoom(roomId, timeLimitOverride) {
 
-    /* Wait for all sensors to be collected */
-    Promise.all([sensorPromise])
-        .then(resp => {
+    let resp = await sensorsServices.getSensorsForRoom(roomId);
 
-
-            /* resp[0] now contains all sensors attached to the room */
-            var allSensors = resp[0].Items;
-            var allProms = [];
+    /* resp now contains all sensors attached to the room */
+    var allSensors = resp.Items;
+    var allMotions = [];
 
 
-            for(var i=0; i<allSensors.length; i++) {
-                let promise = motionsPromiseWrapper(allSensors[i].sensorId, timeLimitOverride);
-                allProms.push(promise);
-            }
+    for(var i=0; i<allSensors.length; i++) {
 
-            Promise.all(allProms)
-                .then(resp => {
-                    /* nested data structure */
+        let resp2 = await getMotionsForSensor(allSensors[i].sensorId, timeLimitOverride, undefined);
 
+        allMotions = allMotions.concat(resp2);
+    }
 
-
-                    callback(flatten(resp));
-
-                }).catch(err => {
-                console.log(err.message);
-            });
-
-        }).catch(err => {
-        console.log(err.message);
-    })
-
+    return allMotions;
 }
+
+
 
 /**
  * helper function to create a flattened list out of a nested one
@@ -125,20 +97,6 @@ function flatten(arr) {
     return arr.reduce(function (flat, toFlatten) {
         return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
     }, []);
-}
-
-
-function sensorsPromiseWrapper(roomId) {
-    return new Promise(function(resolve, reject) {
-        sensorsServices.getSensorsForRoom(roomId, resolve);
-    });
-}
-
-
-function motionsPromiseWrapper(sensorId, timeLimitOverride) {
-    return new Promise(function(resolve, reject) {
-        getMotionsForSensor(sensorId, timeLimitOverride, resolve, undefined);
-    });
 }
 
 
@@ -183,20 +141,17 @@ function getQueryForGetMotionsForSensor(sensorId, lastEvaluatedKey, timeLimitOve
  * @param searchparams the parameters for the search
  * @returns {Promise<any>}
  */
-function getQueryPromiseWrapper() {
+async function getQueryPromiseWrapper(searchParams) {
 
     const docClient = new AWS.DynamoDB.DocumentClient();
 
-    var wrapper = function (searchParams) {
-        return new Promise((resolve, reject) => {
-            docClient.scan(searchParams, (err, data) => {
-                if (err) {
-                    return reject(err);
-                }
-                resolve(data);
-            });
+    return new Promise((resolve, reject) => {
+        docClient.scan(searchParams, (err, data) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(data);
         });
-    }
-    return wrapper;
+    });
 };
 

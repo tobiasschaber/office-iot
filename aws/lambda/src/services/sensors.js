@@ -20,9 +20,10 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
  * @param roomId
  * @param callback
  */
-exports.getSensorsForRoom = (roomId, callback) => {
+exports.getSensorsForRoom = async (roomId) => {
     AWS.config.update({region: awsRegion});
-    listSensorsForRoom(roomId, callback);
+
+    return listSensorsForRoom(roomId);
 }
 
 /**
@@ -30,9 +31,9 @@ exports.getSensorsForRoom = (roomId, callback) => {
  * @param sensorId
  * @param callback
  */
-exports.getRoomForSensor = (sensorId, callback) => {
+exports.getRoomForSensor = async (sensorId) => {
     AWS.config.update({region: awsRegion});
-    getRoomForSensor(sensorId, callback);
+    return getRoomForSensor(sensorId);
 }
 
 
@@ -41,25 +42,13 @@ exports.getRoomForSensor = (sensorId, callback) => {
  * @param roomId
  * @param callback
  */
-function listSensorsForRoom(roomId, callback) {
+async function listSensorsForRoom(roomId) {
 
     var searchParams = getSearchParamsForListSensorsForRoom(roomId);
-    var scanSensorsPromiseWrapper = getQueryPromiseWrapper();
+    var resp = await getQueryPromiseWrapper(searchParams);
 
-    /* create a promise via the wrapper */
-    var sensorPromise = scanSensorsPromiseWrapper(searchParams);
+    return resp;
 
-    /**
-     * Wait for all Promises to be finished
-     */
-    Promise.all([sensorPromise])
-        .then(resp => {
-            callback(resp[0]);
-
-        }).catch(err => {
-            console.log(err.message);
-            callback(err.message);
-    });
 }
 
 
@@ -68,24 +57,11 @@ function listSensorsForRoom(roomId, callback) {
  * @param sensorId
  * @param callback
  */
-function getRoomForSensor(sensorId, callback) {
+async function getRoomForSensor(sensorId) {
     var searchParams = getSearchParamsForGetRoomForSensor(sensorId);
-    var scanSensorsPromiseWrapper = getQueryPromiseWrapper();
+    var resp = await getQueryPromiseWrapper(searchParams);
 
-    /* create a promise via the wrapper */
-    var roomPromise = scanSensorsPromiseWrapper(searchParams);
-
-    /**
-     * Wait for all Promises to be finished
-     */
-    Promise.all([roomPromise])
-        .then(resp => {
-            callback(resp[0].Items[0]);
-
-        }).catch(err => {
-        console.log(err.message);
-        callback(err.message);
-    });
+    return resp.Items[0];
 }
 
 
@@ -137,21 +113,18 @@ function getSearchParamsForGetRoomForSensor(sensorId) {
  * @param searchparams the parameters for the search
  * @returns {Promise<any>}
  */
-function getQueryPromiseWrapper() {
+async function getQueryPromiseWrapper(searchParams) {
 
     const docClient = new AWS.DynamoDB.DocumentClient();
 
-    var wrapper = function (searchParams) {
-        return new Promise((resolve, reject) => {
-            docClient.scan(searchParams, (err, data) => {
-                if (err) {
-                    return reject(err);
-                }
-                resolve(data);
-            });
+    return new Promise((resolve, reject) => {
+        docClient.scan(searchParams, (err, data) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(data);
         });
-    }
-    return wrapper;
+    });
 };
 
 

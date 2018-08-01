@@ -3,36 +3,28 @@ const sensorsServices = require('../../src/services/sensors');
 
 const predefinedRoomId = "00000000-0000-0000-0000-000000000000";
 const predefinedSensorId = "26e98cf9";
+const chai = require('chai');
 
-it('should deliver the predefined sensor for a room', function(done) {
-    sensorsServices.getSensorsForRoom(predefinedRoomId, function(result) {
-        if(!result || result.Items.length === 0) {
-            done("found no sensors because room not found");
-            } else {
 
-            for (var i = 0; i < result.Items.length; i++) {
-                if (result.Items[i].sensorId === predefinedSensorId) {
-                    done(false);    // success
-                    return;
-                }
-            }
-            done("the predefined sensor was not found")
-        }
-    });
+it('should deliver the predefined sensor for a room', async function() {
+    let result = [];
+    result = await sensorsServices.getSensorsForRoom(predefinedRoomId);
+
+    var expect = chai.expect;
+
+    expect(result).to.not.be.undefined;
+    expect(result.Items.length).to.above(0);
+
 });
 
 
-it('should find a room for a given sensor', function(done) {
-    sensorsServices.getRoomForSensor(predefinedSensorId, function(result) {
-        if(!result || !result.attachedInRoom) {
-            done("failed: no room returned");
-        } else {
-            if(result.attachedInRoom === predefinedRoomId) {
-                done(false);    // success
-            } else {
-                done("returned room does not match expected room id");
-            }
-        }
 
-    });
+it('should find a room for a given sensor', async function() {
+    let result = [];
+    result = await sensorsServices.getRoomForSensor(predefinedSensorId);
+
+    var expect = chai.expect;
+    expect(result).to.not.be.undefined;
+    expect(result.attachedInRoom).to.equal(predefinedRoomId);
+
 });

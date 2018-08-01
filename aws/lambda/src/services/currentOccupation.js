@@ -17,16 +17,16 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
 };
 
 
-exports.updateCurrentRoomOccupation = (sensorId, motionDetected, creationTimestamp) => {
+exports.updateCurrentRoomOccupation = async (sensorId, motionDetected, creationTimestamp) => {
     AWS.config.update({region: awsRegion});
-    updateCurrentRoomOccupation(sensorId, motionDetected, creationTimestamp);
+    return updateCurrentRoomOccupation(sensorId, motionDetected, creationTimestamp);
 }
 
 
 
-exports.getCurrentRoomOccupation = (roomId, roomName, callback) => {
+exports.getCurrentRoomOccupation = async (roomId, roomName, callback) => {
     AWS.config.update({region: awsRegion});
-    getCurrentRoomOccupation(roomId, roomName, callback);
+    return getCurrentRoomOccupation(roomId, roomName, callback);
 }
 
 
@@ -38,19 +38,12 @@ exports.getCurrentRoomOccupation = (roomId, roomName, callback) => {
  * @param motionDetected
  * @param creationTimestamp
  */
-function updateCurrentRoomOccupation(sensorId, motionDetected, creationTimestamp) {
+async function updateCurrentRoomOccupation(sensorId, motionDetected, creationTimestamp) {
 
-    var getRoomByIdPromiseWrapper = getRoomBySensorIdPromiseWrapper(sensorId);
+    let resp = await sensorsService.getRoomForSensor(sensorId, resolve);
 
-    Promise.all([getRoomByIdPromiseWrapper])
-        .then(resp => {
-
-            let roomId = resp[0].attachedInRoom;
-            getCurrentRoomOccupationEnriched(roomId, motionDetected, creationTimestamp, updateCurrentRoomOccupationTable);
-
-
-
-        });
+    let roomId = resp[0].attachedInRoom;
+    return getCurrentRoomOccupationEnriched(roomId, motionDetected, creationTimestamp, updateCurrentRoomOccupationTable);
 }
 
 
@@ -106,42 +99,39 @@ function updateCurrentOccupation(insertParams) {
 }
 
 
-function getCurrentRoomOccupation(roomId, roomName, callback) {
+async function getCurrentRoomOccupation(roomId, roomName, callback) {
 
     var searchParams = getQueryForGetCurrentRoomOccupation(roomId);
     var getCurrentRoomOccupationPromiseWrapper = getQueryPromiseWrapper();
 
-    var occupationPromise = getCurrentRoomOccupationPromiseWrapper(searchParams);
+    let resp = await getCurrentRoomOccupationPromiseWrapper(searchParams);
 
-    Promise.all([occupationPromise])
-        .then(resp => {
-            let currentCreationTimestamp = resp[0].Items[0].lastUpdatedTimestamp;
-            let currentMotionDetected = resp[0].Items[0].occupationStatus;
+    let currentCreationTimestamp = resp.Items[0].lastUpdatedTimestamp;
+    let currentMotionDetected = resp.Items[0].occupationStatus;
 
-            let currentOccupationStatus = {
-                "roomId": roomId,
-                "roomName": roomName,
-                "creationTimestamp": currentCreationTimestamp,
-                "motionDetected": currentMotionDetected
-            }
-            callback(currentOccupationStatus);
-        });
+    let currentOccupationStatus = {
+        "roomId": roomId,
+        "roomName": roomName,
+        "creationTimestamp": currentCreationTimestamp,
+        "motionDetected": currentMotionDetected
+    }
+
+    callback(currentOccupationStatus);
+
 }
 
 
-function getCurrentRoomOccupationEnriched(roomId, motionDetected, creationTimestamp, callback) {
+async function getCurrentRoomOccupationEnriched(roomId, motionDetected, creationTimestamp, callback) {
 
     var searchParams = getQueryForGetCurrentRoomOccupation(roomId);
     var getCurrentRoomOccupationPromiseWrapper = getQueryPromiseWrapper();
 
-    var occupationPromise = getCurrentRoomOccupationPromiseWrapper(searchParams);
+    var resp = await getCurrentRoomOccupationPromiseWrapper(searchParams);
 
-    Promise.all([occupationPromise])
-        .then(resp => {
-            let currentCreationTimestamp = resp[0].Items[0].lastUpdatedTimestamp;
-            let currentMotionDetected = resp[0].Items[0].occupationStatus;
-            callback(roomId, motionDetected, creationTimestamp, currentCreationTimestamp, currentMotionDetected);
-        });
+    let currentCreationTimestamp = resp.Items[0].lastUpdatedTimestamp;
+    let currentMotionDetected = resp.Items[0].occupationStatus;
+    callback(roomId, motionDetected, creationTimestamp, currentCreationTimestamp, currentMotionDetected);
+
 }
 
 
@@ -185,13 +175,5 @@ function getQueryForGetCurrentRoomOccupation(roomId) {
     return searchparams;
 }
 
-
-
-
-function getRoomBySensorIdPromiseWrapper(sensorId) {
-    return new Promise(function(resolve, reject) {
-        sensorsService.getRoomForSensor(sensorId, resolve);
-    });
-}
 
 

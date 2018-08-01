@@ -1,52 +1,36 @@
 const motionServices = require('../../src/services/motions');
-
 const predefinedRoomId = "00000000-0000-0000-0000-000000000000";
 const predefinedSensorId = "26e98cf9";
+const chai = require('chai');
 
-it('should should return some motions for predefined sensor', function(done) {
-    motionServices.getMotionsForSensor(predefinedSensorId, undefined, function(result) {
-        if(!result || result.length === 0) {
-            done("failed: no motions returned for sensor " +
-                predefinedSensorId +
-                ". please note that this might be due to never sending any motions!");
-        } else {
-            done(false);    // success
-        }
-    });
+
+it('should should return some motions for predefined sensor', async function() {
+    let result = [];
+    result = await motionServices.getMotionsForSensor(predefinedSensorId, undefined);
+    var expect = chai.expect;
+    expect(result.length).to.above(0);
 });
 
 
-it('should return some motions for a predefined room', function(done) {
-    motionServices.getMotionsForRoom(predefinedRoomId, undefined, function(result) {
-        if(!result || result.length === 0) {
-            done("failed: no motions returned for room " +
-            predefinedRoomId +
-            ". please note that this might be due to never sending any motions!")
-        } else {
+it('should return some motions for a predefined room', async function() {
 
-            if(!result[0].sensorId || result[0].sensorId !== predefinedSensorId) {
-                done("failed: returned sensor for room does not have expected sensorId");
-            } else {
-                done(false); // success
-            }
-        }
-    });
-});
+    let result = [];
+    result = await motionServices.getMotionsForRoom(predefinedRoomId, undefined);
+    var expect = chai.expect;
+    expect(result.length).to.above(0);
+    expect(result[0]).to.not.be.undefined;
+    expect(result[0].sensorId).to.equal(predefinedSensorId);
+
+}).timeout(5000);
 
 
-it('should return some motions for a predefined room with time override', function(done) {
-    motionServices.getMotionsForRoom(predefinedRoomId, 12000000, function(result) {
-        if(!result || result.length === 0) {
-            done("failed: no motions returned for room " +
-                predefinedRoomId +
-                ". please note that this might be due to never sending any motions!")
-        } else {
+it('should return some motions for a predefined room with time override', async function() {
+    let result = [];
+    result = await motionServices.getMotionsForRoom(predefinedRoomId, 12000000);
 
-            if(!result[0].sensorId || result[0].sensorId !== predefinedSensorId) {
-                done("failed: returned sensor for room does not have expected sensorId");
-            } else {
-                done(false); // success
-            }
-        }
-    });
+    var expect = chai.expect;
+    expect(result.length).to.above(0);
+    expect(result[0]).to.not.be.undefined;
+    expect(result[0].sensorId).to.equal(predefinedSensorId);
+
 });

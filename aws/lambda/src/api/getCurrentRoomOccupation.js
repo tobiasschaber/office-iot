@@ -28,13 +28,10 @@ exports.getCurrentRoomOccupation = async (event, context, callback) => {
     AWS.config.update({region: awsRegion});
 
     let result = {rooms: []};
-
     let rooms = await roomsService.getRooms();
     let allRooms = rooms.Items;
-
-    // console.log(allRooms);
-
     let occPromises = [];
+
     for(let i=0; i<allRooms.length; i++) {
         occPromises.push(currentOccupationPromiseWrapper(allRooms[i].roomId, allRooms[i].roomName));
     }
