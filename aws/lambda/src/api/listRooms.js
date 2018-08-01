@@ -24,7 +24,7 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
 exports.listRooms = async (event, context, callback) => {
     AWS.config.update({region: awsRegion});
 
-    let body = await roomsService.getRoomsAS();
+    let body = await roomsService.getRooms();
 
     /* remove all private keys from external calls */
     for(let i=0; i<body.Items.length; i++) {

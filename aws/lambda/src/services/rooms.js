@@ -17,21 +17,11 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
 
 /**
  * get all rooms
- * @param callback
  */
-exports.getRooms = (callback) => {
-    AWS.config.update({region: awsRegion});
-    getRooms(callback);
-}
-
-
-/**
- * get all rooms
- */
-exports.getRoomsAS = async () => {
+exports.getRooms = async () => {
     AWS.config.update({region: awsRegion});
 
-    return getRoomsAS();
+    return getRooms();
 
 }
 
@@ -64,37 +54,12 @@ exports.deleteRoom = (roomId, callback) => {
 }
 
 
-/**
- * get all rooms
- * @param callback
- */
-function getRooms(callback) {
-
-    var searchParams = getSearchParamsForGetRooms();
-    var scanSensorsPromiseWrapper = getQueryPromiseWrapper();
-
-    /* create a promise via the wrapper */
-    var roomPromise = scanSensorsPromiseWrapper(searchParams);
-
-    /**
-     * Wait for all Promises to be finished
-     */
-    Promise.all([roomPromise])
-        .then(resp => {
-            callback(resp[0]);
-
-        }).catch(err => {
-        console.log(err.message);
-        callback(err.message);
-    });
-}
-
 
 /**
  * get all rooms
  * @param callback
  */
-async function getRoomsAS() {
+async function getRooms() {
 
     var searchParams = getSearchParamsForGetRooms();
     var scanSensorsPromiseWrapper = getQueryPromiseWrapper();
