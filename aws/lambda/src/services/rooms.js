@@ -38,9 +38,11 @@ exports.createRoom = (roomName, svcAccountId, svcAccPrivateKey, calendarId, call
  * @param roomId
  * @param callback
  */
-exports.getRoomById = (roomId, callback) => {
+exports.getRoomById = async (roomId, callback) => {
     AWS.config.update({region: awsRegion});
+
     getRoomById(roomId, callback);
+
 }
 
 /**
@@ -76,7 +78,7 @@ async function getRooms() {
  * @param roomId
  * @param callback
  */
-function getRoomById(roomId, callback) {
+async function getRoomById(roomId, callback) {
 
     var searchParams = getSearchParamsForGetRoomById(roomId);
     var scanSensorsPromiseWrapper = getQueryPromiseWrapper();
@@ -84,17 +86,8 @@ function getRoomById(roomId, callback) {
     /* create a promise via the wrapper */
     var roomPromise = scanSensorsPromiseWrapper(searchParams);
 
-    /**
-     * Wait for all Promises to be finished
-     */
-    Promise.all([roomPromise])
-        .then(resp => {
-            callback(resp[0].Items[0]);
-
-        }).catch(err => {
-        console.log(err.message);
-        callback(err.message);
-    });
+    let result = await roomPromise;
+    callback(result.Items[0]);
 
 }
 

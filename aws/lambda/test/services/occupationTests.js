@@ -31,4 +31,4 @@ it('should show all occupations for all rooms with time limit override', functio
         done(false);
 
     });
-});
+}).timeout(5000);

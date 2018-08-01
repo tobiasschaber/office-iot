@@ -29,34 +29,21 @@ exports.getAllRoomOccupationsWithTimeLimit = (timeLimitOverride, callback) => {
 
 
 
-function getAllRoomOccupationsFull(timeLimitOverride, callback) {
+async function getAllRoomOccupationsFull(timeLimitOverride, callback) {
 
-    var allRoomsPromiseWrapper = getAllRoomsPromiseWrapper();
-
-    /**
-     * Wait for all Promises to be finished
-     */
-    Promise.all([allRoomsPromiseWrapper])
-        .then(resp => {
-            var rooms = resp[0];
-
-            return getMotionsForRooms(rooms, timeLimitOverride, callback);
+    var rooms = await roomServices.getRooms();
 
 
-
-        }).catch(err => {
-        console.log(err.message);
-        callback(err.message);
-    });
-
+    let allMotions = await getMotionsForRooms(rooms, timeLimitOverride);
+    callback(allMotions);
 }
 
 
-function getMotionsForRooms(rooms, timeLimitOverride, callback) {
+async function getMotionsForRooms(rooms, timeLimitOverride) {
 
-    var allMotions = {items: []};
+    let allMotions = {items: []};
 
-    var roomsPromises = []
+    var roomsPromises = [];
 
 
     /* iterate over all rooms */
@@ -67,26 +54,17 @@ function getMotionsForRooms(rooms, timeLimitOverride, callback) {
 
     }
 
-    Promise.all(roomsPromises)
-    .then(motions => {
+    let motions = await Promise.all(roomsPromises);
+
 
         for(var j=0; j<motions.length; j++) {
             allMotions.items.push({"roomId" : currentRoom.roomId, "roomName" : currentRoom.roomName, "motions" : motions[j]});
         }
 
-        callback(allMotions);
+    return allMotions;
 
-    }).catch(err => {
-        console.log(err.message);
-    });
 }
 
-
-function getAllRoomsPromiseWrapper() {
-    return new Promise(function(resolve, reject) {
-        roomServices.getRooms(resolve);
-    });
-}
 
 
 function getMotionPromiseWrapper(roomId, timeLimitOverride) {
