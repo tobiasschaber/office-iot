@@ -38,41 +38,23 @@ exports.matchOccupations = (event, context, callback) => {
 };
 
 
-function matchOccupations(callback) {
-    roomServices.getRooms(roomsCallback);
-}
-
-var roomsCallback = function(rooms) {
+async function matchOccupations(callback) {
+    let rooms = await roomServices.getRooms();
 
     /* iterate over all rooms */
     for(var i=0; i<rooms.Items.length; i++) {
         var currentRoom = rooms.Items[i];
+        var roomId = rooms.Items[i].roomId;
 
-        var calendarPromise = calendarPromiseWrapper(currentRoom);
-        var motionPromise = motionPromiseWrapper(currentRoom.roomId);
+        let calendarEntries = await calendarServices.getEventsForCalendarByRoom(currentRoom);
+        let motionsForRoom = await motionsServices.getMotionsForRoom(roomId, undefined);
 
-        /* Wait for all Promises in the list (calendarPromise and motionsPromise) to be finished */
-        Promise.all([calendarPromise, motionPromise])
-            .then(resp => {
-                matchMotionsToCalendar(resp[0], resp[1]);
+        console.log("===========")
+        console.log(calendarEntries);
+        matchMotionsToCalendar(calendarEntries, motionsForRoom);
 
-            }).catch(err => {
-            console.log(err.message);
-        });
     }
-}
 
-
-function calendarPromiseWrapper(room) {
-    return new Promise(function(resolve, reject) {
-        calendarServices.getEventsForCalendar(room, resolve);
-    });
-}
-
-function motionPromiseWrapper(roomId) {
-    return new Promise(function(resolve, reject) {
-        motionsServices.getMotionsForRoom(roomId, undefined, resolve);
-    });
 }
 
 

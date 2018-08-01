@@ -15,9 +15,9 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
 /**
  * return all events for a given calendar
  */
-exports.getEventsForCalendar = (calendarId, calendarServiceAccountId, calendarServiceAccountPrivateKey, callback) => {
+exports.getEventsForCalendar = async (calendarId, calendarServiceAccountId, calendarServiceAccountPrivateKey) => {
     AWS.config.update({region: awsRegion});
-    getEventsForCalendar(calendarId, calendarServiceAccountId, calendarServiceAccountPrivateKey, callback);
+    return getEventsForCalendar(calendarId, calendarServiceAccountId, calendarServiceAccountPrivateKey);
 };
 
 
@@ -26,12 +26,11 @@ exports.getEventsForCalendar = (calendarId, calendarServiceAccountId, calendarSe
  * @param room
  * @param callback
  */
-exports.getEventsForCalendar = (room, callback) => {
-    getEventsForCalendar(
+exports.getEventsForCalendarByRoom = async (room) => {
+    return getEventsForCalendar(
         room.calendarId,
         room.calendarServiceAccountId,
-        room.calendarServiceAccountPrivateKey,
-        callback);
+        room.calendarServiceAccountPrivateKey);
 };
 
 
@@ -42,12 +41,13 @@ exports.getEventsForCalendar = (room, callback) => {
  * @param calendarServiceAccountPrivateKey
  * @param callback
  */
-function getEventsForCalendar(calendarId, calendarServiceAccountId, calendarServiceAccountPrivateKey, callback) {
+async function getEventsForCalendar(calendarId, calendarServiceAccountId, calendarServiceAccountPrivateKey) {
 
     const calendarConfig = getCalendarConfiguration(
         calendarId,
         calendarServiceAccountId,
         calendarServiceAccountPrivateKey);
+
 
     const CalendarAPI = require('node-google-calendar');
 
@@ -63,16 +63,9 @@ function getEventsForCalendar(calendarId, calendarServiceAccountId, calendarServ
             console.log(err.message);
         });
 
+    let resp = await calendarPromise;
+    return resp;
 
-    /* Wait for all Promises to be finished */
-    Promise.all([calendarPromise])
-        .then(resp => {
-            callback(resp[0]);
-
-        }).catch(err => {
-        console.log(err.message);
-        callback(err.message);
-    });
 }
 
 
