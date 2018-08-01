@@ -123,7 +123,7 @@ resource "aws_lambda_function" "get_current_room_occupation" {
   function_name = "getCurrentRoomOccupation"
   handler = "api/getCurrentRoomOccupation.getCurrentRoomOccupation"
   role = "${aws_iam_role.lambda_execution_role.arn}"
-  runtime = "nodejs6.10"
+  runtime = "nodejs8.10"
   source_code_hash = "${data.archive_file.lambda_archive_file.output_base64sha256}"
   #source_code_hash = "${base64sha256(file("../lambda/build/lambda.zip"))}"
   timeout = "10"
