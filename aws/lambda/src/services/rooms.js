@@ -24,6 +24,17 @@ exports.getRooms = (callback) => {
     getRooms(callback);
 }
 
+
+/**
+ * get all rooms
+ */
+exports.getRoomsAS = async () => {
+    AWS.config.update({region: awsRegion});
+
+    return getRoomsAS();
+
+}
+
 /**
  * create a new room
  */
@@ -76,6 +87,22 @@ function getRooms(callback) {
         console.log(err.message);
         callback(err.message);
     });
+}
+
+
+/**
+ * get all rooms
+ * @param callback
+ */
+async function getRoomsAS() {
+
+    var searchParams = getSearchParamsForGetRooms();
+    var scanSensorsPromiseWrapper = getQueryPromiseWrapper();
+
+    /* create a promise via the wrapper */
+    var roomPromise = scanSensorsPromiseWrapper(searchParams);
+
+   return roomPromise;
 }
 
 
