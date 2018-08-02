@@ -1,57 +1,66 @@
 const roomsServices = require('../../src/services/rooms');
+const chai = require('chai');
 
 
-it('should not find an unexisting room', function(done) {
 
-    roomsServices.getRoomById("unexisting-room", function(result) {
-        if(!result) {
-            done(false);    // success
-        }
+it('should not find an unexisting room', async function() {
 
-        else done(result);
-    });
+    let noRoom = await roomsServices.getRoomById("unexisting-room");
+
+    var expect = chai.expect;
+
+    expect(noRoom).to.equals("not found");
+
 });
 
 
 
-it('should create a new room and find it by its id', function(done) {
+it('should create a new room and find it by its id and in the all rooms list', async function() {
+    let calendarId = "testSvc";
+    let roomName = "testRoomName";
+    let calendarServiceAccountId = "testSvcAccountId";
+    let calendarServiceAccountPrivateKey = "testPrivateKey";
 
     /* create a room */
-    roomsServices.createRoom("testRoomName", "testSvcAccountId", "testPrivateKey", "testSvc", function(result) {
+    let newRoom = await roomsServices.createRoom(roomName, calendarServiceAccountId, calendarServiceAccountPrivateKey, calendarId);
 
-        if(!result) {
-            done("failed to create room");
-        }
+    var expect = chai.expect;
 
-        /* try to query the new room by its id */
-        roomsServices.getRoomById(result, function(resultGetRoom) {
-            if(!resultGetRoom) {
-                done("failed to get newly created room");
-            }
+    expect(newRoom).to.not.be.undefined;
+    expect(newRoom.uuid).to.not.be.undefined;
 
-            if(resultGetRoom.roomId !== result) {
-                done("returned new room has an unexpected id: expected: " + result + ", was: " + resultGetRoom.roomId);
-            }
+    let reRead = await roomsServices.getRoomById(newRoom.uuid);
 
-            roomsServices.deleteRoom(resultGetRoom.roomId, function(resultDeleteRoom) {
-                if(resultDeleteRoom) {
-                    done(false);    // success
-                } else {
-                    done("failed to delete room");
-                }
-            });
-        });
-    });
+    console.log(reRead);
+
+    expect(reRead.roomId).to.equal(newRoom.uuid);
+    expect(reRead.calendarServiceAccountPrivateKey).to.equal(calendarServiceAccountPrivateKey);
+    expect(reRead.calendarId).to.equal(calendarId);
+    expect(reRead.roomName).to.equal(roomName);
+    expect(reRead.calendarServiceAccountId).to.equal(calendarServiceAccountId);
+
+
+    let listing = await roomsServices.getRooms();
+    let listRead = listing.Items;
+
+
+    let found = false;
+    for(var i=0; i<listRead.length; i++) {
+        if(listRead[i].roomId === newRoom.uuid) {
+            found = true;
+            expect(listRead[i].calendarServiceAccountPrivateKey).to.equal(calendarServiceAccountPrivateKey);
+            expect(listRead[i].calendarId).to.equal(calendarId);
+            expect(listRead[i].roomName).to.equal(roomName);
+            expect(listRead[i].calendarServiceAccountId).to.equal(calendarServiceAccountId);        }
+    }
+
+    if(!found) {
+        expect(found).to.be.true;
+    }
+
+    /* clean up */
+    let deleteRoom = await roomsServices.deleteRoom(newRoom.uuid);
+
+    expect(deleteRoom).to.equal("deleted");
 });
 
-
-
-//
-// it('should find the above created room as part of all rooms list', function(done) {
-//
-//     rooms.getRooms(function(result) {
-//         console.log(result);
-//
-//     });
-//
-// });

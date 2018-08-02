@@ -41,3 +41,31 @@ exports.getPutPromise = async (inputParams) => {
         });
     });
 };
+
+
+
+/**
+ * create a promise for the dynamoDB deletion
+ * @param inputParams the input parameters to insert
+ * @return {Promise<any>}
+ */
+exports.getDeletePromise = async (deleteParams) => {
+
+    let docClient = new AWS.DynamoDB.DocumentClient();
+
+    return new Promise((resolve, reject) => {
+        docClient.delete(deleteParams, function (err, data) {
+            if(err) {
+                console.log(err);
+                reject("error deleting");
+            } else {
+                resolve("deleted");
+            }
+        });
+    });
+};
+
+
+
+
+

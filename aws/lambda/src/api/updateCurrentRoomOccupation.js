@@ -1,6 +1,7 @@
 
 const AWS = require('aws-sdk');
 const currentOccupationService = require('../services/currentOccupation');
+const apiHelper = require('../helper/apiHelper');
 const awsRegion = 'eu-central-1';
 
 /**
@@ -19,8 +20,7 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
  * @param context
  * @param callback
  */
-//TODO async await
-exports.updateCurrentRoomOccupation = (event, context, callback) => {
+exports.updateCurrentRoomOccupation = async (event, context, callback) => {
     AWS.config.update({region: awsRegion});
 
     if(!event) {
@@ -33,7 +33,8 @@ exports.updateCurrentRoomOccupation = (event, context, callback) => {
             let motionDetected = event.motionDetected;
             let creationTimestamp = event.creationTimestamp;
 
-            currentOccupationService.updateCurrentRoomOccupation(sensorId, motionDetected, creationTimestamp);
+            let result = await currentOccupationService.updateCurrentRoomOccupation(sensorId, motionDetected, creationTimestamp);
+            callback(null, apiHelper.createResponse(200, JSON.stringify(result)));
         }
     }
 };

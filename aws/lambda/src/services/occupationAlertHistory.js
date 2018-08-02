@@ -14,17 +14,27 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
 }
 
 
-//TODO callback ausbauen
-exports.getNotificationState = (event, callback) => {
+
+/**
+ * get notifications from history
+ * @param event
+ */
+exports.getNotificationState = async (event) => {
     AWS.config.update({region: awsRegion});
-    getNotificationState(event, callback);
+    return getNotificationState(event);
 
 }
 
-//TODO callback ausbauen
-exports.addNotification = (event, callback) => {
+
+
+/**
+ * add a notification to the history
+ * @param event
+ * @return {Promise<void>}
+ */
+exports.addNotification = async (event) => {
     AWS.config.update({region: awsRegion});
-    addNotification(event, callback);
+    return addNotification(event);
 
 }
 
@@ -35,25 +45,16 @@ exports.addNotification = (event, callback) => {
  * @param eventStartTime
  * @param callback
  */
-async function getNotificationState(event, callback) {
+async function getNotificationState(event) {
 
     var searchParams = getQueryForGetNotificationState(event);
     var statePromise = await serviceHelper.getQueryPromise(searchParams);
 
-    /* Wait for all promises to be finished */
-    Promise.all([statePromise])
-        .then(resp => {
-            console.log("=============================")
-            callback(event, resp[0].Items);
-        }).catch(err => {
-            console.log(err.message);
-            callback(err.message);
-    });
+    return statePromise.Items;
 }
 
 
 function getQueryForGetNotificationState(event) {
-
 
     /* motions database query parameters to detect relevant events */
     var searchparams = {
@@ -74,23 +75,13 @@ function getQueryForGetNotificationState(event) {
 /**
  * add a new notification for an event identified by eventName and eventStartTime
  * @param eventName
- * @param eventStartTime
- * @param callback
  */
-function addNotification(event, callback) {
+async function addNotification(event) {
 
-    const docClient = new AWS.DynamoDB.DocumentClient();
     var insertParams = getInsertParamsForAddNotification(event);
+    var result = await serviceHelper.getPutPromise(insertParams);
 
-    docClient.put(insertParams, function (err, data) {
-        if (err) {
-            console.error("Unable to add notification. Error JSON:", JSON.stringify(err, null, 2));
-            callback(err.message);
-        } else {
-            callback(event, "added");
-        }
-    });
-
+    return result;
 }
 
 

@@ -32,18 +32,18 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
  * @param context
  * @param callback
  */
-//TODO async await required?
-exports.matchOccupations = (event, context, callback) => {
+exports.matchOccupations = async (event, context, callback) => {
 
     const awsRegion = 'eu-central-1';
     AWS.config.update({region: awsRegion});
 
-    matchOccupations(callback);
+    let result = await matchOccupations();
+    callback(result);
 };
 
 
 
-async function matchOccupations(callback) {
+async function matchOccupations() {
     let rooms = await roomServices.getRooms();
 
     /* iterate over all rooms */
@@ -58,6 +58,7 @@ async function matchOccupations(callback) {
 
     }
 
+    return "done";
 }
 
 
@@ -141,7 +142,7 @@ function matchMotionsToCalendar(calendarEntries, motions) {
  * @param currentEventStart
  * @param currentEventEnd
  */
-function handleMotionsDetected(motionsDetected, nomotionsDetected, motionsCount, currentEvent, currentEventStart, currentEventEnd) {
+async function handleMotionsDetected(motionsDetected, nomotionsDetected, motionsCount, currentEvent, currentEventStart, currentEventEnd) {
 
     console.log("motionsDetected: " + motionsDetected)
     console.log("nomotionsDetected: " +nomotionsDetected)
@@ -171,7 +172,10 @@ function handleMotionsDetected(motionsDetected, nomotionsDetected, motionsCount,
                 }
             } else {
 
-                occupationAlertHistory.getNotificationState(currentEvent, handleNotification);
+                let notificationState = await occupationAlertHistory.getNotificationState(currentEvent);
+                handleNotification(currentEvent, notificationState);
+
+
                 console.log("Event is over!");
                 console.log("");
                 console.log("(NOBODY THERE)");
@@ -218,7 +222,7 @@ function handleNotification(event, reply) {
         }
 
 
-        console.log(now)
+        console.log(now);
         console.log(lastNotificationSend)
     }
 

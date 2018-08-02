@@ -22,8 +22,7 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
  * @param context
  * @param callback
  */
-//TODO async await from services
-exports.createRoom = (event, context, callback) => {
+exports.createRoom = async (event, context, callback) => {
     AWS.config.update({region: awsRegion});
 
     /* ensure event format is correct */
@@ -41,15 +40,12 @@ exports.createRoom = (event, context, callback) => {
         return;
     }
 
-    let wrapperCallback = function(body) {
-        callback(null, apiHelper.createResponse(200, JSON.stringify(body)));
-    };
-
-    roomsService.createRoom(
+    let result = await roomsService.createRoom(
         event.queryStringParameters.roomName,
         event.queryStringParameters.accountId,
         event.queryStringParameters.privateKey,
-        event.queryStringParameters.calendarId,
-        wrapperCallback);
+        event.queryStringParameters.calendarId);
+
+    callback(null, apiHelper.createResponse(200, JSON.stringify(result)));
 
 };

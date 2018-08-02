@@ -35,13 +35,11 @@ exports.updateCurrentRoomOccupation = async (sensorId, motionDetected, creationT
  * return the current occupation status for a given room
  * @param roomId the room id th check
  * @param roomName the name to check
- * @param callback
  * @return {Promise<void>}
  */
-//TODO callback ausbauen
-exports.getCurrentRoomOccupation = async (roomId, roomName, callback) => {
+exports.getCurrentRoomOccupation = async (roomId, roomName) => {
     AWS.config.update({region: awsRegion});
-    return getCurrentRoomOccupation(roomId, roomName, callback);
+    return getCurrentRoomOccupation(roomId, roomName);
 }
 
 
@@ -114,7 +112,7 @@ function updateCurrentOccupation(insertParams) {
 }
 
 
-async function getCurrentRoomOccupation(roomId, roomName, callback) {
+async function getCurrentRoomOccupation(roomId, roomName) {
 
     var searchParams = getQueryForGetCurrentRoomOccupation(roomId);
     let resp = await serviceHelper.getQueryPromise(searchParams);
@@ -135,10 +133,9 @@ async function getCurrentRoomOccupation(roomId, roomName, callback) {
         "roomName": roomName,
         "creationTimestamp": currentCreationTimestamp,
         "motionDetected": currentMotionDetected
-    }
+    };
 
-    callback(currentOccupationStatus);
-
+    return currentOccupationStatus;
 }
 
 

@@ -34,7 +34,8 @@ exports.getCurrentRoomOccupation = async (event, context, callback) => {
     let occPromises = [];
 
     for(let i=0; i<allRooms.length; i++) {
-        occPromises.push(currentOccupationPromiseWrapper(allRooms[i].roomId, allRooms[i].roomName));
+        let curOcc = await currentOccupationService.getCurrentRoomOccupation(allRooms[i].roomId, allRooms[i].roomName);
+        occPromises.push(curOcc);
     }
 
     let resp2 = await Promise.all(occPromises);
@@ -52,14 +53,6 @@ exports.getCurrentRoomOccupation = async (event, context, callback) => {
     callback(null, apiHelper.createResponse(200, JSON.stringify(result)));
 
 
-}
-
-
-//TODO cleanup
-function currentOccupationPromiseWrapper(roomId, roomName) {
-    return new Promise(function(resolve, reject) {
-        currentOccupationService.getCurrentRoomOccupation(roomId, roomName, resolve);
-    });
 }
 
 

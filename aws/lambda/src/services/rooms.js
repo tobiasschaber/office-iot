@@ -33,25 +33,21 @@ exports.getRooms = async () => {
  * @param svcAccountId
  * @param svcAccPrivateKey
  * @param calendarId
- * @param callback
  */
-//TODO callback ausbauen
-exports.createRoom = (roomName, svcAccountId, svcAccPrivateKey, calendarId, callback) => {
+exports.createRoom = async (roomName, svcAccountId, svcAccPrivateKey, calendarId) => {
     AWS.config.update({region: awsRegion});
-    createRoom(roomName, svcAccountId, svcAccPrivateKey, calendarId, callback);
+    return createRoom(roomName, svcAccountId, svcAccPrivateKey, calendarId);
 }
 
 
 /**
  * get a room by its id
  * @param roomId
- * @param callback
  */
-//TODO callback ausbauen
-exports.getRoomById = async (roomId, callback) => {
+exports.getRoomById = async (roomId) => {
     AWS.config.update({region: awsRegion});
 
-    getRoomById(roomId, callback);
+    return getRoomById(roomId);
 
 }
 
@@ -60,12 +56,10 @@ exports.getRoomById = async (roomId, callback) => {
 /**
  * delete a room identified by roomId
  * @param roomId
- * @param callback
  */
-//TODO callback ausbauen
-exports.deleteRoom = (roomId, callback) => {
+exports.deleteRoom = (roomId) => {
     AWS.config.update({region: awsRegion});
-    deleteRoom(roomId, callback)
+    return deleteRoom(roomId);
 }
 
 
@@ -95,8 +89,12 @@ async function getRoomById(roomId, callback) {
     var roomPromise = serviceHelper.getQueryPromise(searchParams);
 
     let result = await roomPromise;
-    callback(result.Items[0]);
 
+    if(result.Items.length === 0) {
+        return "not found";
+    }
+
+    return result.Items[0];
 }
 
 
@@ -108,22 +106,14 @@ async function getRoomById(roomId, callback) {
  * @param calendarId
  * @param callback
  */
-function createRoom(roomName, svcAccountId, svcAccPrivateKey, calendarId, callback) {
+async function createRoom(roomName, svcAccountId, svcAccPrivateKey, calendarId, callback) {
 
-    const docClient = new AWS.DynamoDB.DocumentClient();
     var uuid = uuidv1();
     var insertParams = getInsertParamsForCreateRoom(uuid, roomName, svcAccountId, svcAccPrivateKey, calendarId);
+    var result = await serviceHelper.getPutPromise(insertParams);
 
-    docClient.put(insertParams, function (err, data) {
-        if (err) {
-            console.error("Unable to create room. Error JSON:", JSON.stringify(err, null, 2));
-            callback(err.message);
-        } else {
-            console.log("room created with id: " + uuid);
-
-            callback(uuid);
-        }
-    });
+    //TODO exception handling
+    return { 'uuid' : uuid };
 
 }
 
@@ -133,19 +123,15 @@ function createRoom(roomName, svcAccountId, svcAccPrivateKey, calendarId, callba
  * @param roomId
  * @callback
  */
-function deleteRoom(roomId, callback) {
+async function deleteRoom(roomId) {
 
     const docClient = new AWS.DynamoDB.DocumentClient();
     var deleteParams = getDeleteParamsForDeleteByRoomId(roomId);
 
-    docClient.delete(deleteParams, function (err, data) {
-        if(err) {
-            console.log(err);
-            callback(false);
-        } else {
-            callback(true);
-        }
-    });
+    let result = await serviceHelper.getDeletePromise(deleteParams);
+
+    return result;
+
 }
 
 
