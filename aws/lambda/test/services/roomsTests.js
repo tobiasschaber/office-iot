@@ -1,14 +1,11 @@
 const roomsServices = require('../../src/services/rooms');
 const chai = require('chai');
-
+const expect = chai.expect;
 
 
 it('should not find an unexisting room', async function() {
 
     let noRoom = await roomsServices.getRoomById("unexisting-room");
-
-    var expect = chai.expect;
-
     expect(noRoom).to.equals("not found");
 
 });
@@ -24,7 +21,7 @@ it('should create a new room and find it by its id and in the all rooms list', a
     /* create a room */
     let newRoom = await roomsServices.createRoom(roomName, calendarServiceAccountId, calendarServiceAccountPrivateKey, calendarId);
 
-    var expect = chai.expect;
+
 
     expect(newRoom).to.not.be.undefined;
     expect(newRoom.uuid).to.not.be.undefined;
