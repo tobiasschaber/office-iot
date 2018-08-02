@@ -10,7 +10,6 @@ const serviceHelper = require('./serviceHelper');
  * for example if you want to execute locally
  */
 exports.setLocalTestMode = (awsCredentialsProfile) => {
-    motionServices.setLocalTestMode(awsCredentialsProfile);
     AWS.config.update({credentials: new AWS.SharedIniFileCredentials({profile: awsCredentialsProfile})});
 }
 

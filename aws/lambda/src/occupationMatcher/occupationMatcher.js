@@ -18,11 +18,11 @@ const feiertage = require('feiertagejs');
  */
 exports.setLocalTestMode = (awsCredentialsProfile) => {
     AWS.config.update({credentials: new AWS.SharedIniFileCredentials({profile: awsCredentialsProfile})});
-    roomServices.setLocalTestMode("officeiot");
-    sensorServices.setLocalTestMode("officeiot");
-    motionsServices.setLocalTestMode("officeiot");
-    calendarServices.setLocalTestMode("officeiot");
-    occupationAlertHistory.setLocalTestMode("officeiot");
+    roomServices.setLocalTestMode(awsCredentialsProfile);
+    sensorServices.setLocalTestMode(awsCredentialsProfile);
+    motionsServices.setLocalTestMode(awsCredentialsProfile);
+    calendarServices.setLocalTestMode(awsCredentialsProfile);
+    occupationAlertHistory.setLocalTestMode(awsCredentialsProfile);
 };
 
 
@@ -54,8 +54,6 @@ async function matchOccupations(callback) {
         let calendarEntries = await calendarServices.getEventsForCalendarByRoom(currentRoom);
         let motionsForRoom = await motionsServices.getMotionsForRoom(roomId, undefined);
 
-        console.log("===========")
-        console.log(calendarEntries);
         matchMotionsToCalendar(calendarEntries, motionsForRoom);
 
     }
@@ -74,53 +72,59 @@ function matchMotionsToCalendar(calendarEntries, motions) {
     /* check if today is a public holiday */
     if(!feiertage.isHoliday(new Date(), 'BW')) {
 
-        /* iterate over all calendar entries */
-        for(i=0; i<calendarEntries.length; i++) {
-            var currentEvent = calendarEntries[i];
+        if(calendarEntries) {
 
-            /* ignore cancelled events */
-            if (currentEvent.status !== 'cancelled') {
-                console.log("===============================================================");
-                console.log("Scanning: " + currentEvent.summary + " " + (currentEvent.recurrence ? "[recurring event]" : ""));
-                console.log("Terminstatus: " + currentEvent.status);
+            /* iterate over all calendar entries */
+            for(i=0; i<calendarEntries.length; i++) {
+                var currentEvent = calendarEntries[i];
 
-                /* it looks like on recurring events, the date stays the same (date of creation) and
-                only the time needs to be taken into consideration */
-                let currentEventStart = copyTimeIntoToday(currentEvent.start.dateTime);
-                let currentEventEnd = copyTimeIntoToday(currentEvent.end.dateTime);
+                /* ignore cancelled events */
+                if (currentEvent.status !== 'cancelled') {
+                    console.log("===============================================================");
+                    console.log("Scanning: " + currentEvent.summary + " " + (currentEvent.recurrence ? "[recurring event]" : ""));
+                    console.log("Terminstatus: " + currentEvent.status);
 
-                var motionsDetected = false;
-                var nomotionsDetected = false;
-                var motionsCount = 0;
-                var nomotionsCount = 0;
+                    /* it looks like on recurring events, the date stays the same (date of creation) and
+                    only the time needs to be taken into consideration */
+                    let currentEventStart = copyTimeIntoToday(currentEvent.start.dateTime);
+                    let currentEventEnd = copyTimeIntoToday(currentEvent.end.dateTime);
 
-                /* iterate over all motions */
-                for (j = 0; j < motions.length; j++) {
-                    var currentMotion = motions[j];
+                    var motionsDetected = false;
+                    var nomotionsDetected = false;
+                    var motionsCount = 0;
+                    var nomotionsCount = 0;
 
-
-
-                    var currentMotionTimestamp = new Date(currentMotion.creationTimestamp);
+                    /* iterate over all motions */
+                    for (j = 0; j < motions.length; j++) {
+                        var currentMotion = motions[j];
 
 
-                    /* if there are motions in the calendar entry's timeframe. compare 0/1 with true/false with == not === !*/
-                    /* reduce event end by 5 minutes offset */
 
-                    if (currentEventStart <= currentMotionTimestamp &&
-                        currentEventEnd >= (currentMotionTimestamp-(1000*60*5))) {
-                        if (currentMotion.motionDetected == true) {
-                            motionsDetected = true;
-                            ++motionsCount;
-                        } else {
-                            nomotionsDetected = true;
-                            ++nomotionsCount;
+                        var currentMotionTimestamp = new Date(currentMotion.creationTimestamp);
+
+
+                        /* if there are motions in the calendar entry's timeframe. compare 0/1 with true/false with == not === !*/
+                        /* reduce event end by 5 minutes offset */
+
+                        if (currentEventStart <= currentMotionTimestamp &&
+                            currentEventEnd >= (currentMotionTimestamp-(1000*60*5))) {
+                            if (currentMotion.motionDetected == true) {
+                                motionsDetected = true;
+                                ++motionsCount;
+                            } else {
+                                nomotionsDetected = true;
+                                ++nomotionsCount;
+                            }
                         }
                     }
-                }
 
-                handleMotionsDetected(motionsDetected, nomotionsDetected, motionsCount, currentEvent, currentEventStart, currentEventEnd);
+                    handleMotionsDetected(motionsDetected, nomotionsDetected, motionsCount, currentEvent, currentEventStart, currentEventEnd);
+                }
             }
+        } else {
+            console.log("skipping calendar as entries could not be read");
         }
+
     }
     else {
         console.log("Not scanning due to holiday today");
