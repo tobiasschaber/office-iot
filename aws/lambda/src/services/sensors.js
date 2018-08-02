@@ -1,8 +1,8 @@
-
 const AWS = require('aws-sdk');
 const sensorsTableName = 'sensors';
 const awsRegion = 'eu-central-1';
 const motionServices = require('./motions');
+const serviceHelper = require('./serviceHelper');
 
 
 /**
@@ -45,7 +45,7 @@ exports.getRoomForSensor = async (sensorId) => {
 async function listSensorsForRoom(roomId) {
 
     var searchParams = getSearchParamsForListSensorsForRoom(roomId);
-    var resp = await getQueryPromiseWrapper(searchParams);
+    var resp = await serviceHelper.getQueryPromise(searchParams);
 
     return resp;
 
@@ -59,7 +59,7 @@ async function listSensorsForRoom(roomId) {
  */
 async function getRoomForSensor(sensorId) {
     var searchParams = getSearchParamsForGetRoomForSensor(sensorId);
-    var resp = await getQueryPromiseWrapper(searchParams);
+    var resp = await serviceHelper.getQueryPromise(searchParams);
 
     return resp.Items[0];
 }
@@ -106,28 +106,4 @@ function getSearchParamsForGetRoomForSensor(sensorId) {
         }
     }
 }
-
-
-/**
- * create a promise wrapper for the dynamoDB query, which uses a callback implementation
- * @param searchparams the parameters for the search
- * @returns {Promise<any>}
- */
-async function getQueryPromiseWrapper(searchParams) {
-
-    const docClient = new AWS.DynamoDB.DocumentClient();
-
-    return new Promise((resolve, reject) => {
-        docClient.scan(searchParams, (err, data) => {
-            if (err) {
-                return reject(err);
-            }
-            resolve(data);
-        });
-    });
-};
-
-
-
-
 

@@ -4,6 +4,7 @@ const motionsTableName = 'motions';
 const awsRegion = 'eu-central-1';
 const motionTimeFrameSizeSec = 60*60*24;        /* time frame size in seconds in the past to query motion events */
 const sensorsServices = require('./sensors');
+const serviceHelper = require('./serviceHelper');
 
 /**
  * call this method to set AWS credentials profile,
@@ -49,7 +50,7 @@ async function getMotionsForSensor(sensorId, timeLimitOverride, lastEvaluatedKey
 
     if(!pagedItems) var pagedItems = [];
 
-    let resp = await getQueryPromiseWrapper(searchParams);
+    let resp = await serviceHelper.getQueryPromise(searchParams);
 
     if(resp.LastEvaluatedKey) {
         pagedItems = pagedItems.concat(resp.Items);
@@ -134,24 +135,4 @@ function getQueryForGetMotionsForSensor(sensorId, lastEvaluatedKey, timeLimitOve
 
     return searchparams;
 }
-
-
-/**
- * create a promise wrapper for the dynamoDB query, which uses a callback implementation
- * @param searchparams the parameters for the search
- * @returns {Promise<any>}
- */
-async function getQueryPromiseWrapper(searchParams) {
-
-    const docClient = new AWS.DynamoDB.DocumentClient();
-
-    return new Promise((resolve, reject) => {
-        docClient.scan(searchParams, (err, data) => {
-            if (err) {
-                return reject(err);
-            }
-            resolve(data);
-        });
-    });
-};
 

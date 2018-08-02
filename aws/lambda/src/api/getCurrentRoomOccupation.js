@@ -1,6 +1,6 @@
 
 const AWS = require('aws-sdk');
-const helper = require('./helper');
+const apiHelper = require('./apiHelper');
 const currentOccupationService = require('../services/currentOccupation');
 const roomsService = require('../services/rooms');
 const awsRegion = 'eu-central-1';
@@ -48,7 +48,7 @@ exports.getCurrentRoomOccupation = async (event, context, callback) => {
         result.rooms.push(roomResult);
     }
 
-    callback(null, helper.createResponse(200, JSON.stringify(result)));
+    callback(null, apiHelper.createResponse(200, JSON.stringify(result)));
 
 
 }

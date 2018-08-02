@@ -1,6 +1,6 @@
 
 const AWS = require('aws-sdk');
-const helper = require('./helper');
+const apiHelper = require('./apiHelper');
 const roomsService = require('../services/rooms');
 const awsRegion = 'eu-central-1';
 
@@ -31,5 +31,5 @@ exports.listRooms = async (event, context, callback) => {
         body.Items[i].calendarServiceAccountPrivateKey = "hidden";
     }
 
-    callback(null, helper.createResponse(200, JSON.stringify(body)));
+    callback(null, apiHelper.createResponse(200, JSON.stringify(body)));
 }

@@ -1,7 +1,7 @@
 const AWS = require('aws-sdk');
 const awsRegion = 'eu-central-1';
 const sensorsService = require('./sensors');
-const roomsService = require('./rooms');
+const serviceHelper = require('./serviceHelper');
 const delayOccupiedToFreeMs = 5000;
 
 
@@ -102,12 +102,18 @@ function updateCurrentOccupation(insertParams) {
 async function getCurrentRoomOccupation(roomId, roomName, callback) {
 
     var searchParams = getQueryForGetCurrentRoomOccupation(roomId);
-    var getCurrentRoomOccupationPromiseWrapper = getQueryPromiseWrapper();
+    let resp = await serviceHelper.getQueryPromise(searchParams);
 
-    let resp = await getCurrentRoomOccupationPromiseWrapper(searchParams);
+    let currentCreationTimestamp;
+    let currentMotionDetected;
 
-    let currentCreationTimestamp = resp.Items[0].lastUpdatedTimestamp;
-    let currentMotionDetected = resp.Items[0].occupationStatus;
+    if(resp.Items.length === 0) {
+        currentMotionDetected = "no data";
+        currentCreationTimestamp = "0";
+    } else {
+        currentCreationTimestamp = resp.Items[0].lastUpdatedTimestamp;
+        currentMotionDetected = resp.Items[0].occupationStatus;
+    }
 
     let currentOccupationStatus = {
         "roomId": roomId,
@@ -124,39 +130,13 @@ async function getCurrentRoomOccupation(roomId, roomName, callback) {
 async function getCurrentRoomOccupationEnriched(roomId, motionDetected, creationTimestamp, callback) {
 
     var searchParams = getQueryForGetCurrentRoomOccupation(roomId);
-    var getCurrentRoomOccupationPromiseWrapper = getQueryPromiseWrapper();
-
-    var resp = await getCurrentRoomOccupationPromiseWrapper(searchParams);
+    var resp = await serviceHelper.getQueryPromise(searchParams);
 
     let currentCreationTimestamp = resp.Items[0].lastUpdatedTimestamp;
     let currentMotionDetected = resp.Items[0].occupationStatus;
     callback(roomId, motionDetected, creationTimestamp, currentCreationTimestamp, currentMotionDetected);
 
 }
-
-
-
-/**
- * create a promise wrapper for the dynamoDB query, which uses a callback implementation
- * @param searchparams the parameters for the search
- * @returns {Promise<any>}
- */
-function getQueryPromiseWrapper() {
-
-    const docClient = new AWS.DynamoDB.DocumentClient();
-
-    var wrapper = function (searchParams) {
-        return new Promise((resolve, reject) => {
-            docClient.scan(searchParams, (err, data) => {
-                if (err) {
-                    return reject(err);
-                }
-                resolve(data);
-            });
-        });
-    }
-    return wrapper;
-};
 
 
 

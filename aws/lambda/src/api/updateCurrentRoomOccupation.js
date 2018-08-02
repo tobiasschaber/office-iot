@@ -1,6 +1,5 @@
 
 const AWS = require('aws-sdk');
-const helper = require('./helper');
 const currentOccupationService = require('../services/currentOccupation');
 const awsRegion = 'eu-central-1';
 

@@ -3,6 +3,7 @@ const AWS = require('aws-sdk');
 const roomsTableName = 'rooms';
 const uuidv1 = require('uuid/v1');
 const awsRegion = 'eu-central-1';
+const serviceHelper = require('./serviceHelper');
 
 
 
@@ -64,10 +65,7 @@ exports.deleteRoom = (roomId, callback) => {
 async function getRooms() {
 
     var searchParams = getSearchParamsForGetRooms();
-    var scanSensorsPromiseWrapper = getQueryPromiseWrapper();
-
-    /* create a promise via the wrapper */
-    var roomPromise = scanSensorsPromiseWrapper(searchParams);
+    var roomPromise = await serviceHelper.getQueryPromise(searchParams);
 
    return roomPromise;
 }
@@ -81,10 +79,7 @@ async function getRooms() {
 async function getRoomById(roomId, callback) {
 
     var searchParams = getSearchParamsForGetRoomById(roomId);
-    var scanSensorsPromiseWrapper = getQueryPromiseWrapper();
-
-    /* create a promise via the wrapper */
-    var roomPromise = scanSensorsPromiseWrapper(searchParams);
+    var roomPromise = serviceHelper.getQueryPromise(searchParams);
 
     let result = await roomPromise;
     callback(result.Items[0]);
@@ -218,31 +213,4 @@ function getSearchParamsForGetRoomById(roomId) {
 
     return searchparams;
 }
-
-
-/**
- * create a promise wrapper for the dynamoDB query, which uses a callback implementation
- * @param searchparams the parameters for the search
- * @returns {Promise<any>}
- */
-function getQueryPromiseWrapper() {
-
-    const docClient = new AWS.DynamoDB.DocumentClient();
-
-    var wrapper = function (searchParams) {
-        return new Promise((resolve, reject) => {
-            docClient.scan(searchParams, (err, data) => {
-                if (err) {
-                    return reject(err);
-                }
-                resolve(data);
-            });
-        });
-    }
-    return wrapper;
-};
-
-
-
-
 

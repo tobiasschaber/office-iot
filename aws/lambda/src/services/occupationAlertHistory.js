@@ -3,6 +3,7 @@
 const AWS = require('aws-sdk');
 const notificationsTableName = 'occupationAlertHistory';
 const awsRegion = 'eu-central-1';
+const serviceHelper = require('./serviceHelper');
 
 /**
  * call this method to set AWS credentials profile,
@@ -31,12 +32,10 @@ exports.addNotification = (event, callback) => {
  * @param eventStartTime
  * @param callback
  */
-function getNotificationState(event, callback) {
+async function getNotificationState(event, callback) {
 
     var searchParams = getQueryForGetNotificationState(event);
-    var getNotificationStatePromiseWrapper = getQueryPromiseWrapper();
-
-    var statePromise = getNotificationStatePromiseWrapper(searchParams);
+    var statePromise = await serviceHelper.getQueryPromise(searchParams);
 
     /* Wait for all promises to be finished */
     Promise.all([statePromise])
@@ -104,26 +103,3 @@ function getInsertParamsForAddNotification(event) {
     }
     return params;
 }
-
-
-/**
- * create a promise wrapper for the dynamoDB query, which uses a callback implementation
- * @param searchparams the parameters for the search
- * @returns {Promise<any>}
- */
-function getQueryPromiseWrapper() {
-
-    const docClient = new AWS.DynamoDB.DocumentClient();
-
-    var wrapper = function (searchParams) {
-        return new Promise((resolve, reject) => {
-            docClient.scan(searchParams, (err, data) => {
-                if (err) {
-                    return reject(err);
-                }
-                resolve(data);
-            });
-        });
-    }
-    return wrapper;
-};

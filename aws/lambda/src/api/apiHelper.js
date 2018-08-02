@@ -1,3 +1,5 @@
+
+
 /**
  * create a response message with a given status code and a body message
  * @param responseCode
@@ -18,3 +20,5 @@ exports.createResponse = (responseCode, message) => {
         "isBase64Encoded": false
     };
 };
+
+

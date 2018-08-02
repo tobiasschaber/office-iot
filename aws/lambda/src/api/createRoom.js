@@ -1,6 +1,6 @@
 
 const AWS = require('aws-sdk');
-const helper = require('./helper');
+const apiHelper = require('./apiHelper');
 const roomsService = require('../services/rooms');
 const awsRegion = 'eu-central-1';
 
@@ -27,7 +27,7 @@ exports.createRoom = (event, context, callback) => {
 
     /* ensure event format is correct */
     if(!event || !event.queryStringParameters) {
-        callback(null, helper.createResponse(500, "event or event.queryStringParameters not set"));
+        callback(null, apiHelper.createResponse(500, "event or event.queryStringParameters not set"));
         return;
     }
 
@@ -36,12 +36,12 @@ exports.createRoom = (event, context, callback) => {
        !event.queryStringParameters.accountId ||
        !event.queryStringParameters.privateKey ||
        !event.queryStringParameters.calendarId) {
-        callback(null, helper.createResponse(500, "missing request parameter"));
+        callback(null, apiHelper.createResponse(500, "missing request parameter"));
         return;
     }
 
     let wrapperCallback = function(body) {
-        callback(null, helper.createResponse(200, JSON.stringify(body)));
+        callback(null, apiHelper.createResponse(200, JSON.stringify(body)));
     };
 
     roomsService.createRoom(
