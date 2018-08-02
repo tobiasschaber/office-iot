@@ -1,6 +1,6 @@
 
 const AWS = require('aws-sdk');
-const apiHelper = require('./apiHelper');
+const apiHelper = require('../helper/apiHelper');
 const sensorAttachment = require('../services/sensorAttachment');
 const awsRegion = 'eu-central-1';
 

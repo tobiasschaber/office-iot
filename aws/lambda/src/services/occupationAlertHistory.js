@@ -3,7 +3,7 @@
 const AWS = require('aws-sdk');
 const notificationsTableName = 'occupationAlertHistory';
 const awsRegion = 'eu-central-1';
-const serviceHelper = require('./serviceHelper');
+const serviceHelper = require('../helper/serviceHelper');
 
 /**
  * call this method to set AWS credentials profile,

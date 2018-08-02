@@ -3,7 +3,7 @@ const AWS = require('aws-sdk');
 const roomsTableName = 'rooms';
 const uuidv1 = require('uuid/v1');
 const awsRegion = 'eu-central-1';
-const serviceHelper = require('./serviceHelper');
+const serviceHelper = require('../helper/serviceHelper');
 
 
 

@@ -4,7 +4,7 @@ const motionsTableName = 'motions';
 const awsRegion = 'eu-central-1';
 const motionTimeFrameSizeSec = 60*60*24;        /* time frame size in seconds in the past to query motion events */
 const sensorsServices = require('./sensors');
-const serviceHelper = require('./serviceHelper');
+const serviceHelper = require('../helper/serviceHelper');
 
 /**
  * call this method to set AWS credentials profile,

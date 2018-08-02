@@ -1,6 +1,6 @@
 
 const AWS = require('aws-sdk');
-const apiHelper = require('./apiHelper');
+const apiHelper = require('../helper/apiHelper');
 const roomsService = require('../services/rooms');
 const awsRegion = 'eu-central-1';
 
