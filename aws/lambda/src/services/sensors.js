@@ -1,7 +1,6 @@
 const AWS = require('aws-sdk');
 const sensorsTableName = 'sensors';
 const awsRegion = 'eu-central-1';
-const motionServices = require('./motions');
 const serviceHelper = require('./serviceHelper');
 
 

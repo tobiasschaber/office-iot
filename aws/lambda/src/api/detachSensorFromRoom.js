@@ -1,7 +1,7 @@
 
 const AWS = require('aws-sdk');
-const sensorsTableName = 'sensors';
 const apiHelper = require('./apiHelper');
+const sensorAttachment = require('../services/sensorAttachment');
 const awsRegion = 'eu-central-1';
 
 
@@ -21,56 +21,27 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
  * @param context
  * @param callback
  */
-//TODO async await from services and cleanup
-exports.detachSensorFromRoom = (event, context, callback) => {
+exports.detachSensorFromRoom = async (event, context, callback) => {
 
     /* ensure event format is correct */
-    if(!event || !event.queryStringParameters) {
+    if (!event || !event.queryStringParameters) {
         callback(null, apiHelper.createResponse(500, "event or event.queryStringParameters not set"));
         return;
     }
 
     /* ensure all request parameters are defined */
-    if(!event.queryStringParameters.sensorId ||
+    if (!event.queryStringParameters.sensorId ||
         !event.queryStringParameters.roomId) {
         callback(null, apiHelper.createResponse(500, "missing request parameter"));
         return;
     }
 
-
     AWS.config.update({region: awsRegion});
-    const docClient = new AWS.DynamoDB.DocumentClient();
 
+    let result =  await sensorAttachment.detachSensorFromRoom(
+            event.queryStringParameters.sensorId,
+            event.queryStringParameters.roomId);
 
-    detachSensorFromRoom(event.queryStringParameters.sensorId,
-                         event.queryStringParameters.roomId);
+    callback(null, apiHelper.createResponse(200, JSON.stringify(result)));
 
-
-    /**
-     * detach a sensor from a room
-     * @param sensorId
-     * @param roomId
-     */
-    function detachSensorFromRoom(sensorId, roomId) {
-
-        let params = {
-            TableName: sensorsTableName,
-            Item: {
-                "sensorId": sensorId,
-                "attachedInRoom": "-",
-            }
-        };
-
-        docClient.put(params, function (err, data) {
-            if (err) {
-                console.error("Unable to detach sensor from room. Error JSON:", JSON.stringify(err, null, 2));
-                callback(null, apiHelper.createResponse(500, "error: " + JSON.stringify((err, null, 2))));
-            } else {
-                console.log("Sensor detached: ", JSON.stringify(data, null, 2));
-                callback(null, apiHelper.createResponse(200, "sensor detached"));
-            }
-        });
-
-    }
-
-};
+}

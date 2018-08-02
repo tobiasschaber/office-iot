@@ -1,9 +1,8 @@
 
 const AWS = require('aws-sdk');
-const sensorsTableName = 'sensors';
 const apiHelper = require('./apiHelper');
+const sensorAttachment = require('../services/sensorAttachment');
 const awsRegion = 'eu-central-1';
-
 
 
 /**
@@ -15,23 +14,23 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
 };
 
 
+
 /**
  * entry point for lambda execution
  * @param event
  * @param context
  * @param callback
  */
-//TODO async await from services
-exports.attachSensorToRoom = (event, context, callback) => {
+exports.attachSensorToRoom = async (event, context, callback) => {
 
     /* ensure event format is correct */
-    if(!event || !event.queryStringParameters) {
+    if (!event || !event.queryStringParameters) {
         callback(null, apiHelper.createResponse(500, "event or event.queryStringParameters not set"));
         return;
     }
 
     /* ensure all request parameters are defined */
-    if(!event.queryStringParameters.sensorId ||
+    if (!event.queryStringParameters.sensorId ||
         !event.queryStringParameters.roomId ||
         !event.queryStringParameters.description) {
         callback(null, apiHelper.createResponse(500, "missing request parameter"));
@@ -39,43 +38,13 @@ exports.attachSensorToRoom = (event, context, callback) => {
     }
 
     AWS.config.update({region: awsRegion});
-    const docClient = new AWS.DynamoDB.DocumentClient();
 
-    attachSensorToRoom(event.queryStringParameters.sensorId,
-                       event.queryStringParameters.roomId,
-                       event.queryStringParameters.description);
-
-
-    /**
-     * attach a sensor to a room
-     * @param sensorId
-     * @param roomId
-     * @param description
-     */
-    //TODO async await from services
-    function attachSensorToRoom(sensorId, roomId, description) {
-
-        let params = {
-            TableName: sensorsTableName,
-            Item: {
-                "sensorId": sensorId,
-                "attachedInRoom": roomId,
-                "description": description
-            }
-        };
-
-        docClient.put(params, function (err, data) {
-            if (err) {
-                console.error("Unable to attach sensor to room. Error JSON:", JSON.stringify(err, null, 2));
-                callback(null, apiHelper.createResponse(500, "error: " + JSON.stringify((err, null, 2))));
-            } else {
-                console.log("Sensor attached: ", JSON.stringify(data, null, 2));
-                callback(null, apiHelper.createResponse(200, "sensor attached."));
+    let result = await sensorAttachment.attachSensorToRoom(
+        event.queryStringParameters.sensorId,
+        event.queryStringParameters.roomId,
+        event.queryStringParameters.description);
 
 
-            }
-        });
 
-    }
-
-};
+    callback(null, apiHelper.createResponse(200, JSON.stringify(result)));
+}
