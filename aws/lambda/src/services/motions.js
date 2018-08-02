@@ -11,14 +11,16 @@ const serviceHelper = require('./serviceHelper');
  * for example if you want to execute locally
  */
 exports.setLocalTestMode = (awsCredentialsProfile) => {
+    sensorsServices.setLocalTestMode(awsCredentialsProfile);
     AWS.config.update({credentials: new AWS.SharedIniFileCredentials({profile: awsCredentialsProfile})});
 }
 
 
 /**
  * get all motions for a sensor
- * @param sensorId
- * @param callback
+ * @param sensorId the sensor to check for motions
+ * @param timeLimitOverride
+ * @return {Promise<*>}
  */
  exports.getMotionsForSensor = async(sensorId, timeLimitOverride) => {
     AWS.config.update({region: awsRegion});
@@ -27,9 +29,10 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
 
 
 /**
- * get all motions detected in a given room
+ * get all motions for a room. will check all sensors attached to this room
  * @param roomId
- * @param callback
+ * @param timeLimitOverride
+ * @return {Promise<*>}
  */
 exports.getMotionsForRoom = async (roomId, timeLimitOverride) => {
     AWS.config.update({region: awsRegion});

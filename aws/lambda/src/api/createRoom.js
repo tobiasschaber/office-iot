@@ -22,6 +22,7 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
  * @param context
  * @param callback
  */
+//TODO async await from services
 exports.createRoom = (event, context, callback) => {
     AWS.config.update({region: awsRegion});
 

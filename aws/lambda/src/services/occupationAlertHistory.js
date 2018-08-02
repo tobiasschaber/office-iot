@@ -13,12 +13,15 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
     AWS.config.update({credentials: new AWS.SharedIniFileCredentials({profile: awsCredentialsProfile})});
 }
 
+
+//TODO callback ausbauen
 exports.getNotificationState = (event, callback) => {
     AWS.config.update({region: awsRegion});
     getNotificationState(event, callback);
 
 }
 
+//TODO callback ausbauen
 exports.addNotification = (event, callback) => {
     AWS.config.update({region: awsRegion});
     addNotification(event, callback);

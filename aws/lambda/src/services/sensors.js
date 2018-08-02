@@ -15,10 +15,11 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
 }
 
 
+
 /**
- * get all sensors for a given room (by id)
- * @param roomId
- * @param callback
+ * get all sensors attached to a given room
+ * @param roomId the id of the room to query
+ * @return {Promise<*>}
  */
 exports.getSensorsForRoom = async (roomId) => {
     AWS.config.update({region: awsRegion});
@@ -26,15 +27,18 @@ exports.getSensorsForRoom = async (roomId) => {
     return listSensorsForRoom(roomId);
 }
 
+
+
 /**
- * get the room where a sensor is attached to
- * @param sensorId
- * @param callback
+ * get the room where a sensor is attached to (reverse)
+ * @param sensorId the sensor to find owning room
+ * @return {Promise<*>}
  */
 exports.getRoomForSensor = async (sensorId) => {
     AWS.config.update({region: awsRegion});
     return getRoomForSensor(sensorId);
 }
+
 
 
 /**

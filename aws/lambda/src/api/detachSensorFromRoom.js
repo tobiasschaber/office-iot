@@ -21,6 +21,7 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
  * @param context
  * @param callback
  */
+//TODO async await from services and cleanup
 exports.detachSensorFromRoom = (event, context, callback) => {
 
     /* ensure event format is correct */

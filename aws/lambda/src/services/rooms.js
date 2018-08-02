@@ -17,28 +17,37 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
 
 
 /**
- * get all rooms
+ * get a list of all existing rooms
+ * @return {Promise<*>}
  */
 exports.getRooms = async () => {
     AWS.config.update({region: awsRegion});
-
     return getRooms();
 
 }
 
+
 /**
  * create a new room
+ * @param roomName
+ * @param svcAccountId
+ * @param svcAccPrivateKey
+ * @param calendarId
+ * @param callback
  */
+//TODO callback ausbauen
 exports.createRoom = (roomName, svcAccountId, svcAccPrivateKey, calendarId, callback) => {
     AWS.config.update({region: awsRegion});
     createRoom(roomName, svcAccountId, svcAccPrivateKey, calendarId, callback);
 }
+
 
 /**
  * get a room by its id
  * @param roomId
  * @param callback
  */
+//TODO callback ausbauen
 exports.getRoomById = async (roomId, callback) => {
     AWS.config.update({region: awsRegion});
 
@@ -46,15 +55,19 @@ exports.getRoomById = async (roomId, callback) => {
 
 }
 
+
+
 /**
  * delete a room identified by roomId
  * @param roomId
  * @param callback
  */
+//TODO callback ausbauen
 exports.deleteRoom = (roomId, callback) => {
     AWS.config.update({region: awsRegion});
     deleteRoom(roomId, callback)
 }
+
 
 
 

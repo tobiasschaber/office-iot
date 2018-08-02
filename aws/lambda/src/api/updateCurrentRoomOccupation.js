@@ -19,6 +19,7 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
  * @param context
  * @param callback
  */
+//TODO async await
 exports.updateCurrentRoomOccupation = (event, context, callback) => {
     AWS.config.update({region: awsRegion});
 

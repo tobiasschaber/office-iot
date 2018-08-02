@@ -13,17 +13,32 @@ const currentRoomOccupationTableName = 'currentRoomOccupation';
  * for example if you want to execute locally
  */
 exports.setLocalTestMode = (awsCredentialsProfile) => {
+    sensorsService.setLocalTestMode(awsCredentialsProfile);
     AWS.config.update({credentials: new AWS.SharedIniFileCredentials({profile: awsCredentialsProfile})});
 };
 
 
+/**
+ * update the occupation status for a given room
+ * @param sensorId
+ * @param motionDetected
+ * @param creationTimestamp
+ * @return {Promise<*>}
+ */
 exports.updateCurrentRoomOccupation = async (sensorId, motionDetected, creationTimestamp) => {
     AWS.config.update({region: awsRegion});
     return updateCurrentRoomOccupation(sensorId, motionDetected, creationTimestamp);
 }
 
 
-
+/**
+ * return the current occupation status for a given room
+ * @param roomId the room id th check
+ * @param roomName the name to check
+ * @param callback
+ * @return {Promise<void>}
+ */
+//TODO callback ausbauen
 exports.getCurrentRoomOccupation = async (roomId, roomName, callback) => {
     AWS.config.update({region: awsRegion});
     return getCurrentRoomOccupation(roomId, roomName, callback);

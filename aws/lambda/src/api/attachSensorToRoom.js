@@ -21,6 +21,7 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
  * @param context
  * @param callback
  */
+//TODO async await from services
 exports.attachSensorToRoom = (event, context, callback) => {
 
     /* ensure event format is correct */
@@ -51,6 +52,7 @@ exports.attachSensorToRoom = (event, context, callback) => {
      * @param roomId
      * @param description
      */
+    //TODO async await from services
     function attachSensorToRoom(sensorId, roomId, description) {
 
         let params = {

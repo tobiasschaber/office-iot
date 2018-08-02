@@ -20,6 +20,9 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
     AWS.config.update({credentials: new AWS.SharedIniFileCredentials({profile: awsCredentialsProfile})});
     roomServices.setLocalTestMode("officeiot");
     sensorServices.setLocalTestMode("officeiot");
+    motionsServices.setLocalTestMode("officeiot");
+    calendarServices.setLocalTestMode("officeiot");
+    occupationAlertHistory.setLocalTestMode("officeiot");
 };
 
 
@@ -29,6 +32,7 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
  * @param context
  * @param callback
  */
+//TODO async await required?
 exports.matchOccupations = (event, context, callback) => {
 
     const awsRegion = 'eu-central-1';
@@ -36,6 +40,7 @@ exports.matchOccupations = (event, context, callback) => {
 
     matchOccupations(callback);
 };
+
 
 
 async function matchOccupations(callback) {

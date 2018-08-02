@@ -12,6 +12,7 @@ const awsRegion = 'eu-central-1';
 exports.setLocalTestMode = (awsCredentialsProfile) => {
     AWS.config.update({credentials: new AWS.SharedIniFileCredentials({profile: awsCredentialsProfile})});
     currentOccupationService.setLocalTestMode(awsCredentialsProfile);
+    roomsService.setLocalTestMode(awsCredentialsProfile);
 };
 
 
@@ -54,7 +55,7 @@ exports.getCurrentRoomOccupation = async (event, context, callback) => {
 }
 
 
-
+//TODO cleanup
 function currentOccupationPromiseWrapper(roomId, roomName) {
     return new Promise(function(resolve, reject) {
         currentOccupationService.getCurrentRoomOccupation(roomId, roomName, resolve);

@@ -13,20 +13,28 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
 
 
 /**
- * return all events for a given calendar
+ * returns all events for a given calendar
+ * @param calendarId the calendarId to query
+ * @param calendarServiceAccountId API account id
+ * @param calendarServiceAccountPrivateKey API private key
+ * @return {Promise<*>}
  */
 exports.getEventsForCalendar = async (calendarId, calendarServiceAccountId, calendarServiceAccountPrivateKey) => {
     AWS.config.update({region: awsRegion});
-    return getEventsForCalendar(calendarId, calendarServiceAccountId, calendarServiceAccountPrivateKey);
+    return getEventsForCalendar(
+        calendarId,
+        calendarServiceAccountId,
+        calendarServiceAccountPrivateKey);
 };
 
 
 /**
  * return all events for the calendar of a given room
  * @param room
- * @param callback
+ * @return {Promise<*>}
  */
 exports.getEventsForCalendarByRoom = async (room) => {
+    AWS.config.update({region: awsRegion});
     return getEventsForCalendar(
         room.calendarId,
         room.calendarServiceAccountId,
