@@ -38,6 +38,16 @@ exports.getRoomForSensor = async (sensorId) => {
 }
 
 
+/**
+ * delete a sensor by its id
+ * @param sensorId
+ * @return {Promise<*>}
+ */
+exports.deleteSensor = async (sensorId) => {
+    AWS.config.update({region: awsRegion});
+    return deleteSensor(sensorId);
+}
+
 
 /**
  * get all sensors for a room
@@ -63,7 +73,44 @@ async function getRoomForSensor(sensorId) {
     var searchParams = getSearchParamsForGetRoomForSensor(sensorId);
     var resp = await serviceHelper.getQueryPromise(searchParams);
 
+    if(resp.Items.length === 0) {
+        return "not found";
+    }
     return resp.Items[0];
+}
+
+
+
+/**
+ * delete a sensor, identified by sensorId
+ * @param sensorId
+ * @callback
+ */
+async function deleteSensor(sensorId) {
+
+    var deleteParams = getDeleteParamsForDeleteBySensorId(sensorId);
+
+    let result = await serviceHelper.getDeletePromise(deleteParams);
+
+    return result;
+
+}
+
+
+
+/**
+ * create the search parameters for deleting a sensor by sensorId
+ */
+function getDeleteParamsForDeleteBySensorId(sensorId) {
+
+    var deleteParams = {
+        TableName:sensorsTableName,
+        Key:{
+            "sensorId":sensorId
+        }
+    };
+
+    return deleteParams;
 }
 
 

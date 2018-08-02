@@ -125,7 +125,6 @@ async function createRoom(roomName, svcAccountId, svcAccPrivateKey, calendarId, 
  */
 async function deleteRoom(roomId) {
 
-    const docClient = new AWS.DynamoDB.DocumentClient();
     var deleteParams = getDeleteParamsForDeleteByRoomId(roomId);
 
     let result = await serviceHelper.getDeletePromise(deleteParams);

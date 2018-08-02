@@ -30,5 +30,11 @@ it('should detach a test sensor', async function() {
 
     expect(checkResult.attachedInRoom).to.equals("-");
 
+
+
+    /* clean up */
+    let deleteSensor = await sensorServices.deleteSensor(predefinedSensorId);
+    expect(deleteSensor).to.equal("deleted");
+
 });
 
