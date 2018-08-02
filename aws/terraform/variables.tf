@@ -21,6 +21,12 @@ variable "occupation_matcher_polling_interval" {
   default = "rate(5 minutes)"
 }
 
+# webhook URL for slack integration
+variable "slack_webhook_url" {
+  default = "http://"
+
+}
+
 # template for creating a default example room. undefined values will be overwritten
 variable "default_room" {
   default = <<ITEM

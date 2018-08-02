@@ -61,6 +61,12 @@ resource "aws_lambda_function" "occupation_matcher_lambda" {
   #source_code_hash = "${base64sha256(file("../lambda/build/lambda.zip"))}"
   timeout = "30"
   memory_size = "256"
+
+  environment {
+    variables {
+      SLACK_WEBHOOK_URL = "${var.slack_webhook_url}"
+    }
+  }
 }
 
 

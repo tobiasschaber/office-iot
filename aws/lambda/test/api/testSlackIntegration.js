@@ -1,6 +1,6 @@
 
 
-var slack = require('../../src/services/slackIntegration');
+var slack = require('../../src/services/slack');
 
 var text = "i"
 

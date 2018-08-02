@@ -9,21 +9,22 @@ const request = require('request');
  */
 exports.writeSlackNotification = (text) => {
 
-    var body = { "text":text,"channel": "#trash-ka","link_names": 1, "username": "Okkupations-Knecht","icon_emoji": ":bomb:" };
+    var body = { "text":text,"channel": "#karlsruhe","link_names": 1, "username": "Okkupations-Knecht","icon_emoji": ":bomb:" };
 
+    if(!process.env.SLACK_WEBHOOK_URL) {
+        console.log("could not send message to slack as SLACK_WEBHOOK_URL was not defined");
+        
+    } else {
+        request({
+            method: "POST",
+            url: process.env.SLACK_WEBHOOK_URL,
+            json: true,
+            body: body
+        }, function (error, response, body) {
+            console.log(response);
+        });
 
-
-    //TODO OBFUSCATE HOOK URL
-    request({
-        url: "<<your webhook url here",
-        method: "POST",
-        json: true,
-        body: body
-    }, function (error, response, body){
-        console.log(response);
-    });
-
-
+    }
 }
 
 
