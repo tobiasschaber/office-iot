@@ -47,14 +47,14 @@ async function matchOccupations() {
     let rooms = await roomServices.getRooms();
 
     /* iterate over all rooms */
-    for(var i=0; i<rooms.Items.length; i++) {
-        var currentRoom = rooms.Items[i];
-        var roomId = rooms.Items[i].roomId;
+    for(let i=0; i<rooms.Items.length; i++) {
+        let currentRoom = rooms.Items[i];
+        let roomId = rooms.Items[i].roomId;
 
         let calendarEntries = await calendarServices.getEventsForCalendarByRoom(currentRoom);
         let motionsForRoom = await motionsServices.getMotionsForRoom(roomId, undefined);
 
-        matchMotionsToCalendar(calendarEntries, motionsForRoom);
+        await matchMotionsToCalendar(calendarEntries, motionsForRoom);
 
     }
 
@@ -68,7 +68,7 @@ async function matchOccupations() {
  * @param calendarEntries list of calendar entries
  * @param motions list of all motions
  */
-function matchMotionsToCalendar(calendarEntries, motions) {
+async function matchMotionsToCalendar(calendarEntries, motions) {
 
     /* check if today is a public holiday */
     if(!feiertage.isHoliday(new Date(), 'BW')) {
@@ -76,8 +76,8 @@ function matchMotionsToCalendar(calendarEntries, motions) {
         if(calendarEntries) {
 
             /* iterate over all calendar entries */
-            for(i=0; i<calendarEntries.length; i++) {
-                var currentEvent = calendarEntries[i];
+            for(let i=0; i<calendarEntries.length; i++) {
+                let currentEvent = calendarEntries[i];
 
                 /* ignore cancelled events */
                 if (currentEvent.status !== 'cancelled') {
@@ -90,26 +90,22 @@ function matchMotionsToCalendar(calendarEntries, motions) {
                     let currentEventStart = copyTimeIntoToday(currentEvent.start.dateTime);
                     let currentEventEnd = copyTimeIntoToday(currentEvent.end.dateTime);
 
-                    var motionsDetected = false;
-                    var nomotionsDetected = false;
-                    var motionsCount = 0;
-                    var nomotionsCount = 0;
+                    let motionsDetected = false;
+                    let nomotionsDetected = false;
+                    let motionsCount = 0;
+                    let nomotionsCount = 0;
 
                     /* iterate over all motions */
-                    for (j = 0; j < motions.length; j++) {
-                        var currentMotion = motions[j];
-
-
-
-                        var currentMotionTimestamp = new Date(currentMotion.creationTimestamp);
-
+                    for (let j = 0; j < motions.length; j++) {
+                        let currentMotion = motions[j];
+                        let currentMotionTimestamp = new Date(currentMotion.creationTimestamp);
 
                         /* if there are motions in the calendar entry's timeframe. compare 0/1 with true/false with == not === !*/
                         /* reduce event end by 5 minutes offset */
 
                         if (currentEventStart <= currentMotionTimestamp &&
                             currentEventEnd >= (currentMotionTimestamp-(1000*60*5))) {
-                            if (currentMotion.motionDetected == true) {
+                            if (currentMotion.motionDetected === true) {
                                 motionsDetected = true;
                                 ++motionsCount;
                             } else {
@@ -119,7 +115,7 @@ function matchMotionsToCalendar(calendarEntries, motions) {
                         }
                     }
 
-                    handleMotionsDetected(motionsDetected, nomotionsDetected, motionsCount, currentEvent, currentEventStart, currentEventEnd);
+                    await handleMotionsDetected(motionsDetected, nomotionsDetected, motionsCount, currentEvent, currentEventStart, currentEventEnd);
                 }
             }
         } else {
@@ -173,7 +169,7 @@ async function handleMotionsDetected(motionsDetected, nomotionsDetected, motions
             } else {
 
                 let notificationState = await occupationAlertHistory.getNotificationState(currentEvent);
-                handleNotification(currentEvent, notificationState);
+                await handleNotification(currentEvent, notificationState);
 
 
                 console.log("Event is over!");
@@ -196,12 +192,13 @@ async function handleMotionsDetected(motionsDetected, nomotionsDetected, motions
 }
 
 /**
- * handling for occupation alerts
- * @param
+ * handles notifications
+ * @param event
+ * @param reply
  */
-function handleNotification(event, reply) {
+async function handleNotification(event, reply) {
 
-    var sendNotification = false;
+    let sendNotification = false;
 
     /* empty reply event means there was never send a notification for this event */
     if(reply == null || reply[0] == null) {
@@ -220,33 +217,22 @@ function handleNotification(event, reply) {
         if(lastNotificationSend < now) {
             sendNotification = true;
         }
-
-
         console.log(now);
-        console.log(lastNotificationSend)
+        console.log(lastNotificationSend);
     }
-
-
-
 
     if(sendNotification) {
         console.log("Lege an für " + event.summary);
-        occupationAlertHistory.addNotification(event, publishNotification);
+        await occupationAlertHistory.addNotification(event);
+        slackServices.writeSlackNotification(
+            "Liebe(r) @" + event.creator.email +
+            ", hast du vielleicht im Termin \""
+            +event.summary + "\" den Raum \"" +
+            event.organizer.displayName + "\" blockiert?");
+
     } else {
         console.log("Für " + event.summary + " wurde bereits eine Notification eingestellt.");
     }
-
-
-
-}
-
-
-/**
- * publish a notification message
- */
-function publishNotification(event, message) {
-
-    slackServices.writeSlackNotification("Liebe(r) @" + event.creator.email + ", hast du vielleicht im Termin \"" +event.summary + "\" den Raum \"" + event.organizer.displayName + "\" blockiert?");
 }
 
 

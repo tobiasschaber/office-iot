@@ -3,7 +3,7 @@ const AWS = require('aws-sdk');
 
 /**
  * create a promise  for the dynamoDB query
- * @param searchparams the parameters for the search
+ * @param searchParams the parameters for the search
  * @returns {Promise<any>}
  */
 exports.getQueryPromise = async (searchParams) => {
@@ -46,7 +46,7 @@ exports.getPutPromise = async (inputParams) => {
 
 /**
  * create a promise for the dynamoDB deletion
- * @param inputParams the input parameters to insert
+ * @param deleteParams the input parameters to insert
  * @return {Promise<any>}
  */
 exports.getDeletePromise = async (deleteParams) => {

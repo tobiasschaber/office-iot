@@ -40,18 +40,22 @@ exports.getMotionsForRoom = async (roomId, timeLimitOverride) => {
 }
 
 
-
 /**
  * get all motions for a sensor
  * uses pagination if there are the results are divided into multiple pages
  * @param sensorId
- * @param callback
+ * @param timeLimitOverride
+ * @param lastEvaluatedKey
+ * @param pagedItems
+ * @return {Promise<*>}
  */
 async function getMotionsForSensor(sensorId, timeLimitOverride, lastEvaluatedKey, pagedItems) {
 
-    var searchParams = getQueryForGetMotionsForSensor(sensorId, lastEvaluatedKey, timeLimitOverride);
+    let searchParams = getQueryForGetMotionsForSensor(sensorId, lastEvaluatedKey, timeLimitOverride);
 
-    if(!pagedItems) var pagedItems = [];
+    if(!pagedItems) {
+        var pagedItems = [];
+    }
 
     let resp = await serviceHelper.getQueryPromise(searchParams);
 
@@ -70,18 +74,18 @@ async function getMotionsForSensor(sensorId, timeLimitOverride, lastEvaluatedKey
 /**
  * get all motions for a whole room from all motion sensors attached to that room
  * @param roomId
- * @param callback
+ * @param timeLimitOverride
  */
 async function getMotionsForRoom(roomId, timeLimitOverride) {
 
     let resp = await sensorsServices.getSensorsForRoom(roomId);
 
     /* resp now contains all sensors attached to the room */
-    var allSensors = resp.Items;
-    var allMotions = [];
+    let allSensors = resp.Items;
+    let allMotions = [];
 
 
-    for(var i=0; i<allSensors.length; i++) {
+    for(let i=0; i<allSensors.length; i++) {
 
         let resp2 = await getMotionsForSensor(allSensors[i].sensorId, timeLimitOverride, undefined);
 
@@ -106,10 +110,10 @@ function flatten(arr) {
 
 function getQueryForGetMotionsForSensor(sensorId, lastEvaluatedKey, timeLimitOverride) {
     sensorId = sensorId.trim()
-    var now = Date.now();
+    let now = Date.now();
 
     /* calculate the timestamp from when db entries will be queried */
-    var timeLimit = now - (1000 * motionTimeFrameSizeSec);
+    let timeLimit = now - (1000 * motionTimeFrameSizeSec);
 
     console.log("hard config:" + timeLimit);
     if(timeLimitOverride) {
@@ -122,7 +126,7 @@ function getQueryForGetMotionsForSensor(sensorId, lastEvaluatedKey, timeLimitOve
 
 
     /* motions database query parameters to detect relevant events */
-    var searchparams = {
+    let searchparams = {
         TableName: motionsTableName,
         ProjectionExpression: "sensorId, creationTimestamp, motionDetected",
         FilterExpression: "creationTimestamp > :timestmp and sensorId = :sensorId",

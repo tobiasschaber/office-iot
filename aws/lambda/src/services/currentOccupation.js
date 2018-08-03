@@ -53,7 +53,7 @@ exports.getCurrentRoomOccupation = async (roomId, roomName) => {
  */
 async function updateCurrentRoomOccupation(sensorId, motionDetected, creationTimestamp) {
 
-    let resp = await sensorsService.getRoomForSensor(sensorId, resolve);
+    let resp = await sensorsService.getRoomForSensor(sensorId);
 
     let roomId = resp[0].attachedInRoom;
     return getCurrentRoomOccupationEnriched(roomId, motionDetected, creationTimestamp, updateCurrentRoomOccupationTable);
@@ -80,7 +80,7 @@ function updateCurrentRoomOccupationTable(roomId, motionDetected, creationTimest
 
 function getInsertParamsForUpdateCurrentOccupation(roomId, newLastUpdatedTimestamp, newOccupationStatus) {
 
-    var params = {
+    return {
         TableName: currentRoomOccupationTableName,
         Item: {
             "roomId": roomId,
@@ -88,7 +88,6 @@ function getInsertParamsForUpdateCurrentOccupation(roomId, newLastUpdatedTimesta
             "occupationStatus": newOccupationStatus
         }
     }
-    return params;
 }
 
 
@@ -114,7 +113,7 @@ function updateCurrentOccupation(insertParams) {
 
 async function getCurrentRoomOccupation(roomId, roomName) {
 
-    var searchParams = getQueryForGetCurrentRoomOccupation(roomId);
+    let searchParams = getQueryForGetCurrentRoomOccupation(roomId);
     let resp = await serviceHelper.getQueryPromise(searchParams);
 
     let currentCreationTimestamp;
@@ -128,21 +127,19 @@ async function getCurrentRoomOccupation(roomId, roomName) {
         currentMotionDetected = resp.Items[0].occupationStatus;
     }
 
-    let currentOccupationStatus = {
+    return {
         "roomId": roomId,
         "roomName": roomName,
         "creationTimestamp": currentCreationTimestamp,
         "motionDetected": currentMotionDetected
     };
-
-    return currentOccupationStatus;
 }
 
 
 async function getCurrentRoomOccupationEnriched(roomId, motionDetected, creationTimestamp, callback) {
 
-    var searchParams = getQueryForGetCurrentRoomOccupation(roomId);
-    var resp = await serviceHelper.getQueryPromise(searchParams);
+    let searchParams = getQueryForGetCurrentRoomOccupation(roomId);
+    let resp = await serviceHelper.getQueryPromise(searchParams);
 
     let currentCreationTimestamp = resp.Items[0].lastUpdatedTimestamp;
     let currentMotionDetected = resp.Items[0].occupationStatus;
@@ -156,7 +153,7 @@ function getQueryForGetCurrentRoomOccupation(roomId) {
 
 
     /* motions database query parameters to detect relevant events */
-    var searchparams = {
+    return {
         TableName: currentRoomOccupationTableName,
         ProjectionExpression: "lastUpdatedTimestamp, occupationStatus",
         FilterExpression: "roomId = :roomId",
@@ -164,7 +161,6 @@ function getQueryForGetCurrentRoomOccupation(roomId) {
             ":roomId": roomId
         }
     };
-    return searchparams;
 }
 
 

@@ -41,14 +41,12 @@ exports.addNotification = async (event) => {
 
 /**
  * get new notification status for an event identified by eventName and eventStartTime
- * @param eventName
- * @param eventStartTime
- * @param callback
+ * @param event
  */
 async function getNotificationState(event) {
 
-    var searchParams = getQueryForGetNotificationState(event);
-    var statePromise = await serviceHelper.getQueryPromise(searchParams);
+    let searchParams = getQueryForGetNotificationState(event);
+    let statePromise = await serviceHelper.getQueryPromise(searchParams);
 
     return statePromise.Items;
 }
@@ -57,7 +55,7 @@ async function getNotificationState(event) {
 function getQueryForGetNotificationState(event) {
 
     /* motions database query parameters to detect relevant events */
-    var searchparams = {
+    return {
         TableName: notificationsTableName,
         ProjectionExpression: "eventName, eventStartTimestamp, lastNotificationSendOnDate",
         FilterExpression: "eventName = :eventName and eventStartTimestamp = :eventStartTimestamp",
@@ -66,28 +64,24 @@ function getQueryForGetNotificationState(event) {
             ":eventStartTimestamp": new Date(event.start.dateTime).getTime()
         }
     };
-    return searchparams;
 }
 
 
 
-
 /**
- * add a new notification for an event identified by eventName and eventStartTime
- * @param eventName
+ * add a new notification for an event identified by event
+ * @param event
  */
 async function addNotification(event) {
 
-    var insertParams = getInsertParamsForAddNotification(event);
-    var result = await serviceHelper.getPutPromise(insertParams);
-
-    return result;
+    let insertParams = getInsertParamsForAddNotification(event);
+    return await serviceHelper.getPutPromise(insertParams);
 }
 
 
 function getInsertParamsForAddNotification(event) {
 
-    var params = {
+    return {
         TableName: notificationsTableName,
         Item: {
             "eventName": event.summary,
@@ -95,5 +89,4 @@ function getInsertParamsForAddNotification(event) {
             "lastNotificationSendOnDate": new Date().getTime()
         }
     }
-    return params;
 }

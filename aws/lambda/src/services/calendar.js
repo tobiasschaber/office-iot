@@ -47,7 +47,6 @@ exports.getEventsForCalendarByRoom = async (room) => {
  * @param calendarId
  * @param calendarServiceAccountId
  * @param calendarServiceAccountPrivateKey
- * @param callback
  */
 async function getEventsForCalendar(calendarId, calendarServiceAccountId, calendarServiceAccountPrivateKey) {
 
@@ -61,19 +60,17 @@ async function getEventsForCalendar(calendarId, calendarServiceAccountId, calend
 
     const cal = new CalendarAPI(calendarConfig);
 
-    var calendarQueryParams = getQueryParamsForGetEventsForCalendar(calendarId);
+    let calendarQueryParams = getQueryParamsForGetEventsForCalendar(calendarId);
 
     /* the promise which reads calendar entries (events) */
-    var calendarPromise = cal.Events.list(calendarQueryParams.calendarId, calendarQueryParams)
+    let calendarPromise = cal.Events.list(calendarQueryParams.calendarId, calendarQueryParams)
         .then(resp => {
             return resp;
         }).catch(err => {
             console.log(err.message);
         });
 
-    let resp = await calendarPromise;
-    return resp;
-
+    return await calendarPromise;
 }
 
 
@@ -87,8 +84,8 @@ async function getEventsForCalendar(calendarId, calendarServiceAccountId, calend
  */
 function getQueryParamsForGetEventsForCalendar(calendarId) {
 
-    var start = new Date();
-    var end  = new Date();
+    let start = new Date();
+    let end  = new Date();
 
     /* begin at 00:00:00 and end at 23:59:59 to get all calendar entries of the day */
     start.setHours(0, 0, 0);

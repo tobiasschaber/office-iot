@@ -57,9 +57,7 @@ async function attachSensorToRoom(sensorId, roomId, description) {
         }
     };
 
-    var attache = await serviceHelper.getPutPromise(params);
-
-    return attache;
+    return await serviceHelper.getPutPromise(params);
 }
 
 
@@ -80,8 +78,6 @@ async function detachSensorFromRoom(sensorId, roomId) {
         }
     };
 
-    var detache = await serviceHelper.getPutPromise(params);
-
-    return detache;
+    return await serviceHelper.getPutPromise(params);
 }
 

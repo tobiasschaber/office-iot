@@ -1,15 +1,14 @@
 
-
 const request = require('request');
 
 
 /**
  * send a message via slack incoming webhook
- * @param body
+ * @param text
  */
 exports.writeSlackNotification = (text) => {
 
-    var body = { "text":text,"channel": "#karlsruhe","link_names": 1, "username": "Okkupations-Knecht","icon_emoji": ":bomb:" };
+    let body = { "text":text,"channel": "#karlsruhe","link_names": 1, "username": "Okkupations-Knecht","icon_emoji": ":bomb:" };
 
     if(!process.env.SLACK_WEBHOOK_URL) {
         console.log("could not send message to slack as SLACK_WEBHOOK_URL was not defined");

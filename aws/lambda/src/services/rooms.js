@@ -67,26 +67,22 @@ exports.deleteRoom = (roomId) => {
 
 /**
  * get all rooms
- * @param callback
  */
 async function getRooms() {
 
-    var searchParams = getSearchParamsForGetRooms();
-    var roomPromise = await serviceHelper.getQueryPromise(searchParams);
-
-   return roomPromise;
+    let searchParams = getSearchParamsForGetRooms();
+    return await serviceHelper.getQueryPromise(searchParams);
 }
 
 
 /**
  * get a room by a given roomId
  * @param roomId
- * @param callback
  */
-async function getRoomById(roomId, callback) {
+async function getRoomById(roomId) {
 
-    var searchParams = getSearchParamsForGetRoomById(roomId);
-    var roomPromise = serviceHelper.getQueryPromise(searchParams);
+    let searchParams = getSearchParamsForGetRoomById(roomId);
+    let roomPromise = serviceHelper.getQueryPromise(searchParams);
 
     let result = await roomPromise;
 
@@ -104,13 +100,13 @@ async function getRoomById(roomId, callback) {
  * @param svcAccountId
  * @param svcAccPrivateKey
  * @param calendarId
- * @param callback
  */
-async function createRoom(roomName, svcAccountId, svcAccPrivateKey, calendarId, callback) {
+async function createRoom(roomName, svcAccountId, svcAccPrivateKey, calendarId) {
 
-    var uuid = uuidv1();
-    var insertParams = getInsertParamsForCreateRoom(uuid, roomName, svcAccountId, svcAccPrivateKey, calendarId);
-    var result = await serviceHelper.getPutPromise(insertParams);
+    let uuid = uuidv1();
+    let insertParams = getInsertParamsForCreateRoom(uuid, roomName, svcAccountId, svcAccPrivateKey, calendarId);
+
+    let result = await serviceHelper.getPutPromise(insertParams);
 
     //TODO exception handling
     return { 'uuid' : uuid };
@@ -125,12 +121,8 @@ async function createRoom(roomName, svcAccountId, svcAccPrivateKey, calendarId, 
  */
 async function deleteRoom(roomId) {
 
-    var deleteParams = getDeleteParamsForDeleteByRoomId(roomId);
-
-    let result = await serviceHelper.getDeletePromise(deleteParams);
-
-    return result;
-
+    let deleteParams = getDeleteParamsForDeleteByRoomId(roomId);
+    return await serviceHelper.getDeletePromise(deleteParams);
 }
 
 
@@ -145,7 +137,7 @@ async function deleteRoom(roomId) {
  */
 function getInsertParamsForCreateRoom(uuid, roomName, svcAccountId, svcAccPrivateKey, calendarId) {
 
-    var params = {
+    return {
         TableName: roomsTableName,
         Item: {
             "roomId": uuid,
@@ -155,8 +147,6 @@ function getInsertParamsForCreateRoom(uuid, roomName, svcAccountId, svcAccPrivat
             "calendarId": calendarId
         }
     }
-
-    return params;
 }
 
 
@@ -165,14 +155,12 @@ function getInsertParamsForCreateRoom(uuid, roomName, svcAccountId, svcAccPrivat
  */
 function getDeleteParamsForDeleteByRoomId(roomId) {
 
-    var deleteParams = {
+    return {
         TableName:roomsTableName,
         Key:{
             "roomId":roomId
         }
     };
-
-    return deleteParams;
 }
 
 
@@ -183,12 +171,10 @@ function getDeleteParamsForDeleteByRoomId(roomId) {
 function getSearchParamsForGetRooms() {
 
     /* rooms database query parameters */
-    var searchparams = {
+    return {
         TableName: roomsTableName,
         ProjectionExpression: "roomId, calendarId, calendarServiceAccountId, calendarServiceAccountPrivateKey, roomName"
     };
-
-    return searchparams;
 }
 
 
@@ -198,7 +184,7 @@ function getSearchParamsForGetRooms() {
 function getSearchParamsForGetRoomById(roomId) {
 
     /* sensor database query parameters */
-    var searchparams = {
+    return {
         TableName: roomsTableName,
         ProjectionExpression: "#roomId, calendarId, calendarServiceAccountId, calendarServiceAccountPrivateKey, roomName",
         FilterExpression:" #roomId = :roomId",
@@ -208,7 +194,5 @@ function getSearchParamsForGetRoomById(roomId) {
             ":roomId": roomId
         }
     }
-
-    return searchparams;
 }
 

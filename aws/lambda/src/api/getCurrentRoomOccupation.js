@@ -42,7 +42,7 @@ exports.getCurrentRoomOccupation = async (event, context, callback) => {
 
     for(let j=0; j<resp2.length; j++) {
 
-        var roomResult = {
+        let roomResult = {
             "roomId" : resp2[j].roomId,
             "roomName" : resp2[j].roomName,
             "status" : resp2[j].motionDetected

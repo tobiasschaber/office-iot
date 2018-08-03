@@ -52,26 +52,21 @@ exports.deleteSensor = async (sensorId) => {
 /**
  * get all sensors for a room
  * @param roomId
- * @param callback
  */
 async function listSensorsForRoom(roomId) {
 
-    var searchParams = getSearchParamsForListSensorsForRoom(roomId);
-    var resp = await serviceHelper.getQueryPromise(searchParams);
-
-    return resp;
-
+    let searchParams = getSearchParamsForListSensorsForRoom(roomId);
+    return await serviceHelper.getQueryPromise(searchParams);
 }
 
 
 /**
  * get the room where a given sensor is attached
  * @param sensorId
- * @param callback
  */
 async function getRoomForSensor(sensorId) {
-    var searchParams = getSearchParamsForGetRoomForSensor(sensorId);
-    var resp = await serviceHelper.getQueryPromise(searchParams);
+    let searchParams = getSearchParamsForGetRoomForSensor(sensorId);
+    let resp = await serviceHelper.getQueryPromise(searchParams);
 
     if(resp.Items.length === 0) {
         return "not found";
@@ -88,12 +83,8 @@ async function getRoomForSensor(sensorId) {
  */
 async function deleteSensor(sensorId) {
 
-    var deleteParams = getDeleteParamsForDeleteBySensorId(sensorId);
-
-    let result = await serviceHelper.getDeletePromise(deleteParams);
-
-    return result;
-
+    let deleteParams = getDeleteParamsForDeleteBySensorId(sensorId);
+    return await serviceHelper.getDeletePromise(deleteParams);
 }
 
 
@@ -103,28 +94,15 @@ async function deleteSensor(sensorId) {
  */
 function getDeleteParamsForDeleteBySensorId(sensorId) {
 
-    var deleteParams = {
+    return {
         TableName:sensorsTableName,
         Key:{
             "sensorId":sensorId
         }
     };
-
-    return deleteParams;
 }
 
 
-
-
-/**
- * create search parameters for "listSensorsForRoom"
- * @param roomId
- * @returns {{  TableName: string,
- *              ProjectionExpression: string,
- *              FilterExpression: string,
- *              ExpressionAttributeNames: {"#attachedInRoom": string},
- *              ExpressionAttributeValues: {":attachedInRoom": *}}}
- */
 function getSearchParamsForListSensorsForRoom(roomId) {
 
     /* sensor database query parameters */
