@@ -55,7 +55,7 @@ async function updateCurrentRoomOccupation(sensorId, motionDetected, creationTim
 
     let resp = await sensorsService.getRoomForSensor(sensorId);
 
-    let roomId = resp[0].attachedInRoom;
+    let roomId = resp.attachedInRoom;
     return getCurrentRoomOccupationEnriched(roomId, motionDetected, creationTimestamp, updateCurrentRoomOccupationTable);
 }
 
