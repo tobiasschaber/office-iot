@@ -4,6 +4,7 @@ const sensorsServices = require('../../src/services/sensors');
 const predefinedRoomId = "00000000-0000-0000-0000-000000000000";
 const predefinedSensorId = "7654321";
 const alreadyExistingSensorId = "26e98cf9";
+const secondAlreadyExistingSensorId = "72b7343c";
 const chai = require('chai');
 const expect = chai.expect;
 

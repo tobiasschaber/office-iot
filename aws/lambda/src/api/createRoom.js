@@ -46,6 +46,6 @@ exports.createRoom = async (event, context, callback) => {
         event.queryStringParameters.privateKey,
         event.queryStringParameters.calendarId);
 
-    callback(null, apiHelper.createResponse(200, JSON.stringify(result)));
+    callback(null, apiHelper.createResponse(200, result));
 
 };

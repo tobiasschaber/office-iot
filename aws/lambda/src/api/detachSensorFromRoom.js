@@ -42,6 +42,6 @@ exports.detachSensorFromRoom = async (event, context, callback) => {
             event.queryStringParameters.sensorId,
             event.queryStringParameters.roomId);
 
-    callback(null, apiHelper.createResponse(200, JSON.stringify(result)));
+    callback(null, apiHelper.createResponse(200, result));
 
 }

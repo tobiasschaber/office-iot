@@ -36,7 +36,7 @@ exports.getPutPromise = async (inputParams) => {
                 reject(err);
 
             } else {
-                resolve("success");
+                resolve('success');
             }
         });
     });

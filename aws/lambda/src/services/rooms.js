@@ -108,8 +108,8 @@ async function createRoom(roomName, svcAccountId, svcAccPrivateKey, calendarId) 
 
     let result = await serviceHelper.getPutPromise(insertParams);
 
-    //TODO exception handling
-    return { 'uuid' : uuid };
+    return { 'status': result,
+             'uuid' : uuid };
 
 }
 

@@ -24,12 +24,15 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
 exports.listRooms = async (event, context, callback) => {
     AWS.config.update({region: awsRegion});
 
-    let body = await roomsService.getRooms();
+    let rooms = await roomsService.getRooms();
 
     /* remove all private keys from external calls */
-    for(let i=0; i<body.Items.length; i++) {
-        body.Items[i].calendarServiceAccountPrivateKey = "hidden";
+    for(let i=0; i<rooms.Items.length; i++) {
+        rooms.Items[i].calendarServiceAccountPrivateKey = "hidden";
     }
 
-    callback(null, apiHelper.createResponse(200, JSON.stringify(body)));
+    let responseBody = {};
+    responseBody.rooms = rooms.Items;
+
+    callback(null, apiHelper.createResponse(200, JSON.stringify(responseBody)));
 }

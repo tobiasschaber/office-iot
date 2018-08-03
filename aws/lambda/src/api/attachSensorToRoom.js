@@ -46,5 +46,6 @@ exports.attachSensorToRoom = async (event, context, callback) => {
 
 
 
+
     callback(null, apiHelper.createResponse(200, JSON.stringify(result)));
 }
