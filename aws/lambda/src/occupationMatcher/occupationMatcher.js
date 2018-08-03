@@ -54,7 +54,7 @@ async function matchOccupations() {
         let calendarEntries = await calendarServices.getEventsForCalendarByRoom(currentRoom);
         let motionsForRoom = await motionsServices.getMotionsForRoom(roomId, undefined);
 
-        await matchMotionsToCalendar(calendarEntries, motionsForRoom);
+        matchMotionsToCalendar(calendarEntries, motionsForRoom);
 
     }
 
@@ -224,11 +224,16 @@ async function handleNotification(event, reply) {
     if(sendNotification) {
         console.log("Lege an für " + event.summary);
         await occupationAlertHistory.addNotification(event);
+
+        let roomName = event.location;
+
+        if(!roomName) roomName = event.organizer.displayName;
+
         slackServices.writeSlackNotification(
             "Liebe(r) @" + event.creator.email +
             ", hast du vielleicht im Termin \""
             +event.summary + "\" den Raum \"" +
-            event.organizer.displayName + "\" blockiert?");
+            roomName + "\" blockiert?");
 
     } else {
         console.log("Für " + event.summary + " wurde bereits eine Notification eingestellt.");
