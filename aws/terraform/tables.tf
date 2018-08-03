@@ -83,6 +83,11 @@ resource "aws_dynamodb_table" "occupation_alert_history_table" {
     name = "eventStartTimestamp"
     type = "N"
   }
+
+  ttl {
+    attribute_name = "ttl"
+    enabled = true
+  }
 }
 
 

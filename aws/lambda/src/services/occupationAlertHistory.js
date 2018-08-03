@@ -4,6 +4,7 @@ const AWS = require('aws-sdk');
 const notificationsTableName = 'occupationAlertHistory';
 const awsRegion = 'eu-central-1';
 const serviceHelper = require('../helper/serviceHelper');
+const notificationTTL = (60*60*24*3*1000);  /* time to live for notifications = 3 days */
 
 /**
  * call this method to set AWS credentials profile,
@@ -81,12 +82,16 @@ async function addNotification(event) {
 
 function getInsertParamsForAddNotification(event) {
 
+    /* set TTL to */
+    let ttlDate = Math.round((new Date().getTime() + notificationTTL ) / 1000);
+
     return {
         TableName: notificationsTableName,
         Item: {
             "eventName": event.summary,
             "eventStartTimestamp": new Date(event.start.dateTime).getTime(),
-            "lastNotificationSendOnDate": new Date().getTime()
+            "lastNotificationSendOnDate": new Date().getTime(),
+            "ttl": ttlDate
         }
     }
 }
