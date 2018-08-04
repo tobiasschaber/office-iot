@@ -26,7 +26,10 @@ exports.updateCurrentRoomOccupation = async (event, context, callback) => {
     if(!event) {
         console.log("error: event not set");
     } else {
-        if(!event.sensorId || !event.creationTimestamp || !event.motionDetected) {
+        console.log(event.sensorId)
+        console.log(event.creationTimestamp)
+        console.log(event.motionDetected)
+        if(!event.sensorId || !event.creationTimestamp) {
             callback(null, apiHelper.createResponse(500, "missing request parameter sensorId, creationTimestamp or motionDetected"));
         } else {
             let sensorId = event.sensorId;

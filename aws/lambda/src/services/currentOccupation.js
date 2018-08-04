@@ -69,6 +69,7 @@ function updateCurrentRoomOccupationTable(roomId, motionDetected, creationTimest
 
      } else {
          if(motionDetected === 0) {
+
              if(creationTimestamp >= (currentCreationTimestamp + delayOccupiedToFreeMs)) {
                  updateCurrentOccupation(getInsertParamsForUpdateCurrentOccupation(roomId, creationTimestamp, "free"));
              }
