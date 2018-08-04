@@ -1,3 +1,52 @@
+.mainOccupationBox {
+  border: 0px solid #1C6EA4;
+  height: 100px;
+}
+
+
+.roomName {
+  float:left;
+  vertical-align: middle;
+  width:200px;
+  height: 30px;
+  border: 0px solid red;
+
+  padding-top: 10px;
+
+  font-family: Lato, cursive;
+  font-size: 1em;
+}
+
+
+.roomSign {
+  float: right;
+  text-align: right;
+  width:30px;
+  height: 30px;
+  border: 0px solid blue;
+  padding-top: 10px;
+
+  font-family: Lato, cursive;
+  font-size: 1em;
+}
+
+
+.statusBar {
+  float: left;
+  vertical-align: bottom;
+  height: 20px;
+  width: 100%;
+
+  border: 0px solid orange;
+}
+
+.statusItem {
+  float: left;
+  width: 5%;
+}
+
+
+
 
 .free {
   color: #3cb371;
@@ -12,19 +61,18 @@
 }
 
 
-.occupationTable {
-  width: 500px;
-  display: block;
-  horiz-align: center;
+
+.freeLine {
+  border-top: 1px solid #3cb371;
 
 }
 
+.occupiedLine {
+  border-top: 1px solid #761c19;
+}
 
-.box-head {
-  border-bottom: 1px solid #999999;
-  font-family: Lato, cursive;
-  font-size: 1em;
-  padding-bottom: 10px;
+.nodataLine {
+  border-top: 1px solid #888888;
 }
 
 
@@ -41,32 +89,10 @@
   border-bottom: 0px solid #1C6EA4;
 }
 
-.occupations .box-row {
-  display: table-row;
-}
 
-.occupations .box {
-  display: table-cell;
-  text-align: left;
-  vertical-align: middle;
-  border: 0px solid black;
-  padding-top: 10px;
-  width:400px;
-
+.box-head {
+  border-bottom: 1px solid #999999;
   font-family: Lato, cursive;
   font-size: 1em;
+  padding-bottom: 10px;
 }
-
-.status-box {
-
-  display: table-cell;
-  text-align: left;
-  vertical-align: middle;
-  border: 0px solid black;
-  padding-top: 10px;
-
-  font-family: Lato, cursive;
-  font-size: 2em;
-}
-
-

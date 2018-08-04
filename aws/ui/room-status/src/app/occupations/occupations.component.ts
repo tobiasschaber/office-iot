@@ -22,9 +22,11 @@ export class OccupationsComponent implements OnInit {
   private timerSubscription: Subscription;
 
   occupations: Array<Occupation>;
+  hist : { [key:string]:Array<String> } = {};
 
   constructor(private occupationDataService: OccupationDataService) {
     this.occupations = [];
+    this.hist = {};
   }
 
   ngOnInit() {
@@ -52,6 +54,29 @@ export class OccupationsComponent implements OnInit {
           const rooms = response.rooms;
           if(rooms && rooms.length > 0) {
             this.occupations = rooms;
+            console.log(this.hist);
+
+            for(var i=0; i<rooms.length; i++) {
+
+              /* init for room if not already done */
+              if(!this.hist[rooms[i].roomId]) {
+                this.hist[rooms[i].roomId] = [];
+              }
+
+              /* push a new status into the history */
+              this.hist[rooms[i].roomId].push(rooms[i].status);
+
+              /* keep max list length */
+              if(this.hist[rooms[i].roomId].length > 20) {
+                this.hist[rooms[i].roomId].shift();
+              }
+
+
+              console.log(this.hist[rooms[i].roomId])
+            }
+
+
+
           }
         }
       }, err => {

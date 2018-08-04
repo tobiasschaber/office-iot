@@ -1,18 +1,22 @@
 <div class="occupation">
 
+
   <div class="box-head">Status of all rooms:</div>
 
-    <div class="occupations"
-      *ngFor="let occupation of occupations"
-      [ngClass]="{'free':occupation.status === 'free', 'occupied':occupation.status === 'occupied', 'nodata':occupation.status === 'no sensor data'}"
-    >
-      <div class="box-row">
-        <div class="box" id="roomName">{{occupation.roomName}}</div>
-        <div class="status-box" id="status"><!--{{occupation.status}}--> &#9679;</div>
-      </div>
+  <div class="mainOccupationBox"
+       *ngFor="let occupation of occupations"
+       [ngClass]="{'free':occupation.status === 'free', 'occupied':occupation.status === 'occupied', 'nodata':occupation.status === 'no sensor data'}">
 
-
+    <div class="roomName">{{occupation.roomName}}</div>
+    <div class="roomSign">&#9679;</div>
+    <div class="statusBar">
+    <div class="statusItem"
+         *ngFor="let item of hist[occupation.roomId]"
+           [ngClass]="{'freeLine':item === 'free', 'occupiedLine':item === 'occupied', 'nodataLine':item === 'no sensor data'}">
     </div>
 
+
+
+  </div>
 
 </div>
