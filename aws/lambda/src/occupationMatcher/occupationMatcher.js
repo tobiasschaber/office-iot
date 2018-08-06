@@ -111,7 +111,7 @@ async function matchMotionsToCalendar(calendarEntries, motions) {
 
                         if (currentEventStart <= currentMotionTimestamp &&
                             currentEventEnd >= (currentMotionTimestamp-(1000*60*5))) {
-                            if (currentMotion.motionDetected === true) {
+                            if (currentMotion.motionDetected == true) {
                                 motionsDetected = true;
                                 ++motionsCount;
                             } else {
