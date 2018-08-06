@@ -52,10 +52,15 @@ async function matchOccupations() {
         let roomId = rooms.Items[i].roomId;
 
         let calendarEntries = await calendarServices.getEventsForCalendarByRoom(currentRoom);
-        let motionsForRoom = await motionsServices.getMotionsForRoom(roomId, undefined);
 
-        matchMotionsToCalendar(calendarEntries, motionsForRoom);
 
+        if (calendarEntries) {
+            let motionsForRoom = await motionsServices.getMotionsForRoom(roomId, undefined);
+            matchMotionsToCalendar(calendarEntries, motionsForRoom);
+
+        } else {
+            console.log("error: no calendar entries could be read for calendar: " + currentRoom.roomId + " (" + currentRoom.roomName + "). skipping matching.");
+        }
     }
 
     return "done";
@@ -74,6 +79,7 @@ async function matchMotionsToCalendar(calendarEntries, motions) {
     if(!feiertage.isHoliday(new Date(), 'BW')) {
 
         if(calendarEntries) {
+            console.log(calendarEntries.length);
 
             /* iterate over all calendar entries */
             for(let i=0; i<calendarEntries.length; i++) {
