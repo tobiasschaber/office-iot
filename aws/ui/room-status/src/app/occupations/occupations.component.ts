@@ -75,12 +75,7 @@ export class OccupationsComponent implements OnInit {
               if(this.hist[rooms[i].roomId].length > 20) {
                 this.hist[rooms[i].roomId].shift();
               }
-
-
-              console.log(this.hist[rooms[i].roomId])
             }
-
-
 
           }
         }
