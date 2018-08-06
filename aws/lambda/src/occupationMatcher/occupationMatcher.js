@@ -137,12 +137,12 @@ async function matchMotionsToCalendar(calendarEntries, motions) {
 
 /**
  * decide what to do depending on the motion detection status
- * @param motionsDetected
- * @param nomotionsDetected
- * @param motionsCount
- * @param currentEvent
- * @param currentEventStart
- * @param currentEventEnd
+ * @param motionsDetected true if any motions have been detected, otherwise false
+ * @param nomotionsDetected true if there are no-motions events detected, otherwise false
+ * @param motionsCount number of motions detected
+ * @param currentEvent the event which is currently checked
+ * @param currentEventStart start time of the event
+ * @param currentEventEnd end time of the event
  */
 async function handleMotionsDetected(motionsDetected, nomotionsDetected, motionsCount, currentEvent, currentEventStart, currentEventEnd) {
 
