@@ -25,6 +25,8 @@ resource "aws_s3_bucket_object" "live_occupation_dashboard_file_index_html" {
   source = "../ui/room-status/dist/room-status/index.html"
   acl = "public-read"
   content_type = "text/html"
+  etag   = "${md5(file("../ui/room-status/dist/room-status/index.html"))}"
+
 }
 
 resource "aws_s3_bucket_object" "live_occupation_dashboard_file_main_js" {
@@ -33,6 +35,7 @@ resource "aws_s3_bucket_object" "live_occupation_dashboard_file_main_js" {
   source = "../ui/room-status/dist/room-status/main.js"
   acl = "public-read"
   content_type = "application/javascript"
+  etag   = "${md5(file("../ui/room-status/dist/room-status/main.js"))}"
 }
 
 resource "aws_s3_bucket_object" "live_occupation_dashboard_file_main_js_map" {
@@ -41,6 +44,7 @@ resource "aws_s3_bucket_object" "live_occupation_dashboard_file_main_js_map" {
   source = "../ui/room-status/dist/room-status/main.js.map"
   acl = "public-read"
   content_type = "binary/octet-stream"
+  etag   = "${md5(file("../ui/room-status/dist/room-status/main.js.map"))}"
 }
 
 
@@ -50,6 +54,7 @@ resource "aws_s3_bucket_object" "live_occupation_dashboard_file_polyfills_js" {
   source = "../ui/room-status/dist/room-status/polyfills.js"
   acl = "public-read"
   content_type = "application/javascript"
+  etag   = "${md5(file("../ui/room-status/dist/room-status/polyfills.js"))}"
 }
 
 resource "aws_s3_bucket_object" "live_occupation_dashboard_file_polyfills_js_map" {
@@ -58,6 +63,7 @@ resource "aws_s3_bucket_object" "live_occupation_dashboard_file_polyfills_js_map
   source = "../ui/room-status/dist/room-status/polyfills.js.map"
   acl = "public-read"
   content_type = "binary/octet-stream"
+  etag   = "${md5(file("../ui/room-status/dist/room-status/polyfills.js.map"))}"
 }
 
 
@@ -69,6 +75,7 @@ resource "aws_s3_bucket_object" "live_occupation_dashboard_file_runtime_js" {
   source = "../ui/room-status/dist/room-status/runtime.js"
   acl = "public-read"
   content_type = "application/javascript"
+  etag   = "${md5(file("../ui/room-status/dist/room-status/runtime.js"))}"
 }
 
 resource "aws_s3_bucket_object" "live_occupation_dashboard_file_runtime_js_map" {
@@ -77,6 +84,7 @@ resource "aws_s3_bucket_object" "live_occupation_dashboard_file_runtime_js_map" 
   source = "../ui/room-status/dist/room-status/runtime.js.map"
   acl = "public-read"
   content_type = "binary/octet-stream"
+  etag   = "${md5(file("../ui/room-status/dist/room-status/runtime.js.map"))}"
 }
 
 
@@ -88,6 +96,7 @@ resource "aws_s3_bucket_object" "live_occupation_dashboard_file_styles_js" {
   source = "../ui/room-status/dist/room-status/styles.js"
   acl = "public-read"
   content_type = "application/javascript"
+  etag   = "${md5(file("../ui/room-status/dist/room-status/styles.js"))}"
 }
 
 resource "aws_s3_bucket_object" "live_occupation_dashboard_file_styles_js_map" {
@@ -96,6 +105,7 @@ resource "aws_s3_bucket_object" "live_occupation_dashboard_file_styles_js_map" {
   source = "../ui/room-status/dist/room-status/styles.js.map"
   acl = "public-read"
   content_type = "binary/octet-stream"
+  etag   = "${md5(file("../ui/room-status/dist/room-status/styles.js.map"))}"
 }
 
 
@@ -106,6 +116,7 @@ resource "aws_s3_bucket_object" "live_occupation_dashboard_file_vendor_js" {
   source = "../ui/room-status/dist/room-status/vendor.js"
   acl = "public-read"
   content_type = "application/javascript"
+  etag   = "${md5(file("../ui/room-status/dist/room-status/vendor.js"))}"
 }
 
 resource "aws_s3_bucket_object" "live_occupation_dashboard_file_vendor_js_map" {
@@ -114,6 +125,7 @@ resource "aws_s3_bucket_object" "live_occupation_dashboard_file_vendor_js_map" {
   source = "../ui/room-status/dist/room-status/vendor.js.map"
   acl = "public-read"
   content_type = "binary/octet-stream"
+  etag   = "${md5(file("../ui/room-status/dist/room-status/vendor.js.map"))}"
 }
 
 
