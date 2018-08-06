@@ -30,7 +30,6 @@ export class OccupationsComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log("=========== INIT ===============");
     var occ = new Occupation("someRoomId", "name", "free");
     var occ2 = new Occupation("someRoomId2", "anderer name", "free");
     this.occupations.push(occ);
@@ -54,13 +53,19 @@ export class OccupationsComponent implements OnInit {
           const rooms = response.rooms;
           if(rooms && rooms.length > 0) {
             this.occupations = rooms;
-            console.log(this.hist);
+
+
 
             for(var i=0; i<rooms.length; i++) {
 
               /* init for room if not already done */
               if(!this.hist[rooms[i].roomId]) {
                 this.hist[rooms[i].roomId] = [];
+
+                /* fill with predefined "no data" entries to show on beginning */
+                for(var j=0; j<20; j++) {
+                  this.hist[rooms[i].roomId].push("no data");
+                }
               }
 
               /* push a new status into the history */

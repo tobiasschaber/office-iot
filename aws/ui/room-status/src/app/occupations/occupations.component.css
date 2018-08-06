@@ -1,6 +1,7 @@
 .mainOccupationBox {
   border: 0px solid #1C6EA4;
-  height: 100px;
+  height: 50px;
+
 }
 
 
@@ -91,8 +92,15 @@
 
 
 .box-head {
-  border-bottom: 1px solid #999999;
+  border-bottom: 3px double #444444;
   font-family: Lato, cursive;
+  color: #444444;
   font-size: 1em;
   padding-bottom: 10px;
+  height: 10px;
+}
+
+
+.box-head-spacer {
+  height: 50px;
 }

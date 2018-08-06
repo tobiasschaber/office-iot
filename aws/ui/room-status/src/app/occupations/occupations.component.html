@@ -2,21 +2,19 @@
 
 
   <div class="box-head">Status of all rooms:</div>
+  <div class="box-head-spacer"></div>
 
   <div class="mainOccupationBox"
        *ngFor="let occupation of occupations"
-       [ngClass]="{'free':occupation.status === 'free', 'occupied':occupation.status === 'occupied', 'nodata':occupation.status === 'no sensor data'}">
+       [ngClass]="{'free':occupation.status === 'free', 'occupied':occupation.status === 'occupied', 'nodata':occupation.status === 'no data'}">
 
     <div class="roomName">{{occupation.roomName}}</div>
     <div class="roomSign">&#9679;</div>
     <div class="statusBar">
-    <div class="statusItem"
+      <div class="statusItem"
          *ngFor="let item of hist[occupation.roomId]"
-           [ngClass]="{'freeLine':item === 'free', 'occupiedLine':item === 'occupied', 'nodataLine':item === 'no sensor data'}">
+         [ngClass]="{'freeLine':item === 'free', 'occupiedLine':item === 'occupied', 'nodataLine':item === 'no data'}">
+      </div>
     </div>
-
-
-
   </div>
-
 </div>
