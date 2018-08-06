@@ -14,7 +14,7 @@
 
   padding-top: 10px;
 
-  font-family: Lato, cursive;
+  font-family: Panton;
   font-size: 1em;
 }
 
@@ -27,7 +27,7 @@
   border: 0px solid blue;
   padding-top: 10px;
 
-  font-family: Lato, cursive;
+  font-family: Panton;
   font-size: 1em;
 }
 
@@ -93,7 +93,7 @@
 
 .box-head {
   border-bottom: 3px double #444444;
-  font-family: Lato, cursive;
+  font-family: Panton;
   color: #444444;
   font-size: 1em;
   padding-bottom: 10px;
