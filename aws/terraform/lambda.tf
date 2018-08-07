@@ -147,3 +147,16 @@ resource "aws_lambda_function" "update_current_room_occupation" {
   #source_code_hash = "${base64sha256(file("../lambda/build/lambda.zip"))}"
   timeout = "10"
 }
+
+# the API lambda to update the last updated state of a sensor
+resource "aws_lambda_function" "set_sensor_last_updated" {
+  description = "update a sensor with the information when it was updated last"
+  filename = "${data.archive_file.lambda_archive_file.output_path}"
+  function_name = "setSensorLastUpdateReceived"
+  handler = "api/setSensorLastUpdateReceived.setSensorLastUpdateReceived"
+  role = "${aws_iam_role.lambda_execution_role.arn}"
+  runtime = "nodejs8.10"
+  source_code_hash = "${data.archive_file.lambda_archive_file.output_base64sha256}"
+  #source_code_hash = "${base64sha256(file("../lambda/build/lambda.zip"))}"
+  timeout = "10"
+}

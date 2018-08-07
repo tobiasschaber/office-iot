@@ -50,6 +50,30 @@ exports.deleteSensor = async (sensorId) => {
 
 
 /**
+ * return the current status of all sensors
+ * @return {Promise<void>}
+ */
+exports.getSensorStatus = async () => {
+    AWS.config.update({region: awsRegion});
+    return getSensorStatus();
+}
+
+
+/**
+ * update the last update received status field of a sensor
+ * @param sensorId the sensor to update
+ * @param lastUpdatedTimestamp the new last updated timestamp
+ * @return {Promise<void>}
+ */
+exports.setSensorLastUpdateReceived = async (sensorId, lastUpdatedTimestamp) => {
+    AWS.config.update({region: awsRegion});
+    return setSensorLastUpdateReceived(sensorId, lastUpdatedTimestamp);
+
+}
+
+
+
+/**
  * get all sensors for a room
  * @param roomId
  */
@@ -88,6 +112,56 @@ async function deleteSensor(sensorId) {
 }
 
 
+/**
+ * get sensor status for all sensors
+ * @return {Promise<any>}
+ */
+async function getSensorStatus() {
+    let searchParams = getSearchParamsForGetSensorStatus();
+    let sensors = await serviceHelper.getQueryPromise(searchParams);
+
+    if(sensors.Items.length === 0) {
+        return "not found";
+    }
+    return sensors.Items;
+
+}
+
+
+/**
+ * update the "last updated" field of a sensor
+ * @param sensorId the sensor to update
+ * @param lastUpdatedTimestamp the new last updated timestamp
+ * @return {Promise<any>}
+ */
+async function setSensorLastUpdateReceived(sensorId, lastUpdatedTimestamp) {
+
+    let insertParams = getUpdateParamsSetLastUpdateReceived(sensorId, lastUpdatedTimestamp);
+    return await serviceHelper.getUpdatePromise(insertParams);
+}
+
+
+/**
+ * create the insert params to update the last updated timestamp of a sensor
+ * @param sensorId the sensor to update
+ * @param lastUpdatedTimestamp the new timestamp
+ * @return {{TableName: string, Item: {sensorId: *, lastUpdated: *}}}
+ */
+function getUpdateParamsSetLastUpdateReceived(sensorId, lastUpdatedTimestamp) {
+
+    return {
+        TableName: sensorsTableName,
+        Key: {
+            "sensorId": sensorId
+        },
+        UpdateExpression: "set lastUpdated = :lu",
+        ExpressionAttributeValues: {
+            ":lu": lastUpdatedTimestamp
+        },
+        ReturnValues:"UPDATED_NEW"
+    }
+}
+
 
 /**
  * create the search parameters for deleting a sensor by sensorId
@@ -108,13 +182,23 @@ function getSearchParamsForListSensorsForRoom(roomId) {
     /* sensor database query parameters */
     return {
         TableName: sensorsTableName,
-        ProjectionExpression: "sensorId, #attachedInRoom, description",
+        ProjectionExpression: "sensorId, #attachedInRoom, description, lastUpdated",
         FilterExpression:" #attachedInRoom = :attachedInRoom",
         ExpressionAttributeNames: {
             "#attachedInRoom": "attachedInRoom"
         }, ExpressionAttributeValues: {
             ":attachedInRoom": roomId
         }
+    }
+}
+
+
+function getSearchParamsForGetSensorStatus() {
+
+    /* sensor database query parameters */
+    return {
+        TableName: sensorsTableName,
+        ProjectionExpression: "sensorId, attachedInRoom, description, lastUpdated",
     }
 }
 

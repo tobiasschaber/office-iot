@@ -72,6 +72,11 @@ resource "aws_iot_topic_rule" "motion_detection_forwarder_rule" {
     function_arn = "${aws_lambda_function.update_current_room_occupation.arn}"
   }
 
+  lambda {
+    function_arn = "${aws_lambda_function.set_sensor_last_updated.arn}"
+  }
+
+
 
 
 //  elasticsearch {
