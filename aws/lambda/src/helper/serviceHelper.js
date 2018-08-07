@@ -67,5 +67,28 @@ exports.getDeletePromise = async (deleteParams) => {
 
 
 
+/**
+ * create a promise for the dynamoDB update
+ * @param updateParams the input parameters to change
+ * @return {Promise<any>}
+ */
+exports.getUpdatePromise = async (updateParams) => {
+
+    let docClient = new AWS.DynamoDB.DocumentClient();
+
+    return new Promise((resolve, reject) => {
+        docClient.update(updateParams, function (err, data) {
+            if(err) {
+                console.log(err);
+                reject("error deleting");
+            } else {
+                resolve("deleted");
+            }
+        });
+    });
+};
+
+
+
 
 
