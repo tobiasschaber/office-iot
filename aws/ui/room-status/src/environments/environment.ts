@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  occupationServiceUrl: 'https://tw2a648px5.execute-api.eu-central-1.amazonaws.com/prod/occupation'
+  occupationServiceUrl: 'https://fhnkk7v7mc.execute-api.eu-central-1.amazonaws.com/prod/occupation'
 };
 
 /*

@@ -109,6 +109,20 @@ resource "aws_lambda_function" "detach_sensor_from_room_lambda" {
   timeout = "10"
 }
 
+# the API lambda to detach a sensor from a room
+resource "aws_lambda_function" "get_sensor_status_lambda" {
+  description = "get the status for all sensors"
+  filename = "${data.archive_file.lambda_archive_file.output_path}"
+  function_name = "getSensorStatus"
+  handler = "api/getSensorStatus.getSensorStatus"
+  role = "${aws_iam_role.lambda_execution_role.arn}"
+  runtime = "nodejs8.10"
+  source_code_hash = "${data.archive_file.lambda_archive_file.output_base64sha256}"
+  #source_code_hash = "${base64sha256(file("../lambda/build/lambda.zip"))}"
+  timeout = "10"
+}
+
+
 # the API lambda to list all rooms
 resource "aws_lambda_function" "list_rooms_lambda" {
   description = "list all existing rooms"
