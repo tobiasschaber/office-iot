@@ -1,0 +1,17 @@
+<div class="sensorStatus">
+
+  <div class="box-head">Status of all sensors:</div>
+
+
+  <div class="mainSensorStatusBox"
+  *ngFor="let sens of sensors">
+    <div class="singleSensorStatus">
+      <div class="sensorName">Sensor: {{ sens.sensorId }}</div>
+      <div class="sensorLastChanged">Last Update: {{ sens.lastUpdated | date:'dd:MM:yyyy HH:mm:ss' }}</div>
+    </div>
+  </div>
+
+
+
+
+</div>

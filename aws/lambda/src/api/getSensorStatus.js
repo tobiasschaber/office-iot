@@ -19,6 +19,10 @@ exports.getSensorStatus = async (event, context, callback) => {
     AWS.config.update({region: awsRegion});
 
     let status = await sensorService.getSensorStatus();
-    callback(null, apiHelper.createResponse(200, JSON.stringify(status)));
+
+    let responseBody = {};
+    responseBody.sensors = status;
+
+    callback(null, apiHelper.createResponse(200, JSON.stringify(responseBody)));
 }
 

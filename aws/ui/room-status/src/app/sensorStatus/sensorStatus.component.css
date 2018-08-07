@@ -1,0 +1,57 @@
+.sensorStatus {
+  padding: 3em;
+  margin: 0 auto;
+  width: 500px;
+}
+
+
+
+.box-head {
+  border-bottom: 3px double #444444;
+  font-family: Panton;
+  color: #444444;
+  font-size: 1em;
+  padding-bottom: 10px;
+  height: 10px;
+}
+
+.box-head-spacer {
+  height: 50px;
+}
+
+
+.mainSensorStatusBox {
+  border: 0px solid #1C6EA4;
+  height: 50px;
+
+}
+
+
+.singleSensorStatus {
+  float:left;
+  vertical-align: middle;
+  width:100%;
+  height: 30px;
+  border: 0px solid red;
+
+  padding-top: 10px;
+}
+
+
+.sensorName {
+  width: 200px;
+  float: left;
+
+  font-family: Panton;
+  color: lightgray;
+  font-size: 1em;
+}
+
+.sensorLastChanged {
+  width: 400px;
+  float: left;
+
+  font-family: Panton;
+  color: lightgray;
+  font-size: 1em;
+}
