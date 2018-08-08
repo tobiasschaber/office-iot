@@ -1,0 +1,50 @@
+<h2>Manage rooms</h2>
+
+<div class="roomsSelectionList">
+  <h3>Rooms</h3>
+
+  <div *ngFor="let room of rooms">
+    <span><a (click)="onSelect(room)" >{{room.roomName}}</a></span>
+  </div>
+
+  <div>
+    <span><a (click)="onSelect(undefined)" >Add Room (+)</a></span>
+  </div>
+
+</div>
+
+<div class="roomEditor">
+  <div *ngIf="selectedRoom">
+    <h3>Edit room</h3>
+
+    <table>
+      <tr>
+        <td width="150">Room ID</td>
+        <td>{{selectedRoom.roomId}}</td>
+      </tr>
+
+      <tr>
+        <td width="150">Room Name</td>
+        <td><input [(ngModel)]="selectedRoom.roomName" placeholder="Room-Name"></td>
+      </tr>
+
+      <tr>
+        <td width="150">G. Calendar ID</td>
+        <td><input [(ngModel)]="selectedRoom.calendarId" placeholder="Calendar ID"></td>
+      </tr>
+
+      <tr>
+        <td width="150">G. Calendar Svc Acc</td>
+        <td><input [(ngModel)]="selectedRoom.calendarServiceAccountId" placeholder="Calendar Service Account ID"></td>
+      </tr>
+
+      <tr>
+        <td width="150">G. Calendar Priv Key</td>
+        <td><textarea [(ngModel)]="selectedRoom.calendarServiceAccountPrivateKey" cols="30" rows="8"></textarea>
+      </tr>
+
+    </table>
+  </div>
+
+</div>
+

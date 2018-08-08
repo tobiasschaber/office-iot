@@ -1,0 +1,46 @@
+<h2>Manage sensors</h2>
+
+<div class="sensorsSelectionList">
+    <h3>Sensors</h3>
+
+      <div *ngFor="let sensor of sensors">
+        <span><a (click)="onSelect(sensor)" >{{sensor.sensorId}}</a></span>
+      </div>
+
+      <div>
+        <span><a (click)="onSelect(undefined)" >Add Sensor (+)</a></span>
+      </div>
+
+  </div>
+
+  <div class="sensorEditor">
+    <div *ngIf="selectedSensor">
+      <h3>Edit sensor</h3>
+
+      <table>
+        <tr>
+          <td width="150">Sensor ID</td>
+          <td><input [(ngModel)]="selectedSensor.sensorId" placeholder="Sensor-ID"></td>
+        </tr>
+
+        <tr>
+          <td>Description</td>
+          <td><input [(ngModel)]="selectedSensor.description" placeholder="Description"></td>
+        </tr>
+
+        <tr>
+          <td>Attached to Room</td>
+          <td><input [(ngModel)]="selectedSensor.attachedInRoom" placeholder="Sensor-ID"></td>
+        </tr>
+
+        <tr>
+          <td>Last Data</td>
+          <td>{{selectedSensor.lastUpdated | date:'dd:MM:yyyy HH:mm:ss' }}</td>
+        </tr>
+
+      </table>
+
+    </div>
+
+  </div>
+

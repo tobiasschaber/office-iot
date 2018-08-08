@@ -1,0 +1,24 @@
+
+
+/* Application-wide Styles */
+h1 {
+  color: #369;
+  font-size: 200%;
+}
+h2, h3 {
+  color: #444;
+  font-weight: lighter;
+}
+body {
+  margin: 2em;
+}
+
+body, input[text], button, textarea {
+  color: #888;
+}
+
+/* everywhere else */
+* {
+  font-family: Panton;
+}
+

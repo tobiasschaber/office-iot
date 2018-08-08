@@ -1,0 +1,30 @@
+
+
+.sensorsSelectionList {
+  float: left;
+  width: 15%;
+  height:500px;
+  border-right: 1px solid darkgray;
+  text-align: right;
+  padding-right: 20px;
+
+}
+
+.sensorEditor {
+  margin-left: 20px;
+  float: left;
+  width: 70%;
+  height: 400px;
+  border: 0px solid red;
+}
+
+a {
+  color: #444444;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #888888;
+  text-decoration: none;
+  cursor: grabbing;
+}
