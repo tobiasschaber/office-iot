@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Sensor } from '../data/sensor';
+import { Room } from "../data/room";
+
 import { SensorDataService } from '../services/sensor-data.service';
+import { RoomsDataService } from "../services/rooms.service";
+
 
 @Component({
   selector: 'app-sensors',
@@ -11,13 +15,18 @@ export class SensorsComponent implements OnInit {
 
 
   sensors: Array<Sensor>;
+  rooms: Array<Room>;
   selectedSensor: Sensor; // sensor which is currently selected for editing in ui
 
-  constructor(private sensorDataService: SensorDataService) {
+  model = "";
+
+  constructor(private sensorDataService: SensorDataService, private roomDataService: RoomsDataService) {
     this.sensors = [];
+    this.rooms = [];
   }
 
   ngOnInit() {
+    this.loadRooms();
     this.loadSensors();
 
   }
@@ -55,4 +64,17 @@ export class SensorsComponent implements OnInit {
   }
 
 
+  /**
+   * load rooms from service
+   */
+  loadRooms() {
+    this.roomDataService.getRooms()
+      .subscribe(response => {
+        if(response) {
+          this.rooms = response.rooms;
+        }
+      }, err => {
+        console.log("Error loading rooms from backend service");
+      });
+  }
 }
