@@ -31,7 +31,7 @@
         <tr>
           <td>Attached to Room</td>
           <td>
-            <select required
+            <select required (change)="updateSensorAttachment(selectedSensor)"
                     [(ngModel)]="selectedSensor.attachedInRoom">
               <option *ngFor="let room of rooms" [value]="room.roomId">{{room.roomName}}</option>
             </select>

@@ -73,6 +73,13 @@ resource "aws_api_gateway_method" "sensors_attachment_method_delete" {
   authorization = "NONE"
 }
 
+resource "aws_api_gateway_method" "sensors_attachment_method_options" {
+  rest_api_id   = "${aws_api_gateway_rest_api.officeiot_api.id}"
+  resource_id   = "${aws_api_gateway_resource.sensor_attachment_resource.id}"
+  http_method   = "OPTIONS"
+  authorization = "NONE"
+}
+
 resource "aws_api_gateway_method" "sensor_method_get" {
   rest_api_id   = "${aws_api_gateway_rest_api.officeiot_api.id}"
   resource_id   = "${aws_api_gateway_resource.sensor_resource.id}"
@@ -183,6 +190,26 @@ resource "aws_api_gateway_method_response" "room_options_200" {
   }
 }
 
+# configuration for CORS for sensor calls
+resource "aws_api_gateway_method_response" "attachment_options_200" {
+  rest_api_id = "${aws_api_gateway_rest_api.officeiot_api.id}"
+  resource_id = "${aws_api_gateway_resource.sensor_attachment_resource.id}"
+  http_method = "${aws_api_gateway_method.sensors_attachment_method_options.http_method}"
+  status_code = "200"
+
+  response_models {
+    "application/json" = "Empty"
+  }
+
+  # CORS headers
+  response_parameters {
+    "method.response.header.Access-Control-Allow-Headers" = true,
+    "method.response.header.Access-Control-Allow-Origin" = true,
+    "method.response.header.Access-Control-Allow-Credentials" = true,
+    "method.response.header.Access-Control-Allow-Methods" = true
+  }
+}
+
 
 
 # -------------------------------------------------------
@@ -251,6 +278,28 @@ resource "aws_api_gateway_integration_response" "room_options_integration_respon
 EOF
   }
 }
+
+resource "aws_api_gateway_integration_response" "sensor_attachment_options_integration_response" {
+  rest_api_id   = "${aws_api_gateway_rest_api.officeiot_api.id}"
+  resource_id   = "${aws_api_gateway_resource.sensor_attachment_resource.id}"
+  http_method   = "${aws_api_gateway_method.sensors_attachment_method_options.http_method}"
+  status_code   = "${aws_api_gateway_method_response.attachment_options_200.status_code}"
+
+  # CORS response headers
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+    "method.response.header.Access-Control-Allow-Origin" = "'*'",
+    "method.response.header.Access-Control-Allow-Credentials" = "'true'",
+    "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS'"
+  }
+
+  response_templates {
+    "application/json" = <<EOF
+#set($inputRoot = $input.path('$'))
+EOF
+  }
+}
+
 
 
 # -------------------------------------------------------
@@ -353,6 +402,20 @@ EOF
   }
 }
 
+resource "aws_api_gateway_integration" "sensor_attachment_options_integration" {
+  rest_api_id = "${aws_api_gateway_rest_api.officeiot_api.id}"
+  resource_id = "${aws_api_gateway_resource.sensor_attachment_resource.id}"
+  http_method = "${aws_api_gateway_method.sensors_attachment_method_options.http_method}"
+  type = "MOCK"
+
+  request_templates {
+    "application/json" = <<EOF
+#set($inputRoot = $input.path('$'))
+ { statusCode: 200 }
+EOF
+  }
+}
+
 
 # -------------------------------------------------------
 # deployments
@@ -367,6 +430,7 @@ resource "aws_api_gateway_deployment" "deployment" {
     "aws_api_gateway_integration.room_options_integration",
     "aws_api_gateway_integration.sensor_attachment_post_integration",
     "aws_api_gateway_integration.sensor_attachment_delete_integration",
+    "aws_api_gateway_integration.sensor_attachment_options_integration",
     "aws_api_gateway_integration.sensor_get_integration",
     "aws_api_gateway_integration.sensor_options_integration",
     "aws_api_gateway_integration.occupation_get_integration",

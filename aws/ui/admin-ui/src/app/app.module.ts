@@ -12,6 +12,7 @@ import {HttpClientModule} from "@angular/common/http";
 
 import { SensorDataService } from "./services/sensor-data.service";
 import { RoomsDataService } from "./services/rooms.service";
+import {SensorAttachmentService} from "./services/sensor-attachment-service";
 
 @NgModule({
   declarations: [
@@ -26,7 +27,7 @@ import { RoomsDataService } from "./services/rooms.service";
     FormsModule,
     AppRoutingModule
   ],
-  providers: [ SensorDataService, RoomsDataService ],
+  providers: [ SensorDataService, RoomsDataService, SensorAttachmentService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

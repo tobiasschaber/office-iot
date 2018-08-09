@@ -3,6 +3,7 @@ import { Sensor } from '../data/sensor';
 import { Room } from "../data/room";
 
 import { SensorDataService } from '../services/sensor-data.service';
+import { SensorAttachmentService } from "../services/sensor-attachment-service";
 import { RoomsDataService } from "../services/rooms.service";
 
 
@@ -20,7 +21,10 @@ export class SensorsComponent implements OnInit {
 
   model = "";
 
-  constructor(private sensorDataService: SensorDataService, private roomDataService: RoomsDataService) {
+  constructor(
+      private sensorDataService: SensorDataService,
+      private roomDataService: RoomsDataService,
+      private sensorAttachmentService: SensorAttachmentService) {
     this.sensors = [];
     this.rooms = [];
   }
@@ -76,5 +80,10 @@ export class SensorsComponent implements OnInit {
       }, err => {
         console.log("Error loading rooms from backend service");
       });
+  }
+
+  public updateSensorAttachment(sensor: Sensor) {
+    this.sensorAttachmentService.updateSensorAttachment(sensor);
+
   }
 }
