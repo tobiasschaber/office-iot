@@ -23,6 +23,17 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
  */
 exports.attachSensorToRoom = async (event, context, callback) => {
 
+    if(event.body) {
+        if(!event.queryStringParameters) {
+            event.queryStringParameters = [];
+        }
+        let requestBody = JSON.parse(event.body);
+
+        event.queryStringParameters.sensorId = requestBody.sensorId;
+        event.queryStringParameters.roomId = requestBody.roomId;
+        event.queryStringParameters.description = requestBody.description;
+    }
+
     /* ensure event format is correct */
     if (!event || !event.queryStringParameters) {
         callback(null, apiHelper.createResponse(500, "event or event.queryStringParameters not set"));
