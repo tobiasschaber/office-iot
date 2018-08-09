@@ -2,7 +2,7 @@
 
 .roomsSelectionList {
   float: left;
-  width: 15%;
+  width: 12%;
   height:500px;
   border-right: 1px solid darkgray;
   text-align: right;
@@ -28,3 +28,13 @@ a:hover {
   text-decoration: none;
   cursor: grabbing;
 }
+
+input {
+  width: 500px;
+}
+
+textarea {
+  width: 500px;
+  height: 200px;
+}
+

@@ -2,7 +2,7 @@
 
 .sensorsSelectionList {
   float: left;
-  width: 15%;
+  width: 12%;
   height:500px;
   border-right: 1px solid darkgray;
   text-align: right;
@@ -27,4 +27,8 @@ a:hover {
   color: #888888;
   text-decoration: none;
   cursor: grabbing;
+}
+
+input {
+  width: 300px;
 }

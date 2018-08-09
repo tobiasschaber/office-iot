@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Sensor } from '../data/sensor';
-import {Room} from "../data/room";
+import { SensorDataService } from '../services/sensor-data.service';
 
 @Component({
   selector: 'app-sensors',
@@ -9,26 +9,19 @@ import {Room} from "../data/room";
 })
 export class SensorsComponent implements OnInit {
 
-  sensors = Array<Sensor>();
-  selectedSensor: Sensor;
 
-  rooms = Array<Room>();
+  sensors: Array<Sensor>;
+  selectedSensor: Sensor; // sensor which is currently selected for editing in ui
 
-  constructor() {
-
-    let room1 = new Room("000-000-000", "Jakku", "calendarID", "service acc ID", "private key");
-    let room2 = new Room("000-000-001", "Meetup-Raum", "calendarID2", "service acc ID2", "private key 2");
-
-    this.rooms.push(room1);
-    this.rooms.push(room2);
-
-    this.sensors.push(new Sensor("ghijkl", 0, "sensor b tischmodell", "000-000-000"));
-    this.sensors.push(new Sensor("abcdef", 0, "sensor a wandmodell", undefined));
+  constructor(private sensorDataService: SensorDataService) {
+    this.sensors = [];
   }
 
   ngOnInit() {
+    this.loadSensors();
 
   }
+
 
   /**
    * select other sensor from the sensors list or hit the "add sensor" button
@@ -36,11 +29,30 @@ export class SensorsComponent implements OnInit {
    */
   onSelect(sensor: Sensor) {
     if(!sensor) {
-      this.selectedSensor = new Sensor("", 0, "", undefined)
+      this.selectedSensor = new Sensor("", 0, "", "")
       this.sensors.push(this.selectedSensor);
     } else {
       this.selectedSensor = sensor;
     }
   }
+
+
+  /**
+   * load sensors from the service
+   */
+  loadSensors() {
+    console.log("LOADING SENSORS");
+
+    this.sensorDataService.getSensors()
+      .subscribe(response => {
+        if(response) {
+          this.sensors = response.sensors;
+        }
+
+      }, err => {
+        console.log("Error loading sensors from backend service");
+      });
+  }
+
 
 }

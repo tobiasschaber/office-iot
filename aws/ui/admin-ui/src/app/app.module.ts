@@ -6,8 +6,12 @@ import { AppComponent } from './app.component';
 import { SensorsComponent } from './sensors/sensors.component';
 import { RoomsComponent } from "./rooms/rooms.component";
 
-import { AppRoutingModule } from './/app-routing.module';
+import { AppRoutingModule } from './app-routing.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import {HttpClientModule} from "@angular/common/http";
+
+import { SensorDataService } from "./services/sensor-data.service";
+import { RoomsDataService } from "./services/rooms.service";
 
 @NgModule({
   declarations: [
@@ -18,10 +22,12 @@ import { DashboardComponent } from './dashboard/dashboard.component';
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
     FormsModule,
     AppRoutingModule
   ],
-  providers: [],
+  providers: [ SensorDataService, RoomsDataService ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Room} from "../data/room";
-import {Sensor} from "../data/sensor";
+
+import { RoomsDataService} from "../services/rooms.service";
 
 @Component({
   selector: 'app-rooms',
@@ -9,19 +10,15 @@ import {Sensor} from "../data/sensor";
 })
 export class RoomsComponent implements OnInit {
 
-  rooms = Array<Room>();
-  selectedRoom: Room;
+  rooms: Array<Room>;
+  selectedRoom: Room; // room which is currently selected for editing in ui
 
-  constructor() {
-
-    let room1 = new Room("000-000-000", "Jakku", "calendarID", "service acc ID", "private key");
-    let room2 = new Room("000-000-001", "Meetup-Raum", "calendarID2", "service acc ID2", "private key 2");
-    this.rooms.push(room1)
-    this.rooms.push(room2)
-
+  constructor(private roomsDataService: RoomsDataService) {
+    this.rooms = [];
   }
 
   ngOnInit() {
+    this.loadRooms();
 
   }
 
@@ -37,6 +34,21 @@ export class RoomsComponent implements OnInit {
     } else {
       this.selectedRoom = room;
     }
+  }
+
+
+  /**
+   * load rooms from service
+   */
+  loadRooms() {
+    this.roomsDataService.getRooms()
+      .subscribe(response => {
+        if(response) {
+          this.rooms = response.rooms;
+        }
+      }, err => {
+        console.log("Error loading rooms from backend service");
+      });
   }
 
 }
