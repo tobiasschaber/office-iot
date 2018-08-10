@@ -19,6 +19,28 @@ resource "aws_s3_bucket" "occupation_dashboard_bucket" {
   }
 }
 
+
+# the se bucket for the administration UI
+resource "aws_s3_bucket" "occupation_admin_ui_bucket" {
+  bucket = "office-iot-admin-ui"
+  acl    = "public-read"
+
+  website {
+    index_document = "index.html"
+    error_document = "error.html"
+  }
+
+  cors_rule {
+
+    allowed_methods = ["GET", "PUT", "POST"],
+    allowed_origins = ["*"],
+    max_age_seconds = 300000,
+    allowed_headers = ["*"]
+
+  }
+}
+
+
 resource "aws_s3_bucket_object" "live_occupation_dashboard_file_index_html" {
   bucket = "${aws_s3_bucket.occupation_dashboard_bucket.bucket}"
   key = "index.html"
