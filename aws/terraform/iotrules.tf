@@ -19,7 +19,7 @@ resource "aws_iam_role" "motions_table_update_role" {
 EOF
 }
 
-# role which will be used to update the dynamodb motions table
+# role which will be used to update elasticsearch
 resource "aws_iam_role" "elasticsearch_update_role" {
   name = "elasticsearch_table_update_role"
   assume_role_policy = <<EOF

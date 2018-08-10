@@ -140,12 +140,7 @@ resource "aws_api_gateway_method_response" "sensor_options_200" {
   }
 
   # CORS headers
-  response_parameters {
-    "method.response.header.Access-Control-Allow-Headers" = true,
-    "method.response.header.Access-Control-Allow-Origin" = true,
-    "method.response.header.Access-Control-Allow-Credentials" = true,
-    "method.response.header.Access-Control-Allow-Methods" = true
-  }
+  response_parameters = "${var.cors_method_response_parameters}"
 }
 
 
@@ -161,12 +156,7 @@ resource "aws_api_gateway_method_response" "occupation_options_200" {
   }
 
   # CORS headers
-  response_parameters {
-    "method.response.header.Access-Control-Allow-Headers" = true,
-    "method.response.header.Access-Control-Allow-Origin" = true,
-    "method.response.header.Access-Control-Allow-Credentials" = true,
-    "method.response.header.Access-Control-Allow-Methods" = true
-  }
+  response_parameters = "${var.cors_method_response_parameters}"
 }
 
 
@@ -182,12 +172,7 @@ resource "aws_api_gateway_method_response" "room_options_200" {
   }
 
   # CORS headers
-  response_parameters {
-    "method.response.header.Access-Control-Allow-Headers" = true,
-    "method.response.header.Access-Control-Allow-Origin" = true,
-    "method.response.header.Access-Control-Allow-Credentials" = true,
-    "method.response.header.Access-Control-Allow-Methods" = true
-  }
+  response_parameters = "${var.cors_method_response_parameters}"
 }
 
 # configuration for CORS for sensor calls
@@ -202,12 +187,7 @@ resource "aws_api_gateway_method_response" "attachment_options_200" {
   }
 
   # CORS headers
-  response_parameters {
-    "method.response.header.Access-Control-Allow-Headers" = true,
-    "method.response.header.Access-Control-Allow-Origin" = true,
-    "method.response.header.Access-Control-Allow-Credentials" = true,
-    "method.response.header.Access-Control-Allow-Methods" = true
-  }
+  response_parameters = "${var.cors_method_response_parameters}"
 }
 
 
@@ -223,17 +203,10 @@ resource "aws_api_gateway_integration_response" "occupation_options_integration_
   status_code   = "${aws_api_gateway_method_response.occupation_options_200.status_code}"
 
   # CORS response headers
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-    "method.response.header.Access-Control-Allow-Origin" = "'*'",
-    "method.response.header.Access-Control-Allow-Credentials" = "'true'",
-    "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS'"
-  }
+  response_parameters = "${var.cors_integration_response_response_parameters}"
 
   response_templates {
-    "application/json" = <<EOF
-#set($inputRoot = $input.path('$'))
-EOF
+    "application/json" = "${var.cors_integration_response_template}"
   }
 }
 
@@ -243,18 +216,10 @@ resource "aws_api_gateway_integration_response" "sensor_options_integration_resp
   http_method   = "${aws_api_gateway_method.sensor_method_options.http_method}"
   status_code   = "${aws_api_gateway_method_response.sensor_options_200.status_code}"
 
-  # CORS response headers
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-    "method.response.header.Access-Control-Allow-Origin" = "'*'",
-    "method.response.header.Access-Control-Allow-Credentials" = "'true'",
-    "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS'"
-  }
+  response_parameters = "${var.cors_integration_response_response_parameters}"
 
   response_templates {
-    "application/json" = <<EOF
-#set($inputRoot = $input.path('$'))
-EOF
+    "application/json" = "${var.cors_integration_response_template}"
   }
 }
 
@@ -264,18 +229,10 @@ resource "aws_api_gateway_integration_response" "room_options_integration_respon
   http_method   = "${aws_api_gateway_method.room_method_options.http_method}"
   status_code   = "${aws_api_gateway_method_response.room_options_200.status_code}"
 
-  # CORS response headers
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-    "method.response.header.Access-Control-Allow-Origin" = "'*'",
-    "method.response.header.Access-Control-Allow-Credentials" = "'true'",
-    "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS'"
-  }
+  response_parameters = "${var.cors_integration_response_response_parameters}"
 
   response_templates {
-    "application/json" = <<EOF
-#set($inputRoot = $input.path('$'))
-EOF
+    "application/json" = "${var.cors_integration_response_template}"
   }
 }
 
@@ -285,18 +242,10 @@ resource "aws_api_gateway_integration_response" "sensor_attachment_options_integ
   http_method   = "${aws_api_gateway_method.sensors_attachment_method_options.http_method}"
   status_code   = "${aws_api_gateway_method_response.attachment_options_200.status_code}"
 
-  # CORS response headers
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-    "method.response.header.Access-Control-Allow-Origin" = "'*'",
-    "method.response.header.Access-Control-Allow-Credentials" = "'true'",
-    "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS'"
-  }
+  response_parameters = "${var.cors_integration_response_response_parameters}"
 
   response_templates {
-    "application/json" = <<EOF
-#set($inputRoot = $input.path('$'))
-EOF
+    "application/json" = "${var.cors_integration_response_template}"
   }
 }
 
@@ -367,10 +316,7 @@ resource "aws_api_gateway_integration" "sensor_options_integration" {
   type                    = "MOCK"
 
   request_templates {
-    "application/json" = <<EOF
-#set($inputRoot = $input.path('$'))
- { statusCode: 200 }
-EOF
+    "application/json" = "${var.cors_options_integration_request_template}"
   }
 }
 
@@ -381,10 +327,7 @@ resource "aws_api_gateway_integration" "occupation_options_integration" {
   type = "MOCK"
 
   request_templates {
-    "application/json" = <<EOF
-#set($inputRoot = $input.path('$'))
- { statusCode: 200 }
-EOF
+    "application/json" = "${var.cors_options_integration_request_template}"
   }
 }
 
@@ -395,10 +338,7 @@ resource "aws_api_gateway_integration" "room_options_integration" {
   type = "MOCK"
 
   request_templates {
-    "application/json" = <<EOF
-#set($inputRoot = $input.path('$'))
- { statusCode: 200 }
-EOF
+    "application/json" = "${var.cors_options_integration_request_template}"
   }
 }
 
@@ -409,10 +349,7 @@ resource "aws_api_gateway_integration" "sensor_attachment_options_integration" {
   type = "MOCK"
 
   request_templates {
-    "application/json" = <<EOF
-#set($inputRoot = $input.path('$'))
- { statusCode: 200 }
-EOF
+    "application/json" = "${var.cors_options_integration_request_template}"
   }
 }
 

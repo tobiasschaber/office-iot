@@ -3,8 +3,8 @@
 resource "aws_dynamodb_table" "room_table" {
   hash_key = "roomId"
   name = "rooms"
-  read_capacity = 2
-  write_capacity = 1
+  read_capacity = "${var.dynamodb_table_read_capacity_rooms}"
+  write_capacity = "${var.dynamodb_table_write_capacity_rooms}"
 
   "attribute" {
     name = "roomId"
@@ -23,8 +23,8 @@ resource "aws_dynamodb_table" "room_table" {
 resource "aws_dynamodb_table" "sensors_table" {
   hash_key = "sensorId"
   name = "sensors"
-  read_capacity = 2
-  write_capacity = 1
+  read_capacity = "${var.dynamodb_table_read_capacity_sensors}"
+  write_capacity = "${var.dynamodb_table_write_capacity_sensors}"
 
   "attribute" {
     name = "sensorId"
@@ -44,8 +44,8 @@ resource "aws_dynamodb_table" "motions_table" {
   hash_key = "sensorId"
   range_key = "creationTimestamp"
   name ="motions"
-  read_capacity = 7
-  write_capacity = 2
+  read_capacity = "${var.dynamodb_table_read_capacity_motions}"
+  write_capacity = "${var.dynamodb_table_write_capacity_motions}"
 
   "attribute" {
     name = "sensorId"
@@ -71,8 +71,8 @@ resource "aws_dynamodb_table" "occupation_alert_history_table" {
   hash_key = "eventName"
   range_key = "eventStartTimestamp"
   name ="occupationAlertHistory"
-  read_capacity = 2
-  write_capacity = 2
+  read_capacity = "${var.dynamodb_table_read_capacity_occ_alert_hist}"
+  write_capacity = "${var.dynamodb_table_write_capacity_occ_alert_hist}"
 
   "attribute" {
     name = "eventName"
@@ -96,8 +96,8 @@ resource "aws_dynamodb_table" "occupation_alert_history_table" {
 resource "aws_dynamodb_table" "current_room_occupation_table" {
   hash_key = "roomId"
   name ="currentRoomOccupation"
-  read_capacity = 5
-  write_capacity = 2
+  read_capacity = "${var.dynamodb_table_read_capacity_current_room_occ}"
+  write_capacity = "${var.dynamodb_table_write_capacity_current_room_occ}"
 
   "attribute" {
     name = "roomId"

@@ -1,31 +1,34 @@
 
 
-
-
 # time-to-live in hours for motion events in the dynamodb table
-variable "iot_motions_ttl" {
-  default = "24"
-}
+variable "iot_motions_ttl"                                {  default = "24" }
 
 # the IP from where the ELK cluster is accessible
-variable "elasticsearch_policy_open_ip" {
-  default = "109.109.204.162"
-}
-
-variable "region" {
-  default = "eu-central-1"
-}
+variable "elasticsearch_policy_open_ip"                   {  default = "0.0.0.0" }
+variable "region"                                         {  default = "eu-central-1" }
 
 # polling interval in which the occupation matcher is triggered
-variable "occupation_matcher_polling_interval" {
-  default = "rate(5 minutes)"
-}
+variable "occupation_matcher_polling_interval"            {  default = "rate(5 minutes)" }
 
 # webhook URL for slack integration
-variable "slack_webhook_url" {
-  default = "http://"
+variable "slack_webhook_url"                              {  default = "http://" }
 
-}
+# read capacities for dynamodb tables
+variable "dynamodb_table_read_capacity_rooms"             {  default = 2 }
+variable "dynamodb_table_read_capacity_sensors"           {  default = 2 }
+variable "dynamodb_table_read_capacity_motions"           {  default = 7 }
+variable "dynamodb_table_read_capacity_occ_alert_hist"    {  default = 2 }
+variable "dynamodb_table_read_capacity_current_room_occ"  {  default = 5 }
+
+# write capacities for dynamodb tables
+variable "dynamodb_table_write_capacity_rooms"            {  default = 1 }
+variable "dynamodb_table_write_capacity_sensors"          {  default = 1 }
+variable "dynamodb_table_write_capacity_motions"          {  default = 2 }
+variable "dynamodb_table_write_capacity_occ_alert_hist"   {  default = 2 }
+variable "dynamodb_table_write_capacity_current_room_occ" {  default = 2 }
+
+
+
 
 # template for creating a default example room. undefined values will be overwritten
 variable "default_room" {
@@ -63,4 +66,40 @@ variable "default_current_occupation" {
     "lastUpdatedTimestamp": {"N": "0"}
   }
   ITEM
+}
+
+
+# cors template mapping in integration responses
+variable "cors_integration_response_template" {
+  default = <<EOF
+#set($inputRoot = $input.path('$'))
+EOF
+}
+
+variable "cors_options_integration_request_template" {
+  default = <<EOF
+#set($inputRoot = $input.path('$'))
+ { statusCode: 200 }
+EOF
+}
+
+
+variable "cors_method_response_parameters" {
+  type = "map"
+  default = {
+    "method.response.header.Access-Control-Allow-Headers" = true,
+    "method.response.header.Access-Control-Allow-Origin" = true,
+    "method.response.header.Access-Control-Allow-Credentials" = true,
+    "method.response.header.Access-Control-Allow-Methods" = true
+  }
+}
+
+variable "cors_integration_response_response_parameters" {
+  type = "map"
+  default = {
+      "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+      "method.response.header.Access-Control-Allow-Origin" = "'*'",
+      "method.response.header.Access-Control-Allow-Credentials" = "'true'",
+      "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS'"
+  }
 }

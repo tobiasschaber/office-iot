@@ -58,7 +58,6 @@ resource "aws_lambda_function" "occupation_matcher_lambda" {
   role = "${aws_iam_role.lambda_execution_role.arn}"
   runtime = "nodejs8.10"
   source_code_hash = "${data.archive_file.lambda_archive_file.output_base64sha256}"
-  #source_code_hash = "${base64sha256(file("../lambda/build/lambda.zip"))}"
   timeout = "30"
   memory_size = "256"
 
@@ -79,7 +78,6 @@ resource "aws_lambda_function" "create_room_lambda" {
   role = "${aws_iam_role.lambda_execution_role.arn}"
   runtime = "nodejs8.10"
   source_code_hash = "${data.archive_file.lambda_archive_file.output_base64sha256}"
-  #source_code_hash = "${base64sha256(file("../lambda/build/lambda.zip"))}"
   timeout = "10"
 }
 
@@ -92,7 +90,6 @@ resource "aws_lambda_function" "attach_sensor_to_room_lambda" {
   role = "${aws_iam_role.lambda_execution_role.arn}"
   runtime = "nodejs8.10"
   source_code_hash = "${data.archive_file.lambda_archive_file.output_base64sha256}"
-  #source_code_hash = "${base64sha256(file("../lambda/build/lambda.zip"))}"
   timeout = "10"
 }
 
@@ -105,7 +102,6 @@ resource "aws_lambda_function" "detach_sensor_from_room_lambda" {
   role = "${aws_iam_role.lambda_execution_role.arn}"
   runtime = "nodejs8.10"
   source_code_hash = "${data.archive_file.lambda_archive_file.output_base64sha256}"
-  #source_code_hash = "${base64sha256(file("../lambda/build/lambda.zip"))}"
   timeout = "10"
 }
 
@@ -118,7 +114,6 @@ resource "aws_lambda_function" "get_sensor_status_lambda" {
   role = "${aws_iam_role.lambda_execution_role.arn}"
   runtime = "nodejs8.10"
   source_code_hash = "${data.archive_file.lambda_archive_file.output_base64sha256}"
-  #source_code_hash = "${base64sha256(file("../lambda/build/lambda.zip"))}"
   timeout = "10"
 }
 
@@ -132,7 +127,6 @@ resource "aws_lambda_function" "list_rooms_lambda" {
   role = "${aws_iam_role.lambda_execution_role.arn}"
   runtime = "nodejs8.10"
   source_code_hash = "${data.archive_file.lambda_archive_file.output_base64sha256}"
-  #source_code_hash = "${base64sha256(file("../lambda/build/lambda.zip"))}"
   timeout = "10"
 }
 
@@ -145,7 +139,6 @@ resource "aws_lambda_function" "get_current_room_occupation" {
   role = "${aws_iam_role.lambda_execution_role.arn}"
   runtime = "nodejs8.10"
   source_code_hash = "${data.archive_file.lambda_archive_file.output_base64sha256}"
-  #source_code_hash = "${base64sha256(file("../lambda/build/lambda.zip"))}"
   timeout = "10"
 }
 
@@ -158,7 +151,6 @@ resource "aws_lambda_function" "update_current_room_occupation" {
   role = "${aws_iam_role.lambda_execution_role.arn}"
   runtime = "nodejs8.10"
   source_code_hash = "${data.archive_file.lambda_archive_file.output_base64sha256}"
-  #source_code_hash = "${base64sha256(file("../lambda/build/lambda.zip"))}"
   timeout = "10"
 }
 
@@ -171,6 +163,5 @@ resource "aws_lambda_function" "set_sensor_last_updated" {
   role = "${aws_iam_role.lambda_execution_role.arn}"
   runtime = "nodejs8.10"
   source_code_hash = "${data.archive_file.lambda_archive_file.output_base64sha256}"
-  #source_code_hash = "${base64sha256(file("../lambda/build/lambda.zip"))}"
   timeout = "10"
 }
