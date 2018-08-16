@@ -52,10 +52,13 @@ export class SensorStatusComponent implements OnInit {
       .subscribe(response => {
         if(response) {
 
+
           const loadedSensors = response.sensors;
 
           if(loadedSensors && loadedSensors.length > 0) {
-            console.log("UPD");
+            for(var i=0; i<loadedSensors.length; i++) {
+              loadedSensors[i].sensorHasTimedOut = this.showSensorWarning(loadedSensors[i]);
+            }
             this.sensors = loadedSensors;
           }
         }

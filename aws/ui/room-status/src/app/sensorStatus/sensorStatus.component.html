@@ -8,7 +8,7 @@
     <div class="singleSensorStatus">
       <div class="sensorName">Sensor: {{ sens.sensorId }}</div>
       <div class="sensorLastChanged">Last Update: {{ sens.lastUpdated | date:'dd:MM:yyyy HH:mm:ss' }}</div>
-      <div *ngIf="showSensorWarning(sens)" class="noSensorDataWarning">!!!</div>
+      <div *ngIf="sens.sensorHasTimedOut" class="noSensorDataWarning">!!!</div>
     </div>
   </div>
 
