@@ -8,6 +8,8 @@ import {SensorStatusDataService} from '../services/sensor-status.service';
 import {timer} from 'rxjs/observable/timer';
 import {Subscription} from 'rxjs/Subscription';
 
+const SENSOR_WARN_TIME = 30*1000;
+
 
 @Component({
   selector: 'sensorStatus',
@@ -60,6 +62,15 @@ export class SensorStatusComponent implements OnInit {
       }, err => {
         console.log(err);
       });
+  }
+
+  /**
+   * check if a sensor warning should be displayed depending on how old the last sensor data is
+   * @param {SensorStatus} sens the sensor to check
+   * @return {boolean | boolean} true if a warning should be shown, otherwise false
+   */
+  showSensorWarning(sens: SensorStatus) {
+    return sens.lastUpdated < (new Date().getTime() - SENSOR_WARN_TIME) ? true: false;
   }
 
 }

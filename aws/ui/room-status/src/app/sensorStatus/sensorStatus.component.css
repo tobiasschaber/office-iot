@@ -55,3 +55,9 @@
   color: lightgray;
   font-size: 1em;
 }
+
+
+.noSensorDataWarning {
+  color: red;
+  float: left;
+}
