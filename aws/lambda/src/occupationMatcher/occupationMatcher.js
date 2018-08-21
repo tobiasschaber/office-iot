@@ -51,16 +51,23 @@ async function matchOccupations() {
         let currentRoom = rooms.Items[i];
         let roomId = rooms.Items[i].roomId;
 
-        let calendarEntries = await calendarServices.getEventsForCalendarByRoom(currentRoom);
+        /* check if the room is connected to a calendar */
+        if(currentRoom.calendarServiceAccountPrivateKey.startsWith("-----BEGIN PRIVATE KEY-----")) {
 
+            let calendarEntries = await calendarServices.getEventsForCalendarByRoom(currentRoom);
 
-        if (calendarEntries) {
-            let motionsForRoom = await motionsServices.getMotionsForRoom(roomId, undefined);
-            matchMotionsToCalendar(calendarEntries, motionsForRoom);
+            if (calendarEntries) {
+                let motionsForRoom = await motionsServices.getMotionsForRoom(roomId, undefined);
+                matchMotionsToCalendar(calendarEntries, motionsForRoom);
 
+            } else {
+                console.log("error: no calendar entries could be read for calendar: " + currentRoom.roomId + " (" + currentRoom.roomName + "). skipping matching.");
+            }
         } else {
-            console.log("error: no calendar entries could be read for calendar: " + currentRoom.roomId + " (" + currentRoom.roomName + "). skipping matching.");
+            console.log("skipping calendar " + currentRoom.roomName + " : no private key provided");
         }
+
+
     }
 
     return "done";
