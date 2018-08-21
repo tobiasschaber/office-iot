@@ -66,8 +66,6 @@ async function matchOccupations() {
         } else {
             console.log("skipping calendar " + currentRoom.roomName + " : no private key provided");
         }
-
-
     }
 
     return "done";

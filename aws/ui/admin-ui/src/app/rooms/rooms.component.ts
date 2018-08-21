@@ -28,9 +28,29 @@ export class RoomsComponent implements OnInit {
    * @param {Room} room the selected room, undefined if "add room" pushed
    */
   onSelect(room: Room) {
+
     if(!room) {
-      this.selectedRoom = new Room("", "", "", "", "");
-      this.rooms.push(this.selectedRoom);
+
+      let room  = new Room(
+        "",
+        "Enter Room Name",
+        "Enter Calendar ID",
+        "Enter Service Account ID",
+        "Enter Service Account Private Key");
+
+      let result = this.roomsDataService.createRoom(room);
+
+      result.subscribe(response => {
+        if(response) {
+          console.log(response);
+          room.roomId = response.uuid;
+          this.rooms.push(room);
+          this.selectedRoom = room;
+        }
+      }, err => {
+        console.log("Error creating room in backend system "+ JSON.stringify(err));
+      });
+
     } else {
       this.selectedRoom = room;
     }
