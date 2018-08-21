@@ -25,7 +25,7 @@
 
         <tr>
           <td>Description</td>
-          <td><input [(ngModel)]="selectedSensor.description" placeholder="Description"></td>
+          <td><input [(ngModel)]="selectedSensor.description" (change)="updateSensorAttachment(selectedSensor)" placeholder="Description"></td>
         </tr>
 
         <tr>
