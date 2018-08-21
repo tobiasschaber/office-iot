@@ -23,7 +23,18 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
  * @param callback
  */
 exports.createRoom = async (event, context, callback) => {
-    AWS.config.update({region: awsRegion});
+
+    if(event.body) {
+        if(!event.queryStringParameters) {
+            event.queryStringParameters = [];
+        }
+        let requestBody = JSON.parse(event.body);
+
+        event.queryStringParameters.roomName = requestBody.roomName;
+        event.queryStringParameters.accountId = requestBody.accountId;
+        event.queryStringParameters.privateKey = requestBody.privateKey;
+        event.queryStringParameters.calendarId = requestBody.calendarId;
+    }
 
     /* ensure event format is correct */
     if(!event || !event.queryStringParameters) {
@@ -40,12 +51,14 @@ exports.createRoom = async (event, context, callback) => {
         return;
     }
 
+    AWS.config.update({region: awsRegion});
+
     let result = await roomsService.createRoom(
         event.queryStringParameters.roomName,
         event.queryStringParameters.accountId,
         event.queryStringParameters.privateKey,
         event.queryStringParameters.calendarId);
 
-    callback(null, apiHelper.createResponse(200, result));
+    callback(null, apiHelper.createResponse(200, JSON.stringify(result)));
 
 };
