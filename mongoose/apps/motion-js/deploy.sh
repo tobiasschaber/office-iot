@@ -10,31 +10,42 @@
 # - WLAN_PASSWORD
 
 
+# set the port. default = auto
+export PORT="/dev/ttyUSB1"
+
+
+# please notice that the default port will be used (see mos --helpfull -> "--port" parameter)
+
 # read the secrets file containing the API key
 source ../../../secrets
 
 echo "========================================="
 echo "flashing and configuring sensor device"
 echo "========================================="
-sudo mos flash
-sudo mos wifi $WLAN_NAME '$WLAN_PASSWORD'
-sudo mos aws-iot-setup --aws-region eu-central-1 --aws-iot-policy mos-default
+sudo mos flash --port $PORT
+sudo mos wifi $WLAN_NAME $WLAN_PASSWORD --port $PORT
+sudo mos aws-iot-setup --aws-region eu-central-1 --aws-iot-policy mos-default --port $PORT
 
 
 
 
 echo "========================================="
-echo "checking whether the sensor is registered in mongoose dash"
+echo "get the thing name out of the sensor"
 echo "========================================="
 
 # read the name from the sensor via mos config tool, remove "" and trim it (xargs)
-thingName=$(sudo mos config-get | grep thing_name | cut -d: -f2 | tr -d '"' | xargs)
+thingName=$(sudo mos --port $PORT config-get | grep thing_name | cut -d: -f2 | tr -d '"' | xargs)
 
 if [ -z "$thingName" ]
     then
         echo "ERROR: could not read thing_name from device"
         exit
 fi
+
+echo "thing name: $thingName"
+
+
+
 
 
 
@@ -49,8 +60,11 @@ thingId=$(curl -X GET -H "Authorization: apikey $MONGOOSE_OS_DASH_API_KEY" https
 
 if [ -z "$thingId" ]
     then
-        echo "ERROR: thing [$thingName] is not registered in mongoose dash"
-        exit
+        echo "Thing [$thingName] is not registered in mongoose dash. Will register it now"
+
+        # register on dash
+        thingId=$(curl -XPOST -H "Content-Type: application/json" -H "Authorization: Bearer $MONGOOSE_OS_DASH_API_KEY" -d "{\"name\": \"$thingName\"}" https://dash.mongoose-os.com/api/v2/devices | jq '.id' | tr -d '"')
+        echo "Registered with the ID $thingId"
 fi
 
 
@@ -59,7 +73,7 @@ echo "preparing sensor for ota deployment via mongoose dash"
 echo "========================================="
 
 # make configuration ready for ota deployments
-sudo mos config-set dash.enable=true dash.token=$thingId
+sudo mos --port $PORT config-set dash.enable=true dash.token=$thingId
 
 
 #sudo mos console
