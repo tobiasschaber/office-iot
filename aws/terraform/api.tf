@@ -58,6 +58,13 @@ resource "aws_api_gateway_method" "room_method_post" {
   authorization = "NONE"
 }
 
+resource "aws_api_gateway_method" "room_method_put" {
+  rest_api_id   = "${aws_api_gateway_rest_api.officeiot_api.id}"
+  resource_id   = "${aws_api_gateway_resource.room_resource.id}"
+  http_method   = "PUT"
+  authorization = "NONE"
+}
+
 resource "aws_api_gateway_method" "room_method_get" {
   rest_api_id   = "${aws_api_gateway_rest_api.officeiot_api.id}"
   resource_id   = "${aws_api_gateway_resource.room_resource.id}"
@@ -312,6 +319,15 @@ resource "aws_api_gateway_integration" "room_post_integration" {
   uri                     = "${aws_lambda_function.create_room_lambda.invoke_arn}"
 }
 
+resource "aws_api_gateway_integration" "room_put_integration" {
+  rest_api_id             = "${aws_api_gateway_rest_api.officeiot_api.id}"
+  resource_id             = "${aws_api_gateway_resource.room_resource.id}"
+  http_method             = "${aws_api_gateway_method.room_method_put.http_method}"
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = "${aws_lambda_function.update_room_lambda.invoke_arn}"
+}
+
 resource "aws_api_gateway_integration" "room_get_integration" {
   rest_api_id             = "${aws_api_gateway_rest_api.officeiot_api.id}"
   resource_id             = "${aws_api_gateway_resource.room_resource.id}"
@@ -432,6 +448,7 @@ resource "aws_api_gateway_integration" "sensor_detection_options_integration" {
 resource "aws_api_gateway_deployment" "deployment" {
   depends_on = [
     "aws_api_gateway_integration.room_post_integration",
+    "aws_api_gateway_integration.room_put_integration",
     "aws_api_gateway_integration.room_get_integration",
     "aws_api_gateway_integration.room_options_integration",
     "aws_api_gateway_integration.sensor_attachment_post_integration",
@@ -466,6 +483,13 @@ resource "aws_lambda_permission" "create_room_permission" {
   statement_id  = "AllowAPIGatewayInvoke1"
   action        = "lambda:InvokeFunction"
   function_name = "${aws_lambda_function.create_room_lambda.arn}"
+  principal     = "apigateway.amazonaws.com"
+}
+
+resource "aws_lambda_permission" "update_room_permission" {
+  statement_id  = "AllowAPIGatewayInvoke1"
+  action        = "lambda:InvokeFunction"
+  function_name = "${aws_lambda_function.update_room_lambda.arn}"
   principal     = "apigateway.amazonaws.com"
 }
 

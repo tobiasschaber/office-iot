@@ -41,6 +41,20 @@ exports.createRoom = async (roomName, svcAccountId, svcAccPrivateKey, calendarId
 
 
 /**
+ * update a given room
+ * @param roomId
+ * @param roomName
+ * @param svcAccountId
+ * @param svcAccPrivateKey
+ * @param calendarId
+ */
+exports.updateRoom = async (roomId, roomName, svcAccountId, svcAccPrivateKey, calendarId) => {
+    AWS.config.update({region: awsRegion});
+    return updateRoom(roomId, roomName, svcAccountId, svcAccPrivateKey, calendarId);
+}
+
+
+/**
  * get a room by its id
  * @param roomId
  */
@@ -110,8 +124,29 @@ async function createRoom(roomName, svcAccountId, svcAccPrivateKey, calendarId) 
 
     return { 'status': result,
              'uuid' : uuid };
+}
+
+
+/**
+ * update a given room
+ * @param uuid
+ * @param roomName
+ * @param svcAccountId
+ * @param svcAccPrivateKey
+ * @param calendarId
+ * @return {Promise<void>}
+ */
+async function updateRoom(uuid, roomName, svcAccountId, svcAccPrivateKey, calendarId) {
+
+    let insertParams = getUpdateParamsForCreateRoom(uuid, roomName, svcAccountId, svcAccPrivateKey, calendarId);
+
+    let result = await serviceHelper.getUpdatePromise(insertParams);
+
+    return { 'status': result,
+        'uuid' : uuid };
 
 }
+
 
 
 /**
@@ -196,3 +231,20 @@ function getSearchParamsForGetRoomById(roomId) {
     }
 }
 
+
+function getUpdateParamsForCreateRoom(uuid, roomName, svcAccountId, svcAccPrivateKey, calendarId) {
+
+    return {
+        TableName: roomsTableName,
+        Key: {
+            "roomId": uuid
+        },
+        UpdateExpression: "set calendarId = :cid, calendarServiceAccountId = :csaccid, roomName = :rn",
+        ExpressionAttributeValues: {
+            ":cid": calendarId,
+            ":csaccid": svcAccountId,
+            ":rn": roomName
+        },
+        ReturnValues:"UPDATED_NEW"
+    }
+}

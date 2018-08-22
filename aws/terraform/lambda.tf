@@ -177,3 +177,15 @@ resource "aws_lambda_function" "detect_sensors" {
   source_code_hash = "${data.archive_file.lambda_archive_file.output_base64sha256}"
   timeout = "10"
 }
+
+# the API lambda to update an existing room
+resource "aws_lambda_function" "update_room_lambda" {
+  description = "update a given room identified by roomId"
+  filename = "${data.archive_file.lambda_archive_file.output_path}"
+  function_name = "updateRoom"
+  handler = "api/updateRoom.updateRoom"
+  role = "${aws_iam_role.lambda_execution_role.arn}"
+  runtime = "nodejs8.10"
+  source_code_hash = "${data.archive_file.lambda_archive_file.output_base64sha256}"
+  timeout = "10"
+}
