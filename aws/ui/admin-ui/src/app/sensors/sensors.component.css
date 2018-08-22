@@ -18,6 +18,17 @@
   border: 0px solid red;
 }
 
+/* indicate whether a sensor is attached to a room */
+.attached {
+
+}
+
+/* indicate whether a sensor is NOT attached to a room */
+.not_attached {
+  text-decoration: line-through;
+}
+
+
 a {
   color: #444444;
   text-decoration: none;

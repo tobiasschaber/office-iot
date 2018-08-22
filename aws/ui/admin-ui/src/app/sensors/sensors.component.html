@@ -3,8 +3,10 @@
 <div class="sensorsSelectionList">
     <h3>Sensors</h3>
 
-      <div *ngFor="let sensor of sensors">
-        <span><a (click)="onSelect(sensor)" >{{sensor.sensorId}}</a></span>
+      <div *ngFor="let sensor of sensors"
+           [ngClass]="{'not_attached':!sensor.attachedInRoom, 'attached':sensor.attachedInRoom}">
+
+        <span><a (click)="onSelect(sensor)" >{{sensor.sensorId}} </a></span>
       </div>
 
       <div>
