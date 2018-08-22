@@ -29,6 +29,27 @@ exports.setLocalTestMode = (awsCredentialsProfile) => {
 
 
 /**
+ * get a list of all sensors sending data
+ * @return {Promise<*>}
+ */
+exports.detectSensors = async() => {
+    AWS.config.update({region: awsRegion});
+
+    let allMotions = await detectSensors(undefined);
+
+    let filtered = [];
+
+    for(let i=0; i<allMotions.length; i++) {
+        if(filtered.indexOf(allMotions[i].sensorId) == -1) {
+            filtered.push(allMotions[i].sensorId);
+        }
+    }
+
+    return filtered;
+}
+
+
+/**
  * get all motions for a room. will check all sensors attached to this room
  * @param roomId
  * @param timeLimitOverride
@@ -98,6 +119,64 @@ async function getMotionsForRoom(roomId, timeLimitOverride) {
 
 
 /**
+ * get a list of all sensors sending data
+ * @return {Promise<void>}
+ */
+async function detectSensors(lastEvaluatedKey, pagedItems) {
+
+    let searchParams = getQueryForDetectSensors(lastEvaluatedKey);
+
+    if(!pagedItems) {
+        var pagedItems = [];
+    }
+
+    let resp = await serviceHelper.getQueryPromise(searchParams);
+
+    if(resp.LastEvaluatedKey) {
+        pagedItems = pagedItems.concat(resp.Items);
+        return detectSensors(resp.LastEvaluatedKey, pagedItems);
+
+    } else {
+        pagedItems = pagedItems.concat(resp.Items);
+        return pagedItems;
+    }
+}
+
+
+
+
+/**
+ * get all motions for a sensor
+ * uses pagination if there are the results are divided into multiple pages
+ * @param sensorId
+ * @param timeLimitOverride
+ * @param lastEvaluatedKey
+ * @param pagedItems
+ * @return {Promise<*>}
+ */
+async function getMotionsForSensor(sensorId, timeLimitOverride, lastEvaluatedKey, pagedItems) {
+
+    let searchParams = getQueryForGetMotionsForSensor(sensorId, lastEvaluatedKey, timeLimitOverride);
+
+    if(!pagedItems) {
+        var pagedItems = [];
+    }
+
+    let resp = await serviceHelper.getQueryPromise(searchParams);
+
+    if(resp.LastEvaluatedKey) {
+        pagedItems = pagedItems.concat(resp.Items);
+        return getMotionsForSensor(sensorId, timeLimitOverride, resp.LastEvaluatedKey, pagedItems);
+
+    } else {
+        pagedItems = pagedItems.concat(resp.Items);
+        return pagedItems;
+    }
+}
+
+
+
+/**
  * helper function to create a flattened list out of a nested one
  * @param arr
  */
@@ -143,3 +222,19 @@ function getQueryForGetMotionsForSensor(sensorId, lastEvaluatedKey, timeLimitOve
     return searchparams;
 }
 
+
+function getQueryForDetectSensors(lastEvaluatedKey) {
+
+
+    /* motions database query parameters to detect relevant events */
+    let searchparams = {
+        TableName: motionsTableName,
+        ProjectionExpression: "sensorId"
+    };
+
+    if(lastEvaluatedKey) {
+        searchparams.ExclusiveStartKey = lastEvaluatedKey;
+    }
+
+    return searchparams;
+}
