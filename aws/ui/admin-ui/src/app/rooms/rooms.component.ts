@@ -71,4 +71,20 @@ export class RoomsComponent implements OnInit {
       });
   }
 
+
+  /**
+   * update a given room via backend service
+   * @param {Room} room
+   */
+  updateRoom(room: Room) {
+    this.roomsDataService.updateRoom(room)
+      .subscribe(response => {
+        if(response) {
+          console.log("OK");
+        }
+      }, err => {
+        console.log("Error loading rooms from backend service");
+      });
+  }
+
 }

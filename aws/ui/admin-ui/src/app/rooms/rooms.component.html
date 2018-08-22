@@ -25,21 +25,21 @@
 
       <tr>
         <td width="150">Room Name</td>
-        <td><input [(ngModel)]="selectedRoom.roomName" placeholder="Room-Name"></td>
+        <td><input [(ngModel)]="selectedRoom.roomName" (change)="updateRoom(selectedRoom)" placeholder="Room-Name"></td>
       </tr>
 
       <tr>
         <td width="150">G. Calendar ID</td>
-        <td><input [(ngModel)]="selectedRoom.calendarId" placeholder="Calendar ID"></td>
+        <td><input [(ngModel)]="selectedRoom.calendarId" (change)="updateRoom(selectedRoom)" placeholder="Calendar ID"></td>
       </tr>
 
       <tr>
         <td width="150">G. Calendar Svc Acc</td>
-        <td><input [(ngModel)]="selectedRoom.calendarServiceAccountId" placeholder="Calendar Service Account ID"></td>
+        <td><input [(ngModel)]="selectedRoom.calendarServiceAccountId" (change)="updateRoom(selectedRoom)" placeholder="Calendar Service Account ID"></td>
       </tr>
 
       <tr>
-        <td width="150">G. Calendar Priv Key</td>
+        <td width="150">G. Calendar Priv Key (Cant be changed atm)</td>
         <td><textarea [(ngModel)]="selectedRoom.calendarServiceAccountPrivateKey"></textarea>
       </tr>
 
