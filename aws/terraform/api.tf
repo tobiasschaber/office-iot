@@ -26,6 +26,12 @@ resource "aws_api_gateway_resource" "sensor_attachment_resource" {
   path_part   = "sensorAttachment"
 }
 
+resource "aws_api_gateway_resource" "sensor_detection_resource" {
+  rest_api_id = "${aws_api_gateway_rest_api.officeiot_api.id}"
+  parent_id   = "${aws_api_gateway_rest_api.officeiot_api.root_resource_id}"
+  path_part   = "sensorDetection"
+}
+
 
 resource "aws_api_gateway_resource" "sensor_resource" {
   rest_api_id = "${aws_api_gateway_rest_api.officeiot_api.id}"
@@ -66,6 +72,13 @@ resource "aws_api_gateway_method" "sensors_attachment_method_post" {
   authorization = "NONE"
 }
 
+resource "aws_api_gateway_method" "sensors_detection_method_get" {
+  rest_api_id   = "${aws_api_gateway_rest_api.officeiot_api.id}"
+  resource_id   = "${aws_api_gateway_resource.sensor_detection_resource.id}"
+  http_method   = "GET"
+  authorization = "NONE"
+}
+
 resource "aws_api_gateway_method" "sensors_attachment_method_delete" {
   rest_api_id   = "${aws_api_gateway_rest_api.officeiot_api.id}"
   resource_id   = "${aws_api_gateway_resource.sensor_attachment_resource.id}"
@@ -76,6 +89,13 @@ resource "aws_api_gateway_method" "sensors_attachment_method_delete" {
 resource "aws_api_gateway_method" "sensors_attachment_method_options" {
   rest_api_id   = "${aws_api_gateway_rest_api.officeiot_api.id}"
   resource_id   = "${aws_api_gateway_resource.sensor_attachment_resource.id}"
+  http_method   = "OPTIONS"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_method" "sensors_detection_method_options" {
+  rest_api_id   = "${aws_api_gateway_rest_api.officeiot_api.id}"
+  resource_id   = "${aws_api_gateway_resource.sensor_detection_resource.id}"
   http_method   = "OPTIONS"
   authorization = "NONE"
 }
@@ -190,6 +210,21 @@ resource "aws_api_gateway_method_response" "attachment_options_200" {
   response_parameters = "${var.cors_method_response_parameters}"
 }
 
+# configuration for CORS for sensor calls
+resource "aws_api_gateway_method_response" "detection_options_200" {
+  rest_api_id = "${aws_api_gateway_rest_api.officeiot_api.id}"
+  resource_id = "${aws_api_gateway_resource.sensor_detection_resource.id}"
+  http_method = "${aws_api_gateway_method.sensors_detection_method_options.http_method}"
+  status_code = "200"
+
+  response_models {
+    "application/json" = "Empty"
+  }
+
+  # CORS headers
+  response_parameters = "${var.cors_method_response_parameters}"
+}
+
 
 
 # -------------------------------------------------------
@@ -249,6 +284,19 @@ resource "aws_api_gateway_integration_response" "sensor_attachment_options_integ
   }
 }
 
+resource "aws_api_gateway_integration_response" "sensor_detection_options_integration_response" {
+  rest_api_id   = "${aws_api_gateway_rest_api.officeiot_api.id}"
+  resource_id   = "${aws_api_gateway_resource.sensor_detection_resource.id}"
+  http_method   = "${aws_api_gateway_method.sensors_detection_method_options.http_method}"
+  status_code   = "${aws_api_gateway_method_response.detection_options_200.status_code}"
+
+  response_parameters = "${var.cors_integration_response_response_parameters}"
+
+  response_templates {
+    "application/json" = "${var.cors_integration_response_template}"
+  }
+}
+
 
 
 # -------------------------------------------------------
@@ -299,6 +347,16 @@ resource "aws_api_gateway_integration" "occupation_get_integration" {
   type                    = "AWS_PROXY"
   uri                     = "${aws_lambda_function.get_current_room_occupation.invoke_arn}"
 }
+
+resource "aws_api_gateway_integration" "sensor_detection_get_integration" {
+  rest_api_id             = "${aws_api_gateway_rest_api.officeiot_api.id}"
+  resource_id             = "${aws_api_gateway_resource.sensor_detection_resource.id}"
+  http_method             = "${aws_api_gateway_method.sensors_detection_method_get.http_method}"
+  integration_http_method = "POST" /* attention: always use POST for lambda invocation internally! */
+  type                    = "AWS_PROXY"
+  uri                     = "${aws_lambda_function.detect_sensors.invoke_arn}"
+}
+
 
 resource "aws_api_gateway_integration" "sensor_get_integration" {
   rest_api_id             = "${aws_api_gateway_rest_api.officeiot_api.id}"
@@ -353,6 +411,17 @@ resource "aws_api_gateway_integration" "sensor_attachment_options_integration" {
   }
 }
 
+resource "aws_api_gateway_integration" "sensor_detection_options_integration" {
+  rest_api_id = "${aws_api_gateway_rest_api.officeiot_api.id}"
+  resource_id = "${aws_api_gateway_resource.sensor_detection_resource.id}"
+  http_method = "${aws_api_gateway_method.sensors_detection_method_options.http_method}"
+  type = "MOCK"
+
+  request_templates {
+    "application/json" = "${var.cors_options_integration_request_template}"
+  }
+}
+
 
 # -------------------------------------------------------
 # deployments
@@ -369,6 +438,8 @@ resource "aws_api_gateway_deployment" "deployment" {
     "aws_api_gateway_integration.sensor_attachment_delete_integration",
     "aws_api_gateway_integration.sensor_attachment_options_integration",
     "aws_api_gateway_integration.sensor_get_integration",
+    "aws_api_gateway_integration.sensor_detection_get_integration",
+    "aws_api_gateway_integration.sensor_detection_options_integration",
     "aws_api_gateway_integration.sensor_options_integration",
     "aws_api_gateway_integration.occupation_get_integration",
     "aws_api_gateway_integration.occupation_options_integration"
@@ -430,6 +501,13 @@ resource "aws_lambda_permission" "get_current_room_occupation_permission" {
   statement_id  = "AllowAPIGatewayInvoke4"
   action        = "lambda:InvokeFunction"
   function_name = "${aws_lambda_function.get_current_room_occupation.arn}"
+  principal     = "apigateway.amazonaws.com"
+}
+
+resource "aws_lambda_permission" "detect_sensors_permission" {
+  statement_id  = "AllowAPIGatewayInvoke4"
+  action        = "lambda:InvokeFunction"
+  function_name = "${aws_lambda_function.detect_sensors.arn}"
   principal     = "apigateway.amazonaws.com"
 }
 

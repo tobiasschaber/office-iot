@@ -165,3 +165,15 @@ resource "aws_lambda_function" "set_sensor_last_updated" {
   source_code_hash = "${data.archive_file.lambda_archive_file.output_base64sha256}"
   timeout = "10"
 }
+
+# the API lambda to detect sensors
+resource "aws_lambda_function" "detect_sensors" {
+  description = "get a list of all sensors sending data"
+  filename = "${data.archive_file.lambda_archive_file.output_path}"
+  function_name = "detectSensors"
+  handler = "api/detectSensors.detectSensors"
+  role = "${aws_iam_role.lambda_execution_role.arn}"
+  runtime = "nodejs8.10"
+  source_code_hash = "${data.archive_file.lambda_archive_file.output_base64sha256}"
+  timeout = "10"
+}
