@@ -48,15 +48,15 @@ echo "thing name: $thingName"
 
 
 
-
-
 echo "========================================="
 echo "reading api key for sensor from mongoose dash"
 echo "========================================="
 
 # get the "id" (which is the api key) by the known name of the sensor
 # remove "" and trim it (xargs)
-thingId=$(curl -X GET -H "Authorization: apikey $MONGOOSE_OS_DASH_API_KEY" https://dash.mongoose-os.com/api/v1/devices | jq '.[][] | select(.name=="'$thingName'") | .id' | tr -d '"' | xargs)
+thingId=$(curl -X GET -H "Content-Type: application/json" -H "Authorization: Bearer $MONGOOSE_OS_DASH_API_KEY" https://dash.mongoose-os.com/api/v2/devices | jq '.[] | select(.name=="'$thingName'") | .id' | tr -d '"' | xargs)
+
+echo "FOUND THING: $thingId"
 
 if [ -z "$thingId" ]
     then
@@ -69,11 +69,18 @@ fi
 
 
 echo "========================================="
+echo "reading thing token from mongoose dash"
+echo "========================================="
+thingToken=$(curl -X GET -H "Content-Type: application/json" -H "Authorization: Bearer $MONGOOSE_OS_DASH_API_KEY" https://dash.mongoose-os.com/api/v2/devices | jq '.[] | select(.name=="'$thingName'") | .token' | tr -d '"' | xargs)
+
+echo "THING TOKEN: $thingToken"
+
+echo "========================================="
 echo "preparing sensor for ota deployment via mongoose dash"
 echo "========================================="
 
 # make configuration ready for ota deployments
-sudo mos --port $PORT config-set dash.enable=true dash.token=$thingId
+sudo mos --port $PORT config-set dash.enable=true dash.token=$thingToken
 
 
 #sudo mos console
