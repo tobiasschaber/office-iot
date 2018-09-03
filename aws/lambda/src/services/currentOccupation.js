@@ -2,7 +2,7 @@ const AWS = require('aws-sdk');
 const awsRegion = 'eu-central-1';
 const sensorsService = require('./sensors');
 const serviceHelper = require('../helper/serviceHelper');
-const delayOccupiedToFreeMs = 2000;
+const delayOccupiedToFreeMs = 2000000;  /* 2 * 1000 * 1000 for 2 seconds, as these timestamps are ms*1000 */
 
 
 const currentRoomOccupationTableName = 'currentRoomOccupation';
