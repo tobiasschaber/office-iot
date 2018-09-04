@@ -2,7 +2,8 @@ const AWS = require('aws-sdk');
 const awsRegion = 'eu-central-1';
 const sensorsService = require('./sensors');
 const serviceHelper = require('../helper/serviceHelper');
-const delayOccupiedToFreeMs = 2000;  /* time in ms to force-keep a room occupied */
+const delayOccupiedToFreeMs = 3000;  /* time in ms to force-keep a room occupied */
+const timeUntilOccupationNoData = 60000; /* time (ms) to indicate that room has no data */
 
 
 const currentRoomOccupationTableName = 'currentRoomOccupation';
@@ -64,12 +65,12 @@ async function updateCurrentRoomOccupation(sensorId, motionDetected, creationTim
 function updateCurrentRoomOccupationTable(roomId, motionDetected, creationTimestamp, currentCreationTimestamp, currentMotionDetected) {
 
      /* switch from "free" to "occupied" */
-     if(motionDetected === 1) {
+     if(motionDetected == 1) {
          console.log("update to status occupied");
          updateCurrentOccupation(getInsertParamsForUpdateCurrentOccupation(roomId, creationTimestamp, "occupied"));
 
      } else {
-         if(motionDetected === 0) {
+         if(motionDetected == 0) {
 
              if(creationTimestamp >= (currentCreationTimestamp + delayOccupiedToFreeMs)) {
                  console.log("update to status free");
@@ -129,8 +130,14 @@ async function getCurrentRoomOccupation(roomId, roomName) {
         currentMotionDetected = "no data";
         currentCreationTimestamp = "0";
     } else {
-        currentCreationTimestamp = resp.Items[0].lastUpdatedTimestamp;
-        currentMotionDetected = resp.Items[0].occupationStatus;
+
+        if(resp.Items[0].lastUpdatedTimestamp < (new Date().getTime() - (timeUntilOccupationNoData))) {
+            currentMotionDetected = "no data";
+            currentCreationTimestamp = "0";
+        } else {
+            currentCreationTimestamp = resp.Items[0].lastUpdatedTimestamp;
+            currentMotionDetected = resp.Items[0].occupationStatus;
+        }
     }
 
     return {
