@@ -2,7 +2,7 @@ const AWS = require('aws-sdk');
 const awsRegion = 'eu-central-1';
 const sensorsService = require('./sensors');
 const serviceHelper = require('../helper/serviceHelper');
-const delayOccupiedToFreeMs = 2000000;  /* 2 * 1000 * 1000 for 2 seconds, as these timestamps are ms*1000 */
+const delayOccupiedToFreeMs = 2000;  /* time in ms to force-keep a room occupied */
 
 
 const currentRoomOccupationTableName = 'currentRoomOccupation';
@@ -65,14 +65,19 @@ function updateCurrentRoomOccupationTable(roomId, motionDetected, creationTimest
 
      /* switch from "free" to "occupied" */
      if(motionDetected === 1) {
+         console.log("update to status occupied");
          updateCurrentOccupation(getInsertParamsForUpdateCurrentOccupation(roomId, creationTimestamp, "occupied"));
 
      } else {
          if(motionDetected === 0) {
 
              if(creationTimestamp >= (currentCreationTimestamp + delayOccupiedToFreeMs)) {
+                 console.log("update to status free");
                  updateCurrentOccupation(getInsertParamsForUpdateCurrentOccupation(roomId, creationTimestamp, "free"));
+             } else {
+                 console.log("ignore status update");
              }
+
          }
      }
 }
@@ -142,8 +147,15 @@ async function getCurrentRoomOccupationEnriched(roomId, motionDetected, creation
     let searchParams = getQueryForGetCurrentRoomOccupation(roomId);
     let resp = await serviceHelper.getQueryPromise(searchParams);
 
-    let currentCreationTimestamp = resp.Items[0].lastUpdatedTimestamp;
-    let currentMotionDetected = resp.Items[0].occupationStatus;
+    /* default values if room occupation config db entry was not yet created */
+    let currentCreationTimestamp = 0;
+    let currentMotionDetected = 0;
+
+    if(resp.Items.length > 0) {
+        currentCreationTimestamp = resp.Items[0].lastUpdatedTimestamp;
+        currentMotionDetected = resp.Items[0].occupationStatus;
+    }
+
     callback(roomId, motionDetected, creationTimestamp, currentCreationTimestamp, currentMotionDetected);
 
 }
