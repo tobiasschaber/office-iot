@@ -14,18 +14,18 @@ variable "occupation_matcher_polling_interval"            {  default = "rate(5 m
 variable "slack_webhook_url"                              {  default = "http://" }
 
 # read capacities for dynamodb tables
-variable "dynamodb_table_read_capacity_rooms"             {  default = 2 }
-variable "dynamodb_table_read_capacity_sensors"           {  default = 2 }
-variable "dynamodb_table_read_capacity_motions"           {  default = 7 }
-variable "dynamodb_table_read_capacity_occ_alert_hist"    {  default = 2 }
+variable "dynamodb_table_read_capacity_rooms"             {  default = 1 }
+variable "dynamodb_table_read_capacity_sensors"           {  default = 1 }
+variable "dynamodb_table_read_capacity_motions"           {  default = 15 }
+variable "dynamodb_table_read_capacity_occ_alert_hist"    {  default = 1 }
 variable "dynamodb_table_read_capacity_current_room_occ"  {  default = 5 }
 
 # write capacities for dynamodb tables
 variable "dynamodb_table_write_capacity_rooms"            {  default = 1 }
 variable "dynamodb_table_write_capacity_sensors"          {  default = 1 }
-variable "dynamodb_table_write_capacity_motions"          {  default = 2 }
-variable "dynamodb_table_write_capacity_occ_alert_hist"   {  default = 2 }
-variable "dynamodb_table_write_capacity_current_room_occ" {  default = 2 }
+variable "dynamodb_table_write_capacity_motions"          {  default = 1 }
+variable "dynamodb_table_write_capacity_occ_alert_hist"   {  default = 1 }
+variable "dynamodb_table_write_capacity_current_room_occ" {  default = 1 }
 
 
 
