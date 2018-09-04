@@ -11,13 +11,15 @@ load('api_timer.js');
 let sensorPin = Cfg.get('app.sensorPin');
 let ledPin = Cfg.get('app.ledPin');
 let frequencyMs = Cfg.get('app.pollFrequency');
-let maxNumberOfSkips = Cfg.get('app.maxNumberOfSkips');
+let maxNumberOfMotionSkips = Cfg.get('app.maxNumberOfMotionSkips');
+let maxNumberOfNoMotionSkips = Cfg.get('app.maxNumberOfNoMotionSkips');
 
 /* last motion state which was sent as update. stored to prevent sending masses of messages */
 let lastDetectedState = 0;
 
 /* number of messages that already have been skipped since the last published message */
-let skippedMessagesCount = 0;
+let skippedMotionMessagesCount = 0;
+let skippedNoMotionMessagesCount = 0;
 
 /* state document which is used in the thing shadow */
 let state = { motionDetected: 0 };
@@ -41,14 +43,33 @@ Timer.set(frequencyMs, true, function() {
     let motion = GPIO.read(sensorPin);
     GPIO.write(ledPin, motion);
 
-    if(lastDetectedState === motion && skippedMessagesCount < maxNumberOfSkips) {
-        print("skipping as not changed");
-        skippedMessagesCount = skippedMessagesCount + 1;
 
-    } else {
-        lastDetectedState = motion;
-        skippedMessagesCount = 0;
-        Shadow.update(0, {motionDetected: motion});
+    let skip = false;
 
+    /* no change detected since last detection*/
+    if(lastDetectedState === motion) {
+
+        if(motion === 0 && skippedNoMotionMessagesCount < maxNumberOfNoMotionSkips) {
+            print("skipping NO MOTION as not changed ");
+            skippedNoMotionMessagesCount = skippedNoMotionMessagesCount + 1;
+            skip = true;
+        }
+
+        if(motion === 1 && skippedMotionMessagesCount < maxNumberOfMotionSkips) {
+            print("skipping MOTION as not changed ");
+            skippedMotionMessagesCount = skippedMotionMessagesCount + 1;
+            skip = true;
+        }
     }
+
+    if(!skip) {
+        print("pushing update");
+        lastDetectedState = motion;
+        skippedMotionMessagesCount = 0;
+        skippedNoMotionMessagesCount = 0;
+        Shadow.update(0, {motionDetected: motion});
+    }
+
+
+
 }, null);

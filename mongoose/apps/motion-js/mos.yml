@@ -12,7 +12,8 @@ config_schema:
   - ["app.sensorPin", "i", 13, {title: "motion sensor pin"}]
   - ["app.ledPin", "i", 12, {title: "additional led pin"}]
   - ["app.pollFrequency", "i", 500, {title: "poll frequency for motion sensor"}]
-  - ["app.maxNumberOfSkips", "i", 25, {title: "number of times when no change happened until a publish update will be forced"}]
+  - ["app.maxNumberOfMotionSkips", "i", 5, {title: "number of times when motion detected will be skipped until a publish force update"}]
+  - ["app.maxNumberOfNoMotionSkips", "i", 25, {title: "number of times when NO motion detected will be skipped until a publish force update"}]
 
 tags:
   - js
